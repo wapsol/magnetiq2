@@ -10,3 +10,5 @@ Now, we want to see if we can..
 - specify the final product we want ±100%,
 - vet it in the team across our business requirements, and only then,
 - part-by-part, have the AI-coder build it.
+
+And yes, we are leaving this a public project for now.
