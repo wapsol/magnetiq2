@@ -14,7 +14,7 @@ Alembic is SQLAlchemy's official database migration tool, providing version cont
 
 ## Usage in Magnetiq2
 
-Alembic manages the complex database schema with 15+ tables supporting multilingual content, audit trails, and business operations.
+Alembic manages the database schema with 15+ tables supporting multilingual content, audit trails, and business operations.
 
 ### Project Structure
 ```
