@@ -6,5 +6,6 @@ This folder contains short descriptions of technology, processes and logic behin
 |------------|------|--------------|-------------|
 | Alembic | [alembic.md](alembic.md) | 2025-08-26 | Ashant C |
 | Celery | [celery.md](celery.md) | 2025-08-26 | Claude |
+| Flower | [flower.md](flower.md) | 2025-08-26 | Claude |
 | Gunicorn & Uvicorn | [gunicorn_uvicorn.md](gunicorn_uvicorn.md) | 2025-08-26 | Claude |
 | Redis | [redis.md](redis.md) | 2025-08-26 | Claude |

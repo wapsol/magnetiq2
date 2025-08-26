@@ -121,7 +121,7 @@ celery -A app.celery_app worker --loglevel=info --concurrency=4
 # Start beat scheduler (on one machine only)
 celery -A app.celery_app beat --loglevel=info
 
-# Monitor tasks
+# Monitor tasks with Flower (see flower.md for detailed setup)
 celery -A app.celery_app flower
 ```
 
@@ -212,11 +212,15 @@ result = parallel_jobs.apply_async()
 ## Monitoring and Debugging
 
 ### Flower Web Interface
+For comprehensive monitoring, use **[Flower](flower.md)** - a web-based monitoring tool that provides real-time task tracking, worker management, and performance analytics.
+
 ```bash
 pip install flower
 celery -A app.celery_app flower --port=5555
 # Access at http://localhost:5555
 ```
+
+See the **[Flower short](flower.md)** for detailed configuration, production deployment, and advanced monitoring features.
 
 ### Task Inspection
 ```python
@@ -242,5 +246,11 @@ print(result.result)  # Task return value or exception
 - **Dramatiq**: Modern alternative with better ergonomics
 - **Apache Airflow**: Complex workflow orchestration (overkill for simple tasks)
 - **AWS SQS + Lambda**: Cloud-native serverless task processing
+
+## Related Technologies
+
+For comprehensive task queue implementation in Magnetiq2, Celery works alongside:
+- **[Redis](redis.md)**: Message broker and result backend for high-performance task queuing
+- **[Flower](flower.md)**: Real-time monitoring and management of Celery clusters
 
 Celery's maturity, flexibility, and extensive ecosystem make it the go-to choice for distributed task processing in Python applications like Magnetiq2, especially when handling complex workflows and requiring robust monitoring capabilities.
