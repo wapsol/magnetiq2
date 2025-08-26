@@ -18,8 +18,8 @@ The Magnetiq v2 backend is a high-performance, scalable API built with Python an
 - **Documentation**: Auto-generated OpenAPI 3.0
 
 ### Port Configuration
-- **Development**: Port 3000 (unified development port)
-- **Production**: Port 8000 (behind Nginx reverse proxy)
+- **Development**: Port 3036 (unified backend port)
+- **Production**: Port 3036 (behind Nginx reverse proxy)
 - **Health Checks**: Dedicated endpoints with comprehensive dependency monitoring
 - **Metrics**: Prometheus metrics endpoint on same port
 
@@ -60,7 +60,7 @@ backend/
 ## API Design Standards
 
 ### Base URL Structure
-- **Development**: `http://localhost:3000`
+- **Development**: `http://localhost:3036`
 - **Production**: `https://api.voltaic.systems` (primary) / `https://voltaic.systems/api` (unified)
 - **Route Prefix**: All API routes under `/api/` namespace
 - **Versioning**: `/api/v1/` for current stable API
@@ -1153,7 +1153,7 @@ class Settings(BaseSettings):
     
     # Server
     HOST: str = "0.0.0.0"
-    PORT: int = 3000  # Development port as required
+    PORT: int = 3036  # Unified backend port
     
     # Database
     DATABASE_URL: str = "postgresql+asyncpg://user:pass@localhost/magnetiq"
@@ -1210,10 +1210,10 @@ RUN useradd --create-home --shell /bin/bash magnetiq
 USER magnetiq
 
 # Expose port
-EXPOSE 3000
+EXPOSE 3036
 
 # Start application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3036"]
 ```
 
 ## Performance Optimization
@@ -1669,7 +1669,7 @@ def custom_openapi():
         servers=[
             {"url": "https://api.voltaic.systems", "description": "Production server"},
             {"url": "https://staging-api.voltaic.systems", "description": "Staging server"},
-            {"url": "http://localhost:3000", "description": "Development server"}
+            {"url": "http://localhost:3036", "description": "Development server"}
         ]
     )
     

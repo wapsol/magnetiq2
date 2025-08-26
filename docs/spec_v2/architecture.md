@@ -8,7 +8,7 @@ Magnetiq v2 is a comprehensive Content Management System (CMS) with integrated b
 
 ### Backend
 - **Language**: Python 3.11+
-- **Framework**: FastAPI 0.104+ with async/await support
+- **Framework**: FastAPI 0.104+ with async/await support (Port 3036)
 - **ORM**: SQLAlchemy 2.0 with async support and Alembic migrations
 - **Database**: PostgreSQL 14+ (production), SQLite (development/testing)
 - **Cache**: Redis 7.0+ for session management, caching, and message queuing
@@ -26,6 +26,7 @@ Magnetiq v2 is a comprehensive Content Management System (CMS) with integrated b
 - **Form Handling**: React Hook Form with Zod validation
 - **Routing**: React Router v6 with nested routing
 - **Internationalization**: React i18next for multilingual support
+- **Port Configuration**: Single port (8036) with routing for public/admin. For enhanced security and isolation, frontend applications can alternatively be deployed on separate ports with independent scaling and access control.
 
 ### Infrastructure
 - **Containerization**: Docker with multi-stage builds and Docker Compose
@@ -49,18 +50,24 @@ Magnetiq v2 is a comprehensive Content Management System (CMS) with integrated b
              │                              │
              ▼                              ▼
 ┌─────────────────────────┐    ┌──────────────────────────┐
-│   Public Frontend       │    │    Admin Frontend        │
-│   (React SPA)          │    │   (React Admin Panel)    │
-│   Port: 3000           │    │   Port: 8088             │
+│   Public Frontend       │    │    Admin Panel           │
+│   (React SPA)          │    │   (React Admin)          │
+│   Served via routing    │    │   Served via routing     │
 └───────────┬─────────────┘    └───────────┬──────────────┘
             │                               │
             └───────────┬───────────────────┘
+                        │
+          ┌─────────────▼─────────────┐
+          │    Frontend Server        │
+          │    (Single Port: 8036)    │
+          │  Public + Admin Routes    │
+          └─────────────┬─────────────┘
                         │
                         ▼
             ┌───────────────────────────┐
             │     FastAPI Backend       │
             │   (Unified API Gateway)   │
-            │      Port: 8000          │
+            │      Port: 3036          │
             └───────────┬───────────────┘
                         │
        ┌────────────────┼────────────────┐
