@@ -1,0 +1,21 @@
+## Development Guidelines
+
+- Store all docs generated during code gen to /docs/. READMEs can remain in respective directories accompanying the code.
+- Propagate all errors to the frontend.
+- Fix the port numbers of frontend and backend. Store them in config files.
+- Write ERROR, WARN and INFO to comprehensive application log file.
+- Put all test files in ./tests/ and reuse them in future!
+- Always show statistics in Admin Dashboard.
+- Always create backend logs for API access, info, errors and warnings.
+- Always use descriptive file names in snake_case for markdown md files.
+- Check if communication tokens between frontend and backend services is working 100% correctly.
+- Show maximum information on the error message, including communication token, lower level error messages propagated up from deeper execution levels in backend. Make sure that the user sees the full error-trace on the UI!
+- Always start backend python service on port 3000
+- Do not change the backend config.py file without my explicity approval!
+- Keep my UIs minimalistic!
+- Ensure all modals disappear upon ESC!
+- When coding new features, ensure to include changes as necessary to public frontend, AdminPanel, backend services, database, API calls and communication between all these parts.
+- Always implement features for multilingual support, German and English.
+- Always checkout uncommitted changes into a branch before committing and pushing. Name format of the branch is ach@ddmmyy-n, where ach are my initials, ddmmyy the date-stamp and n is the n-th checkout of the day.
+- Route all backend calls via /api/ only
+- Organise all /backend/ python helper scripts into /scripts/ folder.
