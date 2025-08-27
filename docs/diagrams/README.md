@@ -2,12 +2,32 @@
 
 Technical diagrams for shorts and specification documentation using Python Diagrams + Mermaid.
 
-## Structure
+## File Structure
 
-- **[assets/shorts/](./assets/shorts/)** - Generated diagram images for shorts documentation
-- **[generator/shorts/](./generator/shorts/)** - Python diagram generation scripts
-- **[generator/common/](./generator/common/)** - Shared styling and utilities
-- **[requirements.txt](./requirements.txt)** - Diagram generation dependencies
+```
+docs/diagrams/
+├── README.md                           # This file
+├── requirements.txt                    # Python dependencies
+├── assets/
+│   └── shorts/                         # Generated diagram images
+│       ├── sqlalchemy_architecture.png
+│       ├── sqlalchemy_data_flow.png
+│       ├── sqlalchemy_query_flow.png
+│       ├── sqlalchemy_relationships.png
+│       ├── sqlalchemy_session_lifecycle.png
+│       └── sqlalchemy_transaction_scope.png
+└── generator/
+    ├── common/
+    │   └── styles.py                   # Shared styling & themes
+    └── shorts/
+        └── sqlalchemy_diagrams.py      # SQLAlchemy diagram generators
+```
+
+## Quick Links
+
+- **[Generated Images](./assets/shorts/)** - PNG diagrams for documentation
+- **[Generator Scripts](./generator/shorts/)** - Python code for diagram creation
+- **[Shared Styles](./generator/common/)** - Common styling and utilities
 
 ## Usage
 
