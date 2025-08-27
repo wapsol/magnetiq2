@@ -15,9 +15,11 @@ Webinar Topic (Template)
 │   ├── Materials & Resources
 │   └── Analytics Data
 └── Integration Points
-    ├── Odoo Products
     ├── Calendar Events
-    └── Email Campaigns
+    ├── Communication Services
+    │   ├── Email Campaigns
+    │   ├── LinkedIn Promotion
+    │   └── Social Media Analytics
 ```
 
 ### Core Entities
@@ -671,6 +673,53 @@ interface WebinarProgramSettings {
 ```
 
 ## Automation Features
+
+### Communication Services Integration
+
+#### Social Media Promotion
+```typescript
+interface WebinarSocialPromotion {
+  webinarTopic: {
+    title: TranslatedText;
+    description: TranslatedText;
+    hashtags: string[];
+    speakers: SpeakerInfo[];
+  };
+  
+  linkedinPromotion: {
+    companyPagePost: {
+      content: string;
+      media: ImageFile[];
+      publishAt: Date;
+      targetAudience: LinkedInAudience;
+    };
+    speakerPosts: {
+      content: string;
+      callToAction: string;
+      publishAt: Date;
+    }[];
+  };
+  
+  twitterPromotion: {
+    announcementTweet: {
+      content: string;
+      media: ImageFile[];
+      publishAt: Date;
+    };
+    threadSeries: {
+      tweets: string[];
+      schedule: Date[];
+    };
+    speakerTags: string[];
+  };
+}
+```
+
+#### Automated Social Media Campaigns
+- **Pre-webinar**: Announcement posts 2 weeks before
+- **Reminder Posts**: 1 week, 3 days, and 24 hours before
+- **Live Promotion**: Real-time engagement during webinar
+- **Follow-up Content**: Key takeaways and recording announcements
 
 ### Email Automation Workflows
 

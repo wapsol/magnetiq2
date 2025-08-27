@@ -37,6 +37,10 @@ backend/
 │   │   │   ├── auth/        # Authentication endpoints
 │   │   │   ├── content/     # Content management
 │   │   │   ├── business/    # Business features
+│   │   │   ├── communication/ # Communication services
+│   │   │   │   ├── email/   # Email marketing
+│   │   │   │   ├── linkedin/# LinkedIn integration
+│   │   │   │   └── twitter/ # Twitter/X integration
 │   │   │   ├── admin/       # Admin panel APIs
 │   │   │   └── public/      # Public-facing APIs
 │   ├── core/                # Core functionality
@@ -146,6 +150,60 @@ GET    /api/v1/business/bookings              # List bookings
 POST   /api/v1/business/bookings              # Create booking
 GET    /api/v1/business/bookings/{id}         # Get booking details
 PUT    /api/v1/business/bookings/{id}         # Update booking status
+```
+
+### Communication Services Endpoints
+
+#### Email Marketing
+```
+GET    /api/v1/communication/email/campaigns           # List email campaigns
+POST   /api/v1/communication/email/campaigns           # Create email campaign  
+GET    /api/v1/communication/email/campaigns/{id}      # Get campaign details
+PUT    /api/v1/communication/email/campaigns/{id}      # Update campaign
+DELETE /api/v1/communication/email/campaigns/{id}      # Delete campaign
+POST   /api/v1/communication/email/campaigns/{id}/send # Send campaign
+
+GET    /api/v1/communication/email/templates           # List email templates
+POST   /api/v1/communication/email/templates           # Create email template
+GET    /api/v1/communication/email/templates/{id}      # Get template
+PUT    /api/v1/communication/email/templates/{id}      # Update template
+DELETE /api/v1/communication/email/templates/{id}      # Delete template
+```
+
+#### LinkedIn Integration
+```
+GET    /api/v1/communication/linkedin/accounts         # List connected LinkedIn accounts
+POST   /api/v1/communication/linkedin/accounts         # Connect LinkedIn account
+DELETE /api/v1/communication/linkedin/accounts/{id}    # Disconnect account
+
+GET    /api/v1/communication/linkedin/content          # List LinkedIn posts
+POST   /api/v1/communication/linkedin/content          # Create LinkedIn post
+GET    /api/v1/communication/linkedin/content/{id}     # Get post details
+PUT    /api/v1/communication/linkedin/content/{id}     # Update scheduled post
+DELETE /api/v1/communication/linkedin/content/{id}     # Delete/cancel post
+POST   /api/v1/communication/linkedin/content/{id}/publish # Publish post immediately
+
+POST   /api/v1/communication/linkedin/media            # Upload LinkedIn media
+GET    /api/v1/communication/linkedin/engagement       # Get engagement analytics
+GET    /api/v1/communication/linkedin/engagement/{post_id} # Get post-specific analytics
+```
+
+#### Twitter/X Integration
+```
+GET    /api/v1/communication/twitter/accounts          # List connected Twitter accounts  
+POST   /api/v1/communication/twitter/accounts          # Connect Twitter account
+DELETE /api/v1/communication/twitter/accounts/{id}     # Disconnect account
+
+GET    /api/v1/communication/twitter/content           # List tweets/threads
+POST   /api/v1/communication/twitter/content           # Create tweet/thread
+GET    /api/v1/communication/twitter/content/{id}      # Get tweet details
+PUT    /api/v1/communication/twitter/content/{id}      # Update scheduled tweet
+DELETE /api/v1/communication/twitter/content/{id}      # Delete/cancel tweet
+POST   /api/v1/communication/twitter/content/{id}/publish # Publish tweet immediately
+
+POST   /api/v1/communication/twitter/media             # Upload Twitter media
+GET    /api/v1/communication/twitter/engagement        # Get engagement analytics
+GET    /api/v1/communication/twitter/engagement/{tweet_id} # Get tweet-specific analytics
 ```
 
 ### Admin Panel Endpoints

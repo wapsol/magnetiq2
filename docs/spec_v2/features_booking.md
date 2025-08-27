@@ -672,6 +672,51 @@ interface ScheduleEditor {
 }
 ```
 
+### Communication Services Integration
+
+#### Cross-Platform Follow-up Strategy
+```typescript
+interface BookingCommunicationStrategy {
+  confirmationWorkflow: {
+    emailConfirmation: EmailTemplate;
+    linkedinConnection: {
+      enabled: boolean;
+      personalMessage: string;
+      sendAfterMeeting: boolean;
+    };
+    socialMediaFollow: {
+      consultantProfiles: SocialProfile[];
+      companyPages: SocialProfile[];
+    };
+  };
+  
+  postMeetingEngagement: {
+    followUpEmail: EmailTemplate;
+    linkedinPost: {
+      meetingHighlights: string;
+      nextStepsCall: string;
+      hashtags: string[];
+    };
+    twitterEngagement: {
+      thankYouTweet: string;
+      insightSharing: string;
+    };
+  };
+  
+  leadNurtureSequence: {
+    emailSeries: EmailCampaign[];
+    socialRetargeting: RetargetingConfig[];
+    contentRecommendations: ContentSuggestion[];
+  };
+}
+```
+
+#### Social Media Integration
+- **Pre-Meeting**: LinkedIn connection requests from consultants
+- **Post-Meeting**: Social media follow-up content and engagement
+- **Lead Nurturing**: Cross-channel communication sequences
+- **Referral Amplification**: Social proof and testimonial sharing
+
 ### Communication Management
 
 #### Email Template System

@@ -315,6 +315,30 @@ SMTP_FROM_EMAIL=noreply@magnetiq.local
 # File uploads
 MAX_FILE_SIZE=10485760  # 10MB
 UPLOAD_DIR=./media
+
+# Communication Services - Social Media Integration
+LINKEDIN_CLIENT_ID=your-dev-linkedin-client-id
+LINKEDIN_CLIENT_SECRET=your-dev-linkedin-client-secret
+LINKEDIN_REDIRECT_URI=http://localhost:8036/auth/linkedin/callback
+
+TWITTER_CLIENT_ID=your-dev-twitter-client-id
+TWITTER_CLIENT_SECRET=your-dev-twitter-client-secret
+TWITTER_REDIRECT_URI=http://localhost:8036/auth/twitter/callback
+
+# OAuth2 Security
+OAUTH_ENCRYPTION_KEY=dev-oauth-encryption-key-32-bytes-minimum
+OAUTH_STATE_TTL=600
+
+# Social Media Rate Limiting
+LINKEDIN_DAILY_POST_LIMIT=25
+LINKEDIN_HOURLY_API_LIMIT=500
+TWITTER_15MIN_TWEET_LIMIT=300
+TWITTER_15MIN_API_LIMIT=75
+
+# Content Security
+CONTENT_VALIDATION_ENABLED=true
+SPAM_DETECTION_THRESHOLD=0.8
+MALICIOUS_URL_CHECK_ENABLED=true
 ```
 
 ### Production Environment Variables
@@ -340,6 +364,34 @@ SMTP_FROM_EMAIL=noreply@voltaic.systems
 # File uploads
 MAX_FILE_SIZE=52428800  # 50MB
 UPLOAD_DIR=./data/media
+
+# Communication Services - Social Media Integration
+LINKEDIN_CLIENT_ID=${LINKEDIN_CLIENT_ID}
+LINKEDIN_CLIENT_SECRET=${LINKEDIN_CLIENT_SECRET}
+LINKEDIN_REDIRECT_URI=https://voltaic.systems/auth/linkedin/callback
+
+TWITTER_CLIENT_ID=${TWITTER_CLIENT_ID}
+TWITTER_CLIENT_SECRET=${TWITTER_CLIENT_SECRET}
+TWITTER_REDIRECT_URI=https://voltaic.systems/auth/twitter/callback
+
+# OAuth2 Security
+OAUTH_ENCRYPTION_KEY=${OAUTH_ENCRYPTION_KEY}
+OAUTH_STATE_TTL=600
+
+# Social Media Rate Limiting
+LINKEDIN_DAILY_POST_LIMIT=25
+LINKEDIN_HOURLY_API_LIMIT=500
+TWITTER_15MIN_TWEET_LIMIT=300
+TWITTER_15MIN_API_LIMIT=75
+
+# Content Security
+CONTENT_VALIDATION_ENABLED=true
+SPAM_DETECTION_THRESHOLD=0.8
+MALICIOUS_URL_CHECK_ENABLED=true
+
+# Monitoring & Logging
+SOCIAL_MEDIA_AUDIT_LOGGING=true
+OAUTH_EVENT_LOGGING=true
 ```
 
 ## Deployment Process

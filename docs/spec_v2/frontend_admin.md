@@ -124,6 +124,12 @@ Business Management
 ├── Whitepapers
 └── Bookings
 
+Communication Services
+├── Email Campaigns
+├── LinkedIn Management
+├── Twitter Management
+└── Analytics & Engagement
+
 User Management
 ├── Admin Users
 ├── User Roles
@@ -131,10 +137,9 @@ User Management
 └── Sessions
 
 Integrations
-├── Odoo Settings
 ├── Google Calendar
-├── Email Service
-└── API Keys
+├── Social Media APIs
+└── External Services
 
 System Settings
 ├── General Settings
@@ -385,7 +390,106 @@ interface AdminUser {
 5. **Confirmation sent** to admin and user
 6. **Audit log updated** with reset activity
 
-### 4. Integrations Management (`/admin/integrations`)
+### 4. Communication Services Management (`/admin/communication`)
+
+#### Email Campaign Management
+```tsx
+interface EmailCampaignInterface {
+  campaignDetails: {
+    name: string;
+    subject: string;
+    preheader: string;
+    templateId?: number;
+  };
+  content: {
+    htmlContent: string;
+    textContent: string;
+    variables: Record<string, any>;
+  };
+  recipients: {
+    type: 'list' | 'segment' | 'individual';
+    config: RecipientConfig;
+    totalCount: number;
+  };
+  scheduling: {
+    sendAt?: Date;
+    timezone: string;
+    status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'failed';
+  };
+  analytics: {
+    sent: number;
+    delivered: number;
+    opened: number;
+    clicked: number;
+    unsubscribed: number;
+    bounced: number;
+  };
+}
+```
+
+#### Social Media Account Management
+```tsx
+interface SocialAccountInterface {
+  platform: 'linkedin' | 'twitter';
+  accountInfo: {
+    name: string;
+    handle: string;
+    profileImage: string;
+    followerCount: number;
+    isBusinessAccount: boolean;
+  };
+  authentication: {
+    isConnected: boolean;
+    tokenExpiry: Date;
+    lastSync: Date;
+    permissions: string[];
+  };
+  publishing: {
+    activeContent: number;
+    scheduledPosts: number;
+    totalPosts: number;
+    lastPost: Date;
+  };
+}
+```
+
+#### Social Media Content Creation
+```tsx
+interface SocialContentInterface {
+  platform: 'linkedin' | 'twitter';
+  content: {
+    title?: string;
+    text: string;
+    contentType: 'post' | 'thread' | 'article';
+    platformConfig: PlatformSpecificConfig;
+  };
+  media: {
+    attachments: MediaFile[];
+    uploadStatus: 'pending' | 'uploading' | 'ready' | 'failed';
+  };
+  scheduling: {
+    publishNow: boolean;
+    scheduledFor?: Date;
+    timezone: string;
+  };
+  engagement: {
+    likes: number;
+    comments: number;
+    shares: number;
+    impressions: number;
+    engagementRate: number;
+  };
+}
+```
+
+#### Cross-Platform Analytics Dashboard
+- **Unified Metrics**: Engagement across all platforms
+- **Content Performance**: Top-performing posts by platform
+- **Audience Growth**: Follower trends and demographics
+- **Campaign ROI**: Lead generation from social content
+- **Platform Comparison**: Performance metrics side-by-side
+
+### 5. Integrations Management (`/admin/integrations`)
 
 #### Odoo Integration Tab
 ```tsx

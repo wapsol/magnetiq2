@@ -365,6 +365,158 @@ class TestDatabaseMigrations:
 
 ## Integration Testing
 
+### Communication Services Testing
+
+#### OAuth2 Flow Testing
+```python
+# Test OAuth2 authentication flows for social platforms
+import pytest
+from unittest.mock import patch, AsyncMock
+from services.oauth2_service import SecureOAuth2Service
+
+class TestOAuth2Integration:
+    @pytest.fixture
+    def oauth_service(self, redis_mock):
+        return SecureOAuth2Service(redis_mock)
+    
+    @pytest.mark.asyncio
+    async def test_linkedin_oauth_initiation(self, oauth_service):
+        """Test LinkedIn OAuth2 flow initiation"""
+        user_id = "user123"
+        platform = "linkedin"
+        redirect_uri = "https://voltaic.systems/auth/callback"
+        
+        result = await oauth_service.initiate_oauth_flow(
+            platform, user_id, redirect_uri
+        )
+        
+        assert "auth_url" in result
+        assert "state" in result
+        assert "linkedin.com/oauth/v2/authorization" in result["auth_url"]
+        assert "w_member_social" in result["auth_url"]  # Check scope
+    
+    @pytest.mark.asyncio
+    async def test_twitter_oauth_with_pkce(self, oauth_service):
+        """Test Twitter OAuth2 with PKCE implementation"""
+        user_id = "user123"
+        platform = "twitter"
+        redirect_uri = "https://voltaic.systems/auth/callback"
+        
+        result = await oauth_service.initiate_oauth_flow(
+            platform, user_id, redirect_uri
+        )
+        
+        assert "code_challenge" in result["auth_url"]
+        assert "code_challenge_method=S256" in result["auth_url"]
+    
+    @pytest.mark.asyncio
+    async def test_oauth_state_validation(self, oauth_service):
+        """Test CSRF protection via state validation"""
+        # Test invalid state
+        invalid_result = await oauth_service.handle_oauth_callback(
+            "linkedin", "test_code", "invalid_state", "redirect_uri"
+        )
+        
+        assert invalid_result is None  # Should reject invalid state
+```
+
+#### Social Media Content Testing
+```python
+class TestSocialMediaContent:
+    @pytest.fixture
+    def content_validator(self):
+        from services.social_content_security import SocialContentSecurityService
+        return SocialContentSecurityService()
+    
+    @pytest.mark.asyncio
+    async def test_content_sanitization(self, content_validator):
+        """Test malicious content detection and sanitization"""
+        malicious_content = {
+            "text": "<script>alert('xss')</script>Check out our services!",
+            "links": ["https://voltaic.systems"]
+        }
+        
+        result = await content_validator.validate_social_content(
+            "linkedin", malicious_content
+        )
+        
+        assert result["is_valid"] is False
+        assert "malicious content" in result["errors"][0].lower()
+        assert "<script>" not in result["sanitized_content"]["text"]
+    
+    @pytest.mark.asyncio
+    async def test_platform_content_limits(self, content_validator):
+        """Test platform-specific content validation"""
+        # Test Twitter character limit
+        long_content = {"text": "x" * 300}  # Exceeds 280 char limit
+        
+        result = await content_validator.validate_social_content(
+            "twitter", long_content
+        )
+        
+        assert result["is_valid"] is False
+        assert any("length" in error.lower() for error in result["errors"])
+    
+    @pytest.mark.asyncio
+    async def test_spam_detection(self, content_validator):
+        """Test spam score calculation"""
+        spam_content = {
+            "text": "BUY NOW!!! AMAZING DEALS!!! #deal #sale #buy #now #cheap #discount #offer #limited",
+            "links": ["http://spam1.com", "http://spam2.com", "http://spam3.com"]
+        }
+        
+        result = await content_validator.validate_social_content(
+            "linkedin", spam_content
+        )
+        
+        # High spam score should trigger validation failure
+        assert result["is_valid"] is False
+        assert any("spam" in error.lower() for error in result["errors"])
+```
+
+#### Social Media Rate Limiting Tests
+```python
+class TestSocialMediaRateLimiting:
+    @pytest.fixture
+    def rate_limiter(self, redis_mock):
+        from services.social_media_rate_limiter import SocialMediaRateLimiter
+        return SocialMediaRateLimiter(redis_mock)
+    
+    @pytest.mark.asyncio
+    async def test_linkedin_posting_limits(self, rate_limiter, redis_mock):
+        """Test LinkedIn daily posting limits"""
+        user_id = "user123"
+        platform = "linkedin"
+        
+        # Simulate 25 posts (daily limit)
+        redis_mock.get.return_value = "25"
+        redis_mock.ttl.return_value = 3600
+        
+        result = await rate_limiter.check_posting_limit(
+            user_id, platform, "posts"
+        )
+        
+        assert result["allowed"] is False
+        assert result["remaining"] == 0
+        assert result["reset_in"] == 3600
+    
+    @pytest.mark.asyncio
+    async def test_twitter_rate_limiting(self, rate_limiter, redis_mock):
+        """Test Twitter 15-minute rate limits"""
+        user_id = "user123"
+        platform = "twitter"
+        
+        # Within limits
+        redis_mock.get.return_value = "50"  # 50 out of 300
+        
+        result = await rate_limiter.check_posting_limit(
+            user_id, platform, "tweets"
+        )
+        
+        assert result["allowed"] is True
+        assert result["remaining"] == 250
+```
+
 ### Email Integration Tests
 ```python
 # Example: Email service integration tests

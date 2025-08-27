@@ -543,6 +543,249 @@ INSERT INTO system_settings (key, value, description, type) VALUES
 CREATE INDEX idx_system_settings_key ON system_settings(key);
 ```
 
+### Communication Services
+
+#### `social_accounts`
+Social media account management for connected platforms.
+
+```sql
+CREATE TABLE social_accounts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    
+    -- Platform Information
+    platform TEXT NOT NULL CHECK (platform IN ('linkedin', 'twitter', 'facebook', 'instagram')),
+    account_name TEXT NOT NULL,
+    account_handle TEXT,
+    account_id TEXT NOT NULL, -- Platform-specific account ID
+    
+    -- Authentication
+    access_token TEXT NOT NULL,
+    refresh_token TEXT,
+    token_expires_at DATETIME,
+    
+    -- Account Metadata
+    profile_image_url TEXT,
+    follower_count INTEGER DEFAULT 0,
+    following_count INTEGER DEFAULT 0,
+    is_business_account BOOLEAN DEFAULT 0,
+    
+    -- Status
+    is_active BOOLEAN DEFAULT 1,
+    last_sync_at DATETIME,
+    
+    -- Assigned User
+    created_by INTEGER NOT NULL,
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    deleted_at DATETIME,
+    
+    FOREIGN KEY (created_by) REFERENCES admin_users(id)
+);
+
+-- Indexes for social_accounts
+CREATE INDEX idx_social_accounts_platform ON social_accounts(platform);
+CREATE INDEX idx_social_accounts_created_by ON social_accounts(created_by);
+CREATE UNIQUE INDEX idx_social_accounts_platform_account ON social_accounts(platform, account_id) WHERE deleted_at IS NULL;
+```
+
+#### `social_content`
+Platform-specific social media content management.
+
+```sql
+CREATE TABLE social_content (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    
+    -- Platform Targeting
+    social_account_id INTEGER NOT NULL,
+    platform TEXT NOT NULL, -- linkedin, twitter (redundant but useful for queries)
+    
+    -- Content Data
+    title TEXT,
+    content TEXT NOT NULL,
+    content_type TEXT NOT NULL DEFAULT 'post' CHECK (content_type IN ('post', 'thread', 'story', 'article')),
+    
+    -- Platform-Specific Configuration
+    platform_config TEXT NOT NULL, -- JSON: platform-specific settings
+    -- LinkedIn: {"visibility": "public|connections", "articleFormat": true}
+    -- Twitter: {"threadLength": 5, "allowReplies": true, "sensitiveContent": false}
+    
+    -- Media Attachments
+    media_urls TEXT, -- JSON array of media file URLs
+    media_types TEXT, -- JSON array of media types (image, video, document)
+    
+    -- Scheduling
+    scheduled_for DATETIME,
+    published_at DATETIME,
+    
+    -- Status Management
+    status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'scheduled', 'published', 'failed')),
+    publish_error TEXT,
+    
+    -- Platform Response
+    platform_post_id TEXT, -- ID from social platform
+    platform_url TEXT, -- Direct URL to published post
+    
+    -- Analytics Hooks
+    initial_engagement TEXT, -- JSON snapshot of engagement at publish time
+    
+    -- Management
+    created_by INTEGER NOT NULL,
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    deleted_at DATETIME,
+    
+    FOREIGN KEY (social_account_id) REFERENCES social_accounts(id),
+    FOREIGN KEY (created_by) REFERENCES admin_users(id)
+);
+
+-- Indexes for social_content
+CREATE INDEX idx_social_content_account ON social_content(social_account_id);
+CREATE INDEX idx_social_content_platform ON social_content(platform);
+CREATE INDEX idx_social_content_status ON social_content(status);
+CREATE INDEX idx_social_content_scheduled ON social_content(scheduled_for);
+CREATE INDEX idx_social_content_created_by ON social_content(created_by);
+```
+
+#### `social_engagement`
+Platform-specific engagement metrics and analytics.
+
+```sql
+CREATE TABLE social_engagement (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    
+    -- Content Reference
+    social_content_id INTEGER NOT NULL,
+    platform TEXT NOT NULL,
+    platform_post_id TEXT NOT NULL,
+    
+    -- Engagement Metrics (Platform-Specific)
+    engagement_data TEXT NOT NULL, -- JSON with platform-specific metrics
+    -- LinkedIn: {"likes": 45, "comments": 12, "shares": 8, "clicks": 156, "impressions": 2340}
+    -- Twitter: {"likes": 89, "retweets": 23, "replies": 15, "quotes": 4, "bookmarks": 67, "impressions": 5670}
+    
+    -- Audience Insights
+    audience_data TEXT, -- JSON with demographic data (when available)
+    
+    -- Performance Scoring
+    engagement_rate REAL DEFAULT 0.0,
+    viral_score INTEGER DEFAULT 0, -- Algorithm-calculated virality score
+    
+    -- Data Collection
+    data_collected_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for social_engagement
+CREATE INDEX idx_social_engagement_content ON social_engagement(social_content_id);
+CREATE INDEX idx_social_engagement_platform ON social_engagement(platform);
+CREATE INDEX idx_social_engagement_platform_post ON social_engagement(platform_post_id);
+CREATE INDEX idx_social_engagement_rate ON social_engagement(engagement_rate);
+CREATE INDEX idx_social_engagement_collected ON social_engagement(data_collected_at);
+```
+
+#### `email_campaigns`
+Email marketing campaign management.
+
+```sql
+CREATE TABLE email_campaigns (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    
+    -- Campaign Information
+    name TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    preheader TEXT,
+    
+    -- Content
+    html_content TEXT,
+    text_content TEXT,
+    template_id INTEGER,
+    
+    -- Recipients
+    recipient_type TEXT NOT NULL DEFAULT 'list' CHECK (recipient_type IN ('list', 'segment', 'individual')),
+    recipient_config TEXT, -- JSON: recipient selection criteria
+    
+    -- Scheduling
+    send_at DATETIME,
+    
+    -- Status
+    status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'scheduled', 'sending', 'sent', 'failed')),
+    
+    -- Analytics
+    total_recipients INTEGER DEFAULT 0,
+    emails_sent INTEGER DEFAULT 0,
+    emails_delivered INTEGER DEFAULT 0,
+    emails_bounced INTEGER DEFAULT 0,
+    opens_total INTEGER DEFAULT 0,
+    clicks_total INTEGER DEFAULT 0,
+    unsubscribes INTEGER DEFAULT 0,
+    
+    -- Management
+    created_by INTEGER NOT NULL,
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    sent_at DATETIME,
+    deleted_at DATETIME,
+    
+    FOREIGN KEY (created_by) REFERENCES admin_users(id)
+);
+
+-- Indexes for email_campaigns
+CREATE INDEX idx_email_campaigns_status ON email_campaigns(status);
+CREATE INDEX idx_email_campaigns_send_at ON email_campaigns(send_at);
+CREATE INDEX idx_email_campaigns_created_by ON email_campaigns(created_by);
+```
+
+#### `email_templates`
+Reusable email templates for campaigns.
+
+```sql
+CREATE TABLE email_templates (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    
+    -- Template Information
+    name TEXT NOT NULL,
+    description TEXT,
+    category TEXT, -- newsletter, promotional, transactional, welcome
+    
+    -- Content
+    subject_template TEXT,
+    html_template TEXT NOT NULL,
+    text_template TEXT,
+    
+    -- Template Variables
+    variables TEXT, -- JSON array of available template variables
+    
+    -- Usage Tracking
+    usage_count INTEGER DEFAULT 0,
+    last_used_at DATETIME,
+    
+    -- Management
+    created_by INTEGER NOT NULL,
+    is_active BOOLEAN DEFAULT 1,
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    deleted_at DATETIME,
+    
+    FOREIGN KEY (created_by) REFERENCES admin_users(id)
+);
+
+-- Indexes for email_templates
+CREATE INDEX idx_email_templates_category ON email_templates(category);
+CREATE INDEX idx_email_templates_active ON email_templates(is_active);
+CREATE INDEX idx_email_templates_created_by ON email_templates(created_by);
+```
+
 ## Database Relationships
 
 ### Entity Relationship Overview

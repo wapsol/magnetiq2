@@ -1036,7 +1036,79 @@ interface ExecutiveDashboard {
 
 ## Automation Features
 
+### Communication Services Integration
+
+#### Social Media Content Strategy
+```typescript
+interface WhitepaperSocialStrategy {
+  contentTypes: {
+    linkedinArticle: {
+      title: string;
+      excerpt: string;
+      keyInsights: string[];
+      callToAction: string;
+      hashtagStrategy: string[];
+    };
+    
+    twitterThreads: {
+      hookTweet: string;
+      keyPoints: string[];
+      conclusionTweet: string;
+      downloadPrompt: string;
+    };
+    
+    infographics: {
+      keyStatistics: DataPoint[];
+      visualElements: GraphicAsset[];
+      brandedTemplate: TemplateId;
+    };
+  };
+  
+  promotionSchedule: {
+    preRelease: {
+      teaserPosts: SocialPost[];
+      authorIntroduction: SocialPost[];
+      topicExploration: SocialPost[];
+    };
+    
+    launch: {
+      announcementPost: SocialPost;
+      keyTakeaways: SocialPost[];
+      downloadCall: SocialPost;
+    };
+    
+    postLaunch: {
+      userTestimonials: SocialPost[];
+      supplementaryContent: SocialPost[];
+      crossPromotion: SocialPost[];
+    };
+  };
+}
+```
+
+#### Social Lead Generation
+- **LinkedIn Thought Leadership**: Author posts driving whitepaper downloads
+- **Twitter Engagement**: Threading key insights with download CTAs
+- **Cross-Platform Promotion**: Coordinated campaign across channels
+- **Influencer Collaboration**: Speaker/author social media promotion
+
 ### Lead Nurturing Automation
+
+#### Communication Services Integration
+```typescript
+interface IntegratedNurturingWorkflow {
+  emailSequences: EmailCampaign[];
+  socialRetargeting: {
+    platform: 'linkedin' | 'twitter';
+    audienceSegment: LeadSegment;
+    contentVariations: SocialPost[];
+  };
+  crossChannelCoordination: {
+    emailToSocial: TriggerConfig[];
+    socialToEmail: TriggerConfig[];
+  };
+}
+```
 
 #### Automated Email Sequences
 ```typescript

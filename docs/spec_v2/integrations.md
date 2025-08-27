@@ -1127,4 +1127,574 @@ class IntegrationHealthMonitor:
         }
 ```
 
+## Social Media Integrations
+
+### LinkedIn Integration
+
+#### OAuth2 Authentication Flow
+```python
+class LinkedInIntegrationService(BaseIntegrationService):
+    """LinkedIn API integration for professional content publishing."""
+    
+    BASE_URL = "https://api.linkedin.com/v2"
+    AUTH_URL = "https://www.linkedin.com/oauth/v2/authorization"
+    TOKEN_URL = "https://www.linkedin.com/oauth/v2/accessToken"
+    
+    REQUIRED_SCOPES = [
+        'r_liteprofile',
+        'r_emailaddress', 
+        'w_member_social',
+        'r_organization_social',
+        'w_organization_social'
+    ]
+    
+    def __init__(self, config: Dict[str, Any]):
+        super().__init__(config)
+        self.client_id = config.get('client_id')
+        self.client_secret = config.get('client_secret')
+        self.redirect_uri = config.get('redirect_uri')
+    
+    def get_authorization_url(self, state: str) -> str:
+        """Generate LinkedIn OAuth2 authorization URL."""
+        params = {
+            'response_type': 'code',
+            'client_id': self.client_id,
+            'redirect_uri': self.redirect_uri,
+            'state': state,
+            'scope': ' '.join(self.REQUIRED_SCOPES)
+        }
+        
+        query_string = '&'.join([f"{k}={v}" for k, v in params.items()])
+        return f"{self.AUTH_URL}?{query_string}"
+    
+    async def exchange_code_for_token(self, authorization_code: str) -> Dict[str, Any]:
+        """Exchange authorization code for access token."""
+        token_data = {
+            'grant_type': 'authorization_code',
+            'code': authorization_code,
+            'redirect_uri': self.redirect_uri,
+            'client_id': self.client_id,
+            'client_secret': self.client_secret
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.post(self.TOKEN_URL, data=token_data) as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    raise IntegrationError(f"Token exchange failed: {response.status}")
+    
+    async def get_profile_info(self, access_token: str) -> Dict[str, Any]:
+        """Get LinkedIn profile information."""
+        headers = {'Authorization': f'Bearer {access_token}'}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"{self.BASE_URL}/me", headers=headers) as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    raise IntegrationError(f"Profile fetch failed: {response.status}")
+    
+    async def publish_post(
+        self, 
+        access_token: str,
+        account_id: str,
+        content: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Publish content to LinkedIn."""
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json',
+            'X-Restli-Protocol-Version': '2.0.0'
+        }
+        
+        # LinkedIn post structure
+        post_data = {
+            "author": f"urn:li:person:{account_id}",
+            "lifecycleState": "PUBLISHED",
+            "specificContent": {
+                "com.linkedin.ugc.ShareContent": {
+                    "shareCommentary": {
+                        "text": content.get('text', '')
+                    },
+                    "shareMediaCategory": "NONE"
+                }
+            },
+            "visibility": {
+                "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+            }
+        }
+        
+        # Add media if present
+        if content.get('media_urls'):
+            media_data = []
+            for media_url in content['media_urls']:
+                media_data.append({
+                    "status": "READY",
+                    "media": media_url,
+                    "title": {"text": content.get('title', '')},
+                    "description": {"text": content.get('description', '')}
+                })
+            
+            post_data["specificContent"]["com.linkedin.ugc.ShareContent"]["shareMediaCategory"] = "IMAGE"
+            post_data["specificContent"]["com.linkedin.ugc.ShareContent"]["media"] = media_data
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                f"{self.BASE_URL}/ugcPosts", 
+                headers=headers, 
+                json=post_data
+            ) as response:
+                if response.status in [200, 201]:
+                    result = await response.json()
+                    return {
+                        'platform_post_id': result.get('id'),
+                        'platform_url': f"https://linkedin.com/feed/update/{result.get('id')}",
+                        'status': 'published',
+                        'published_at': datetime.utcnow().isoformat()
+                    }
+                else:
+                    error_text = await response.text()
+                    raise IntegrationError(f"LinkedIn publish failed: {response.status} - {error_text}")
+    
+    async def get_post_analytics(
+        self, 
+        access_token: str, 
+        post_id: str
+    ) -> Dict[str, Any]:
+        """Get analytics for a LinkedIn post."""
+        headers = {'Authorization': f'Bearer {access_token}'}
+        
+        analytics_url = f"{self.BASE_URL}/socialActions/{post_id}"
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(analytics_url, headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return {
+                        'likes': data.get('numLikes', 0),
+                        'comments': data.get('numComments', 0),
+                        'shares': data.get('numShares', 0),
+                        'clicks': data.get('clickCount', 0),
+                        'impressions': data.get('impressionCount', 0)
+                    }
+                else:
+                    self.logger.warning(f"LinkedIn analytics fetch failed: {response.status}")
+                    return {}
+```
+
+### Twitter/X Integration
+
+#### OAuth2 Authentication and Publishing
+```python
+class TwitterIntegrationService(BaseIntegrationService):
+    """Twitter/X API integration for tweet publishing and engagement."""
+    
+    BASE_URL = "https://api.twitter.com/2"
+    AUTH_URL = "https://twitter.com/i/oauth2/authorize"
+    TOKEN_URL = "https://api.twitter.com/2/oauth2/token"
+    
+    REQUIRED_SCOPES = [
+        'tweet.read',
+        'tweet.write',
+        'users.read',
+        'tweet.moderate.write',
+        'offline.access'
+    ]
+    
+    def __init__(self, config: Dict[str, Any]):
+        super().__init__(config)
+        self.client_id = config.get('client_id')
+        self.client_secret = config.get('client_secret')
+        self.redirect_uri = config.get('redirect_uri')
+    
+    def get_authorization_url(self, state: str, code_challenge: str) -> str:
+        """Generate Twitter OAuth2 authorization URL with PKCE."""
+        params = {
+            'response_type': 'code',
+            'client_id': self.client_id,
+            'redirect_uri': self.redirect_uri,
+            'scope': ' '.join(self.REQUIRED_SCOPES),
+            'state': state,
+            'code_challenge': code_challenge,
+            'code_challenge_method': 'S256'
+        }
+        
+        query_string = '&'.join([f"{k}={v}" for k, v in params.items()])
+        return f"{self.AUTH_URL}?{query_string}"
+    
+    async def exchange_code_for_token(
+        self, 
+        authorization_code: str, 
+        code_verifier: str
+    ) -> Dict[str, Any]:
+        """Exchange authorization code for access token."""
+        token_data = {
+            'grant_type': 'authorization_code',
+            'code': authorization_code,
+            'redirect_uri': self.redirect_uri,
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'code_verifier': code_verifier
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.post(self.TOKEN_URL, data=token_data) as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    raise IntegrationError(f"Twitter token exchange failed: {response.status}")
+    
+    async def get_user_info(self, access_token: str) -> Dict[str, Any]:
+        """Get Twitter user information."""
+        headers = {'Authorization': f'Bearer {access_token}'}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                f"{self.BASE_URL}/users/me",
+                headers=headers,
+                params={'user.fields': 'public_metrics,verified'}
+            ) as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    raise IntegrationError(f"Twitter user fetch failed: {response.status}")
+    
+    async def publish_tweet(
+        self, 
+        access_token: str, 
+        content: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Publish a tweet or thread to Twitter."""
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json'
+        }
+        
+        # Handle thread creation
+        if content.get('content_type') == 'thread':
+            return await self._publish_thread(headers, content)
+        else:
+            return await self._publish_single_tweet(headers, content)
+    
+    async def _publish_single_tweet(
+        self, 
+        headers: Dict[str, str], 
+        content: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Publish a single tweet."""
+        tweet_data = {
+            'text': content.get('text', '')
+        }
+        
+        # Add media if present
+        if content.get('media_urls'):
+            # Note: Media must be uploaded separately using Twitter's media upload endpoint
+            tweet_data['media'] = {
+                'media_ids': content.get('media_ids', [])
+            }
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                f"{self.BASE_URL}/tweets",
+                headers=headers,
+                json=tweet_data
+            ) as response:
+                if response.status in [200, 201]:
+                    result = await response.json()
+                    tweet_id = result['data']['id']
+                    return {
+                        'platform_post_id': tweet_id,
+                        'platform_url': f"https://twitter.com/user/status/{tweet_id}",
+                        'status': 'published',
+                        'published_at': datetime.utcnow().isoformat()
+                    }
+                else:
+                    error_text = await response.text()
+                    raise IntegrationError(f"Twitter publish failed: {response.status} - {error_text}")
+    
+    async def _publish_thread(
+        self, 
+        headers: Dict[str, str], 
+        content: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Publish a Twitter thread."""
+        thread_texts = content.get('thread_texts', [])
+        if not thread_texts:
+            raise ValueError("Thread content cannot be empty")
+        
+        tweet_ids = []
+        reply_to_id = None
+        
+        for i, text in enumerate(thread_texts):
+            tweet_data = {'text': text}
+            
+            if reply_to_id:
+                tweet_data['reply'] = {'in_reply_to_tweet_id': reply_to_id}
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    f"{self.BASE_URL}/tweets",
+                    headers=headers,
+                    json=tweet_data
+                ) as response:
+                    if response.status in [200, 201]:
+                        result = await response.json()
+                        tweet_id = result['data']['id']
+                        tweet_ids.append(tweet_id)
+                        reply_to_id = tweet_id
+                    else:
+                        error_text = await response.text()
+                        raise IntegrationError(f"Thread tweet {i+1} failed: {response.status} - {error_text}")
+        
+        # Return information about the first tweet (thread starter)
+        return {
+            'platform_post_id': tweet_ids[0],
+            'platform_url': f"https://twitter.com/user/status/{tweet_ids[0]}",
+            'status': 'published',
+            'thread_ids': tweet_ids,
+            'published_at': datetime.utcnow().isoformat()
+        }
+    
+    async def get_tweet_analytics(
+        self, 
+        access_token: str, 
+        tweet_id: str
+    ) -> Dict[str, Any]:
+        """Get analytics for a Twitter tweet."""
+        headers = {'Authorization': f'Bearer {access_token}'}
+        
+        params = {
+            'tweet.fields': 'public_metrics,non_public_metrics,organic_metrics',
+            'expansions': 'author_id'
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                f"{self.BASE_URL}/tweets/{tweet_id}",
+                headers=headers,
+                params=params
+            ) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    metrics = data['data'].get('public_metrics', {})
+                    
+                    return {
+                        'likes': metrics.get('like_count', 0),
+                        'retweets': metrics.get('retweet_count', 0),
+                        'replies': metrics.get('reply_count', 0),
+                        'quotes': metrics.get('quote_count', 0),
+                        'bookmarks': metrics.get('bookmark_count', 0),
+                        'impressions': data['data'].get('organic_metrics', {}).get('impression_count', 0)
+                    }
+                else:
+                    self.logger.warning(f"Twitter analytics fetch failed: {response.status}")
+                    return {}
+    
+    async def upload_media(
+        self, 
+        access_token: str, 
+        media_file: bytes, 
+        media_type: str
+    ) -> str:
+        """Upload media to Twitter and return media_id."""
+        # This is a simplified version - actual implementation requires chunked upload for larger files
+        upload_url = "https://upload.twitter.com/1.1/media/upload.json"
+        
+        headers = {'Authorization': f'Bearer {access_token}'}
+        
+        files = {'media': media_file}
+        data = {'media_category': 'tweet_image' if 'image' in media_type else 'tweet_video'}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.post(upload_url, headers=headers, data=files) as response:
+                if response.status == 200:
+                    result = await response.json()
+                    return result['media_id_string']
+                else:
+                    raise IntegrationError(f"Media upload failed: {response.status}")
+```
+
+### Platform-Specific Configuration Management
+
+#### Social Media Service Manager
+```python
+class SocialMediaManager:
+    """Centralized manager for all social media integrations."""
+    
+    def __init__(self):
+        self.services = {
+            'linkedin': LinkedInIntegrationService,
+            'twitter': TwitterIntegrationService
+        }
+        self.active_connections = {}
+    
+    async def connect_platform(
+        self, 
+        platform: str, 
+        user_id: int, 
+        auth_config: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Connect a social media platform for a user."""
+        if platform not in self.services:
+            raise ValueError(f"Unsupported platform: {platform}")
+        
+        service_class = self.services[platform]
+        service = service_class(auth_config)
+        
+        # Test connection
+        connection_result = await service.test_connection()
+        
+        if connection_result['status'] == 'success':
+            # Store connection in database
+            social_account = await self._create_social_account(
+                platform=platform,
+                user_id=user_id,
+                auth_data=auth_config,
+                account_info=connection_result['account_info']
+            )
+            
+            self.active_connections[f"{platform}_{user_id}"] = service
+            
+            return {
+                'status': 'connected',
+                'account_id': social_account.id,
+                'platform': platform,
+                'account_info': connection_result['account_info']
+            }
+        else:
+            raise IntegrationError(f"Failed to connect {platform}: {connection_result['error']}")
+    
+    async def publish_content(
+        self, 
+        social_account_id: int, 
+        content: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Publish content to a connected social media platform."""
+        # Get account details from database
+        social_account = await self._get_social_account(social_account_id)
+        
+        if not social_account or not social_account.is_active:
+            raise ValueError("Social account not found or inactive")
+        
+        platform = social_account.platform
+        service_key = f"{platform}_{social_account.created_by}"
+        
+        if service_key not in self.active_connections:
+            # Recreate service from stored credentials
+            auth_config = await self._get_auth_config(social_account)
+            service_class = self.services[platform]
+            self.active_connections[service_key] = service_class(auth_config)
+        
+        service = self.active_connections[service_key]
+        
+        # Publish content
+        result = await service.publish_content(
+            access_token=social_account.access_token,
+            content=content
+        )
+        
+        # Store content record in database
+        await self._create_content_record(social_account_id, content, result)
+        
+        return result
+    
+    async def sync_engagement_metrics(self, social_account_id: int) -> Dict[str, Any]:
+        """Sync engagement metrics for all published content from an account."""
+        social_account = await self._get_social_account(social_account_id)
+        platform = social_account.platform
+        
+        # Get all published content for this account
+        published_content = await self._get_published_content(social_account_id)
+        
+        service_key = f"{platform}_{social_account.created_by}"
+        if service_key not in self.active_connections:
+            auth_config = await self._get_auth_config(social_account)
+            service_class = self.services[platform]
+            self.active_connections[service_key] = service_class(auth_config)
+        
+        service = self.active_connections[service_key]
+        
+        metrics_updated = 0
+        for content in published_content:
+            try:
+                if platform == 'linkedin':
+                    analytics = await service.get_post_analytics(
+                        social_account.access_token, 
+                        content.platform_post_id
+                    )
+                elif platform == 'twitter':
+                    analytics = await service.get_tweet_analytics(
+                        social_account.access_token, 
+                        content.platform_post_id
+                    )
+                
+                await self._update_engagement_metrics(content.id, analytics)
+                metrics_updated += 1
+                
+            except Exception as e:
+                self.logger.error(f"Failed to sync metrics for {content.id}: {e}")
+        
+        return {
+            'status': 'completed',
+            'metrics_updated': metrics_updated,
+            'total_content': len(published_content)
+        }
+```
+
+## Integration Error Handling
+
+### Platform-Specific Error Patterns
+```python
+class SocialMediaErrorHandler:
+    """Centralized error handling for social media integrations."""
+    
+    LINKEDIN_ERROR_CODES = {
+        429: ('rate_limit_exceeded', 'LinkedIn API rate limit reached'),
+        401: ('authentication_failed', 'LinkedIn access token expired or invalid'),
+        403: ('permission_denied', 'Insufficient LinkedIn permissions'),
+        400: ('invalid_request', 'LinkedIn API request validation failed')
+    }
+    
+    TWITTER_ERROR_CODES = {
+        429: ('rate_limit_exceeded', 'Twitter API rate limit reached'),
+        401: ('authentication_failed', 'Twitter access token expired or invalid'),
+        403: ('forbidden', 'Twitter API request forbidden'),
+        422: ('validation_failed', 'Twitter content validation failed')
+    }
+    
+    @classmethod
+    def handle_platform_error(cls, platform: str, status_code: int, response_data: Dict) -> Dict[str, Any]:
+        """Handle platform-specific errors and provide actionable responses."""
+        
+        error_maps = {
+            'linkedin': cls.LINKEDIN_ERROR_CODES,
+            'twitter': cls.TWITTER_ERROR_CODES
+        }
+        
+        error_map = error_maps.get(platform, {})
+        error_type, error_message = error_map.get(status_code, ('unknown_error', 'Unknown platform error'))
+        
+        recovery_actions = []
+        
+        if error_type == 'rate_limit_exceeded':
+            recovery_actions.append('Wait for rate limit reset')
+            recovery_actions.append('Reduce posting frequency')
+        elif error_type == 'authentication_failed':
+            recovery_actions.append('Refresh access token')
+            recovery_actions.append('Re-authenticate account')
+        elif error_type == 'permission_denied':
+            recovery_actions.append('Review required permissions')
+            recovery_actions.append('Reconnect account with proper scopes')
+        
+        return {
+            'error_type': error_type,
+            'error_message': error_message,
+            'status_code': status_code,
+            'platform': platform,
+            'recovery_actions': recovery_actions,
+            'response_data': response_data
+        }
+```
+
 This comprehensive integration specification provides a robust foundation for connecting Magnetiq v2 with all required external services while maintaining security, reliability, and monitoring capabilities.

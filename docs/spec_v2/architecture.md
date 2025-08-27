@@ -86,10 +86,17 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
 
 ### 3. Business Operations Service
 - **Webinar Management**: Topic creation, session scheduling, registration handling
-- **Lead Generation**: Whitepaper distribution with basic lead capture
+- **Whitepapers**: Whitepaper distribution with basic lead capture
 - **Booking System**: Simple consultation scheduling
-- **Email Integration**: Basic transactional emails via SMTP
 - **Basic Analytics**: Simple metrics on engagement and conversions
+
+### 4. Communication Services
+- **Email Marketing**: Transactional and marketing email campaigns via SMTP
+- **LinkedIn Integration**: Professional content publishing, company page management, engagement analytics
+- **Twitter/X Integration**: Tweet publishing, thread management, multimedia content support
+- **Platform-Specific Content**: Tailored content formats, media optimization per platform
+- **Cross-Platform Analytics**: Unified engagement metrics and campaign performance
+- **Content Automation**: Scheduled publishing, content templates, AI-powered generation
 
 ## API Design Principles
 
