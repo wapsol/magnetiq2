@@ -160,7 +160,7 @@ def generate_production_deployment():
         db_prod >> Edge(style="dashed", label="Daily") >> backup_prod
 
 def generate_deployment_process_flow():
-    """Generate deployment process workflow diagram"""
+    """Generate deployment process workflow diagram with detailed descriptions"""
     
     with Diagram("Deployment Process Workflow",
                 show=False,
@@ -169,40 +169,42 @@ def generate_deployment_process_flow():
                 graph_attr={
                     "fontsize": "10",
                     "bgcolor": "white",
-                    "ranksep": "0.6"
+                    "ranksep": "0.8",
+                    "nodesep": "0.6"
                 }):
         
         # Development phase
-        with Cluster("Development"):
-            code = Action("Code\nChanges")
-            test_local = Decision("Local\nTests?")
-            commit = Action("Git\nCommit")
+        with Cluster("Development Phase"):
+            code = Action("Code Changes\n• Feature development\n• Bug fixes\n• Documentation")
+            test_local = Decision("Local Tests\n• Unit tests\n• Integration tests\n• Linting checks")
+            commit = Action("Git Commit\n• Semantic versioning\n• Commit messages\n• Branch strategy")
         
         # Build phase
-        with Cluster("Build"):
-            build_images = Action("Build\nDocker Images")
-            test_images = Decision("Image\nTests?")
+        with Cluster("Build Phase"):
+            build_images = Action("Build Docker Images\n• Frontend build\n• Backend build\n• Optimize assets")
+            test_images = Decision("Image Tests\n• Container health\n• Port accessibility\n• Dependencies")
         
         # Deployment phase
-        with Cluster("Deploy"):
-            backup_db = Action("Backup\nDatabase")
-            deploy_prod = Action("Deploy to\nProduction")
-            health_check = Decision("Health\nCheck?")
+        with Cluster("Deploy Phase"):
+            backup_db = Action("Backup Database\n• SQLite snapshot\n• Media files\n• Configuration")
+            deploy_prod = Action("Deploy Production\n• Container restart\n• Volume mounts\n• Network config")
+            health_check = Decision("Health Check\n• API endpoints\n• Database connection\n• Service status")
             
         # Recovery phase
-        rollback = Action("Rollback")
-        success = StartEnd("Success")
+        rollback = Action("Rollback\n• Restore backup\n• Previous image\n• Alert team")
+        success = StartEnd("Deployment\nSuccess\n• Notify stakeholders\n• Update docs")
         
-        # Process flow
+        # Process flow with detailed edge labels
         code >> test_local
-        test_local >> Edge(label="Pass") >> commit
-        test_local >> Edge(label="Fail", color="red") >> code
+        test_local >> Edge(label="✓ All tests pass\nCode quality OK", color="green") >> commit
+        test_local >> Edge(label="✗ Tests fail\nFix issues", color="red") >> code
         commit >> build_images >> test_images
-        test_images >> Edge(label="Pass") >> backup_db
-        test_images >> Edge(label="Fail", color="red") >> build_images
+        test_images >> Edge(label="✓ Images valid\nDependencies OK", color="green") >> backup_db
+        test_images >> Edge(label="✗ Build errors\nFix configuration", color="red") >> build_images
         backup_db >> deploy_prod >> health_check
-        health_check >> Edge(label="Pass", color="green") >> success
-        health_check >> Edge(label="Fail", color="red") >> rollback >> code
+        health_check >> Edge(label="✓ System healthy\nAll services up", color="green") >> success
+        health_check >> Edge(label="✗ System unhealthy\nRevert changes", color="red") >> rollback
+        rollback >> Edge(label="Investigate\nand retry", style="dashed") >> code
 
 def generate_container_architecture():
     """Generate Docker container architecture diagram"""
