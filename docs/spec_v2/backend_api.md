@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Magnetiq v2 backend is a streamlined, production-ready API built with Python and FastAPI. It provides secure, RESTful endpoints for all system functionality including authentication, content management, and business operations using a simple SQLite database.
+The Magnetiq v2 backend is a streamlined, production-ready API built with Python and FastAPI. It provides secure, RESTful endpoints for all system functionality including authentication, content management, communications and business operations using a simple SQLite database.
 
 ## Technical Foundation
 
