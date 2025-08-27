@@ -1,169 +1,183 @@
 # SQLAlchemy: The Python SQL Toolkit and Object-Relational Mapper
 
-## System Architecture
+## Architecture Overview
 ![SQLAlchemy Architecture](../diagrams/assets/shorts/sqlalchemy_architecture.png)
 
 ## What is SQLAlchemy?
 
-SQLAlchemy is Python's premier SQL toolkit and Object-Relational Mapper, providing enterprise-level persistence patterns with dual-layer architecture. Its Core expression layer offers SQL-like control while the ORM layer enables full object-oriented database interaction. SQLAlchemy 2.0+ brings native async support, enhanced type hints, and streamlined APIs, making it the gold standard for Python database operations.
+SQLAlchemy is Python's premier SQL toolkit and Object-Relational Mapper, providing enterprise-level persistence patterns through a sophisticated dual-layer architecture. The Core layer delivers precise SQL expression control while the ORM layer enables intuitive object-oriented database interaction. Version 2.0 revolutionized the library with native async support, comprehensive type hints, and streamlined APIs that embrace modern Python patterns.
 
 ## Usage in Magnetiq v2
 
-SQLAlchemy 2.0 powers the entire Magnetiq v2 data layer through async SQLite operations, managing multilingual content, authentication, bookings, and business automation with modern Python patterns.
+SQLAlchemy 2.0 powers Magnetiq v2's entire data persistence layer, managing multilingual content, user authentication, booking systems, and business automation through async SQLite operations with WAL mode for concurrent access.
 
-### Architecture Overview
-![Query Processing Flow](../diagrams/assets/shorts/sqlalchemy_query_flow.png)
+### Data Flow Through Layers
+![Data Flow Layers](../diagrams/assets/shorts/sqlalchemy_data_flow.png)
 
-### Implementation Structure
-```
-backend/
-├── app/
-│   ├── database.py              # Async engine & session factory
-│   ├── models/
-│   │   ├── base.py             # Base model with common fields
-│   │   ├── auth.py             # User, Role, Session models
-│   │   ├── content.py          # Page, ContentBlock models
-│   │   └── booking.py          # Booking, Consultation models
-│   ├── services/               # Business logic with ORM queries
-│   └── migrations/            # Alembic schema versioning
-```
-
-### Core Configuration
+### Project Implementation
 ```python
-# database.py - Async SQLite with WAL mode
+# backend/app/database.py - Async SQLite Configuration
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-DATABASE_URL = "sqlite+aiosqlite:///magnetiq_v2.db"
+from sqlalchemy.orm import declarative_base
 
+DATABASE_URL = "sqlite+aiosqlite:///magnetiq_v2.db"
 engine = create_async_engine(
     DATABASE_URL,
     connect_args={"check_same_thread": False},
-    pool_pre_ping=True
+    pool_pre_ping=True,
+    echo=False
 )
 
 AsyncSessionLocal = async_sessionmaker(
-    bind=engine, class_=AsyncSession, expire_on_commit=False
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False
 )
+
+# Dependency injection for FastAPI
+async def get_db():
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+        finally:
+            await session.close()
 ```
 
-## Model Relationships & Patterns
+## Model Relationships Design
 ![Model Relationships](../diagrams/assets/shorts/sqlalchemy_relationships.png)
 
-### Declarative Model Pattern
+### Modern Declarative Models
 ```python
+# SQLAlchemy 2.0 typed models with relationships
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 from datetime import datetime
+
+class User(Base):
+    __tablename__ = "users"
+    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    role: Mapped[str] = mapped_column(String(50), default="viewer")
+    
+    # Relationships
+    pages: Mapped[List["Page"]] = relationship(back_populates="author")
+    bookings: Mapped[List["Booking"]] = relationship(back_populates="user")
 
 class Page(Base):
     __tablename__ = "pages"
     
     id: Mapped[int] = mapped_column(primary_key=True)
     slug: Mapped[str] = mapped_column(String(200), unique=True, index=True)
-    title: Mapped[Dict[str, str]] = mapped_column(JSON)  # Multilingual
+    title: Mapped[Dict[str, str]] = mapped_column(JSON)  # {"en": "Title", "de": "Titel"}
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    
     author: Mapped["User"] = relationship(back_populates="pages")
+    content_blocks: Mapped[List["ContentBlock"]] = relationship(cascade="all, delete-orphan")
 ```
 
-## Session Lifecycle Management
+## Query Processing Pipeline
+![Query Processing](../diagrams/assets/shorts/sqlalchemy_query_flow.png)
+
+```mermaid
+flowchart LR
+    A[Build Query] --> B[Compile SQL]
+    B --> C{Cache Hit?}
+    C -->|Yes| D[Use Cached]
+    C -->|No| E[Generate SQL]
+    E --> D
+    D --> F[Execute]
+    F --> G[Map Results]
+    G --> H[Return Objects]
+```
+
+## Session & Transaction Management
 ![Session Lifecycle](../diagrams/assets/shorts/sqlalchemy_session_lifecycle.png)
 
-```mermaid
-sequenceDiagram
-    participant API as FastAPI Endpoint
-    participant Dep as Dependency Injection
-    participant Session as AsyncSession
-    participant DB as SQLite Database
-    
-    API->>+Dep: Request with get_db()
-    Dep->>+Session: async with AsyncSessionLocal()
-    Session->>DB: BEGIN TRANSACTION
-    API->>Session: await session.execute(query)
-    Session->>DB: SQL Query Execution
-    DB-->>Session: Result Set
-    Session-->>API: Model Instances
-    Session->>DB: COMMIT/ROLLBACK
-    Session->>-Dep: Close Session
-    Dep-->>-API: Cleanup Complete
-```
+![Transaction Boundaries](../diagrams/assets/shorts/sqlalchemy_transaction_scope.png)
 
-## Migration Workflow with Alembic
-
-```mermaid
-flowchart TD
-    A[Model Change] --> B[Generate Migration]
-    B --> C{alembic revision --autogenerate}
-    C --> D[Review Generated SQL]
-    D --> E{Migration Correct?}
-    E -->|No| F[Edit Migration File]
-    F --> D
-    E -->|Yes| G[alembic upgrade head]
-    G --> H[Update Production DB]
-    H --> I[Verify Schema]
-```
-
-### Migration Commands
-```bash
-# Generate migration
-alembic revision --autogenerate -m "Add booking fields"
-
-# Apply migrations
-alembic upgrade head
-
-# Rollback one version
-alembic downgrade -1
-```
-
-## Advanced Query Patterns
-
-### Async Service Implementation
+### Async Service Pattern
 ```python
 class ContentService:
-    async def get_published_pages(self, lang: str = "en") -> List[Page]:
+    def __init__(self, db: AsyncSession):
+        self.db = db
+    
+    async def get_published_pages(self, language: str = "en") -> List[Page]:
+        """Fetch published pages with eager loading"""
         stmt = (
             select(Page)
-            .options(selectinload(Page.content_blocks))
+            .options(selectinload(Page.content_blocks))  # Prevent N+1
             .where(Page.is_published == True)
             .order_by(Page.published_at.desc())
         )
         result = await self.db.execute(stmt)
         return result.scalars().all()
+    
+    async def create_page_transaction(self, page_data: dict) -> Page:
+        """Transactional page creation with rollback"""
+        async with self.db.begin():  # Auto commit/rollback
+            page = Page(**page_data)
+            self.db.add(page)
+            await self.db.flush()  # Get ID without committing
+            
+            # Add content blocks
+            for block_data in page_data.get("blocks", []):
+                block = ContentBlock(page_id=page.id, **block_data)
+                self.db.add(block)
+            
+            return page  # Commits on context exit
 ```
 
-### Performance Optimization
-- **Connection Pooling**: Pre-configured pool with health checks
-- **Eager Loading**: `selectinload()` prevents N+1 queries
-- **Compiled Caching**: Statement compilation reuse
-- **WAL Mode**: Write-Ahead Logging for concurrent reads
+## Migration Management with Alembic
 
-## Historical Timeline
+```mermaid
+flowchart LR
+    A[Model Change] --> B[Generate Migration]
+    B --> C[Review SQL]
+    C --> D{Correct?}
+    D -->|No| E[Edit Migration]
+    E --> C
+    D -->|Yes| F[Apply Migration]
+    F --> G[Update Schema]
+```
 
-- **2006**: Mike Bayer releases SQLAlchemy 0.1 at Pycon
-- **2012**: SQLAlchemy 0.8 introduces new declarative syntax
-- **2016**: Version 1.0 marks production stability milestone
-- **2021**: SQLAlchemy 1.4 introduces 2.0 transition features
-- **2022**: SQLAlchemy 2.0 launches with native async, modern typing
-- **2024**: Adopted by Magnetiq v2 for async data operations
+## Performance Optimizations
+
+- **Connection Pooling**: Pre-configured async pool with health checks via `pool_pre_ping`
+- **Eager Loading**: Strategic use of `selectinload()` and `joinedload()` to prevent N+1 queries
+- **Query Compilation Cache**: Automatic SQL statement compilation reuse
+- **WAL Mode**: SQLite Write-Ahead Logging enables concurrent reads
+- **Batch Operations**: `bulk_insert_mappings()` for efficient data loading
+
+## Historical Evolution
+
+- **2006**: Mike Bayer creates SQLAlchemy, introduces innovative Unit of Work pattern
+- **2012**: Version 0.8 revolutionizes declarative syntax
+- **2016**: 1.0 release marks enterprise production readiness
+- **2021**: 1.4 bridges to 2.0 with future compatibility mode
+- **2022**: SQLAlchemy 2.0 launches with native async, full typing support
+- **2024**: Powers Magnetiq v2's async data operations
 
 ## Key Contributors
 
-1. **Mike Bayer** (@zzzeek) - Creator, lead architect at Red Hat
-2. **Federico Caselli** - Core maintainer, async implementation
-3. **Gord Thompson** - Database driver compatibility expert
-4. **Jonathan Vanasco** - Performance optimization specialist
-5. **Ramon Williams** - SQLAlchemy 2.0 migration lead
+1. **Mike Bayer** (@zzzeek) - Creator and BDFL, Red Hat engineer
+2. **Federico Caselli** - Async implementation architect
+3. **Gord Thompson** - Database driver compatibility specialist
+4. **Sebastian Bank** - Type hints system designer
+5. **Jonathan Vanasco** - Performance optimization lead
 
 ## Real-World Implementations
 
-### Reddit's Trophy System
-Reddit uses SQLAlchemy for their trophy and award system, handling millions of user achievements with complex relationships between users, trophies, and award criteria. Their implementation leverages SQLAlchemy's hybrid properties for computed fields and extensive query optimization for feed generation.
+### Dropbox's Paper Backend
+Dropbox Paper uses SQLAlchemy for document storage with custom sharding across MySQL clusters. Their implementation handles millions of collaborative documents using SQLAlchemy's event system for real-time sync triggers and hybrid properties for computed document statistics.
 
-### OpenStack Nova
-OpenStack's compute service Nova relies on SQLAlchemy for multi-database support across MySQL, PostgreSQL, and SQLite. They utilize SQLAlchemy's migration system for zero-downtime upgrades across thousands of nodes, with custom connection pooling for high-availability deployments.
+### Mozilla's Crash Reporter (Socorro)
+Mozilla Socorro processes Firefox crash reports using SQLAlchemy with PostgreSQL partitioning. They handle 3+ million daily crash reports through custom SQLAlchemy types for stack trace data and connection pooling optimized for high-throughput data ingestion.
 
 ## Contemporary Alternatives
 
-- **Django ORM**: Tightly integrated with Django framework, simpler API but less flexible for complex queries
-- **Tortoise ORM**: Async-first design inspired by Django ORM, younger ecosystem
-- **SQLModel**: FastAPI creator's hybrid combining SQLAlchemy with Pydantic, simplified but less mature
+- **Django ORM**: Integrated with Django, simpler but less flexible for complex queries and raw SQL
+- **Tortoise ORM**: Async-first design, younger ecosystem, inspired by Django ORM patterns
+- **SQLModel**: FastAPI creator's hybrid merging SQLAlchemy with Pydantic, trades power for simplicity
 
-SQLAlchemy's maturity, comprehensive async support, and extensive optimization capabilities make it ideal for Magnetiq v2's scalable data layer requirements.
+SQLAlchemy's maturity, comprehensive async capabilities, and unmatched flexibility in handling complex queries make it the optimal choice for Magnetiq v2's scalable, high-performance data layer.

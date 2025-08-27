@@ -91,7 +91,7 @@ def generate_sqlalchemy_architecture():
     with Diagram("SQLAlchemy in Magnetiq v2", 
                 show=False, 
                 filename="../assets/shorts/sqlalchemy_architecture",
-                direction="TB"):
+                direction="LR",  # LEFT to RIGHT for horizontal layout
         
         with Cluster("FastAPI Application Layer"):
             api = FastAPI("API Endpoints\n(Port 3036)")
@@ -171,6 +171,39 @@ sequenceDiagram
 ```
 
 ### 3. Diagram Standards and Best Practices
+
+**Layout Principles:**
+- **ALWAYS use horizontal layouts** (`direction="LR"`) as the default orientation
+- **Wrap complex architectures** into logical rows using multiple clusters
+- **Optimize for page width**: Design diagrams to fit standard documentation width (~800-1200px)
+- **Use compact node labels**: Multi-line labels with `\n` for space efficiency
+- **Group related components**: Use Clusters to create visual rows/columns
+
+**Horizontal Layout Template:**
+```python
+def generate_horizontal_architecture():
+    with Diagram("System Architecture", 
+                show=False,
+                direction="LR",  # ALWAYS horizontal first
+                graph_attr={"rankdir": "LR", "splines": "ortho"}):
+        
+        # Row 1: Frontend components
+        with Cluster("Client Layer"):
+            client1 = Component("Web App")
+            client2 = Component("Mobile")
+        
+        # Row 2: API layer (next logical group)
+        with Cluster("API Layer"):
+            api = Component("API Gateway")
+            
+        # Row 3: Backend services
+        with Cluster("Services"):
+            svc1 = Component("Service A")
+            svc2 = Component("Service B")
+            
+        # Connect horizontally
+        [client1, client2] >> api >> [svc1, svc2]
+```
 
 **Naming Conventions:**
 - Generator files: `[technology]_diagrams.py`

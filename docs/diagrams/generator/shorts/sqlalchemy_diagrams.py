@@ -2,6 +2,7 @@
 """
 SQLAlchemy Diagram Generator for Magnetiq v2 Documentation
 Generates architecture and flow diagrams for SQLAlchemy short documentation
+All diagrams use horizontal layout (LR) for better page width optimization
 """
 
 from diagrams import Diagram, Cluster, Edge
@@ -10,175 +11,252 @@ from diagrams.programming.language import Python
 from diagrams.onprem.database import PostgreSQL
 from diagrams.generic.storage import Storage
 from diagrams.generic.compute import Rack
-from diagrams.programming.flowchart import Decision, StartEnd
+from diagrams.programming.flowchart import Decision, StartEnd, Action
 import os
 
 # Ensure output directory exists
 os.makedirs("../../assets/shorts", exist_ok=True)
 
 def generate_sqlalchemy_architecture():
-    """Generate the main SQLAlchemy architecture diagram for Magnetiq v2"""
+    """Generate horizontal SQLAlchemy architecture diagram for Magnetiq v2"""
     
     with Diagram("SQLAlchemy Architecture in Magnetiq v2", 
                 show=False, 
                 filename="../../assets/shorts/sqlalchemy_architecture",
-                direction="TB",
-                graph_attr={"fontsize": "14", "bgcolor": "white", "pad": "0.5"}):
+                direction="LR",  # Horizontal layout
+                graph_attr={
+                    "fontsize": "12", 
+                    "bgcolor": "white", 
+                    "pad": "0.3",
+                    "ranksep": "0.75",
+                    "nodesep": "0.5",
+                    "splines": "ortho"
+                }):
         
-        # Frontend layer
-        with Cluster("Client Layer"):
-            client = FastAPI("React Frontend\n(Port 8036)")
+        # Column 1: Frontend
+        with Cluster("Frontend"):
+            client = FastAPI("React\n8036")
         
-        # API layer
-        with Cluster("API Layer"):
-            api = FastAPI("FastAPI Backend\n(Port 3036)")
+        # Column 2: API
+        with Cluster("API"):
+            api = FastAPI("FastAPI\n3036")
             
-        # Business Logic layer
-        with Cluster("Business Logic"):
-            with Cluster("Service Layer"):
-                content_svc = Python("Content Service")
-                auth_svc = Python("Auth Service")
-                booking_svc = Python("Booking Service")
-                
-        # ORM layer
-        with Cluster("SQLAlchemy 2.0 ORM"):
-            with Cluster("Models"):
-                user_model = Python("User Model")
-                page_model = Python("Page Model")
-                booking_model = Python("Booking Model")
-                
-            with Cluster("Core Components"):
-                session_factory = Rack("Async Session\nFactory")
-                engine = Rack("Async Engine\n(aiosqlite)")
-                
-        # Migration layer
-        with Cluster("Schema Management"):
-            alembic = Storage("Alembic\nMigrations")
+        # Column 3: Business Logic
+        with Cluster("Services"):
+            content_svc = Python("Content")
+            auth_svc = Python("Auth")
+            booking_svc = Python("Booking")
             
-        # Database layer
-        with Cluster("Database"):
-            db = PostgreSQL("SQLite Database\n(WAL Mode)")
+        # Column 4: ORM Layer
+        with Cluster("SQLAlchemy 2.0"):
+            models = Python("Models")
+            session = Rack("Async\nSession")
+            engine = Rack("Engine")
+            
+        # Column 5: Database & Migrations
+        with Cluster("Data Layer"):
+            db = PostgreSQL("SQLite\nWAL")
+            alembic = Storage("Alembic")
         
-        # Define relationships
-        client >> Edge(label="HTTP/JSON") >> api
-        api >> Edge(label="Dependency\nInjection") >> [content_svc, auth_svc, booking_svc]
-        
-        content_svc >> page_model
-        auth_svc >> user_model
-        booking_svc >> booking_model
-        
-        [user_model, page_model, booking_model] >> session_factory
-        session_factory >> Edge(label="Connection\nPool") >> engine
-        engine >> Edge(label="SQL") >> db
-        alembic >> Edge(label="DDL", style="dashed") >> db
+        # Horizontal connections
+        client >> api
+        api >> Edge(label="DI") >> [content_svc, auth_svc, booking_svc]
+        [content_svc, auth_svc, booking_svc] >> models
+        models >> session >> engine >> db
+        alembic >> Edge(style="dashed") >> db
 
 def generate_sqlalchemy_session_lifecycle():
-    """Generate SQLAlchemy async session lifecycle diagram"""
+    """Generate horizontal async session lifecycle diagram"""
     
     with Diagram("SQLAlchemy Async Session Lifecycle",
                 show=False,
                 filename="../../assets/shorts/sqlalchemy_session_lifecycle",
-                direction="LR",
-                graph_attr={"fontsize": "12", "bgcolor": "white"}):
+                direction="LR",  # Horizontal flow
+                graph_attr={
+                    "fontsize": "11", 
+                    "bgcolor": "white",
+                    "ranksep": "0.5",
+                    "nodesep": "0.3"
+                }):
         
-        start = StartEnd("API Request")
-        
-        with Cluster("Session Management"):
-            acquire = Python("get_db()\nDependency")
-            session_start = Rack("AsyncSession\nBegin")
-            operations = Python("Database\nOperations")
-            commit = Decision("Commit or\nRollback")
-            cleanup = Rack("Session\nClose")
-        
+        # Linear horizontal flow
+        start = StartEnd("Request")
+        acquire = Python("get_db()")
+        session_start = Rack("Begin\nSession")
+        operations = Python("Execute\nQueries")
+        commit = Decision("Success?")
+        cleanup = Rack("Close")
         end = StartEnd("Response")
         
-        # Flow
-        start >> acquire >> session_start
-        session_start >> operations >> commit
-        commit >> Edge(label="Success") >> cleanup
-        commit >> Edge(label="Error", style="dashed", color="red") >> cleanup
-        cleanup >> end
+        # Horizontal flow with branches
+        start >> acquire >> session_start >> operations >> commit
+        commit >> Edge(label="Yes", color="green") >> cleanup >> end
+        commit >> Edge(label="No", color="red", style="dashed") >> cleanup
 
 def generate_sqlalchemy_query_flow():
-    """Generate SQLAlchemy query construction and execution flow"""
+    """Generate horizontal query processing flow diagram"""
     
-    with Diagram("SQLAlchemy Query Processing Flow",
+    with Diagram("SQLAlchemy Query Processing Pipeline",
                 show=False,
                 filename="../../assets/shorts/sqlalchemy_query_flow",
-                direction="TB",
-                graph_attr={"fontsize": "12", "bgcolor": "white", "ranksep": "0.5"}):
+                direction="LR",  # Horizontal pipeline
+                graph_attr={
+                    "fontsize": "11", 
+                    "bgcolor": "white",
+                    "ranksep": "0.6",
+                    "pad": "0.2"
+                }):
         
-        # Query Construction Phase
-        with Cluster("Query Construction"):
-            select_stmt = Python("select(Model)")
-            where_clause = Python(".where()")
-            join_clause = Python(".join()")
-            order_clause = Python(".order_by()")
+        # Query Construction Row
+        with Cluster("Build"):
+            select_stmt = Python("select()")
+            where = Python("where()")
+            join = Python("join()")
         
-        # Compilation Phase
-        with Cluster("SQL Compilation"):
-            compiler = Rack("SQL Compiler")
-            sql_cache = Storage("Compiled\nQuery Cache")
+        # Compilation Row
+        with Cluster("Compile"):
+            compiler = Rack("SQL\nCompiler")
+            cache = Storage("Cache")
         
-        # Execution Phase
-        with Cluster("Execution"):
-            executor = Rack("Async Executor")
-            conn_pool = Rack("Connection\nPool")
+        # Execution Row
+        with Cluster("Execute"):
+            executor = Rack("Async\nExecutor")
+            pool = Rack("Pool")
         
-        # Result Processing
-        with Cluster("Result Processing"):
-            result_proc = Python("Result\nProcessor")
-            orm_mapper = Python("ORM\nMapper")
-            instances = Python("Model\nInstances")
+        # Result Row
+        with Cluster("Result"):
+            processor = Python("Process")
+            mapper = Python("Map ORM")
         
+        # Database
         db = PostgreSQL("SQLite")
         
-        # Define flow
-        select_stmt >> where_clause >> join_clause >> order_clause
-        order_clause >> compiler
-        compiler >> sql_cache
-        compiler >> executor
-        executor >> conn_pool >> db
-        db >> result_proc >> orm_mapper >> instances
+        # Horizontal flow with caching branch
+        select_stmt >> where >> join >> compiler
+        compiler >> cache
+        compiler >> executor >> pool >> db >> processor >> mapper
 
 def generate_sqlalchemy_relationship_mapping():
-    """Generate SQLAlchemy relationship mapping diagram"""
+    """Generate horizontal model relationships diagram"""
     
     with Diagram("SQLAlchemy Model Relationships",
                 show=False,
                 filename="../../assets/shorts/sqlalchemy_relationships",
-                direction="LR",
-                graph_attr={"fontsize": "12", "bgcolor": "white"}):
+                direction="LR",  # Horizontal relationships
+                graph_attr={
+                    "fontsize": "10", 
+                    "bgcolor": "white",
+                    "ranksep": "1.0",
+                    "nodesep": "0.5"
+                }):
         
-        with Cluster("User Model"):
-            user = Python("User\n- id: int\n- email: str\n- role: str")
+        # Models arranged horizontally
+        with Cluster("Authentication"):
+            user = Python("User\nid, email\nrole")
         
-        with Cluster("Page Model"):
-            page = Python("Page\n- id: int\n- slug: str\n- title: JSON\n- author_id: FK")
+        with Cluster("Content"):
+            page = Python("Page\nid, slug\ntitle")
+            content = Python("Content\nBlock\nid, type")
         
-        with Cluster("ContentBlock Model"):
-            content = Python("ContentBlock\n- id: int\n- page_id: FK\n- content: JSON")
+        with Cluster("Business"):
+            booking = Python("Booking\nid, date\nstatus")
+            webinar = Python("Webinar\nid, topic")
         
-        with Cluster("Booking Model"):
-            booking = Python("Booking\n- id: int\n- user_id: FK\n- date: datetime")
+        # Horizontal relationships
+        user >> Edge(label="1:N author", style="bold") >> page
+        page >> Edge(label="1:N blocks", style="bold") >> content
+        user >> Edge(label="1:N bookings", style="bold") >> booking
+        user >> Edge(label="N:M attendees", style="bold") >> webinar
+
+def generate_sqlalchemy_data_flow():
+    """Generate horizontal data flow through SQLAlchemy layers"""
+    
+    with Diagram("SQLAlchemy Data Flow Layers",
+                show=False,
+                filename="../../assets/shorts/sqlalchemy_data_flow",
+                direction="LR",  # Horizontal layers
+                graph_attr={
+                    "fontsize": "11",
+                    "bgcolor": "white",
+                    "pad": "0.3",
+                    "ranksep": "0.8"
+                }):
         
-        # Relationships
-        user >> Edge(label="1:N\nauthor", style="bold") >> page
-        page >> Edge(label="1:N\ncontent_blocks", style="bold") >> content
-        user >> Edge(label="1:N\nbookings", style="bold") >> booking
+        # Request flow through layers
+        with Cluster("HTTP"):
+            request = FastAPI("Request")
+            response = FastAPI("Response")
+        
+        with Cluster("Application"):
+            endpoint = Python("Endpoint")
+            service = Python("Service")
+        
+        with Cluster("ORM"):
+            query = Python("Query")
+            models = Python("Models")
+        
+        with Cluster("Core"):
+            sql = Rack("SQL")
+            conn = Rack("Connection")
+        
+        with Cluster("Storage"):
+            db = PostgreSQL("SQLite")
+        
+        # Bidirectional flow
+        request >> endpoint >> service >> query >> models >> sql >> conn >> db
+        db >> Edge(style="dashed") >> conn >> Edge(style="dashed") >> sql
+        sql >> Edge(style="dashed") >> models >> Edge(style="dashed") >> query
+        query >> Edge(style="dashed") >> service >> Edge(style="dashed") >> endpoint >> response
+
+def generate_sqlalchemy_transaction_scope():
+    """Generate horizontal transaction scope diagram"""
+    
+    with Diagram("SQLAlchemy Transaction Boundaries",
+                show=False,
+                filename="../../assets/shorts/sqlalchemy_transaction_scope",
+                direction="LR",  # Horizontal transaction flow
+                graph_attr={
+                    "fontsize": "11",
+                    "bgcolor": "white",
+                    "ranksep": "0.6"
+                }):
+        
+        # Transaction phases
+        api_call = FastAPI("API Call")
+        
+        with Cluster("Transaction Scope"):
+            begin = Action("BEGIN")
+            work = Python("Business\nLogic")
+            validate = Decision("Valid?")
+            commit = Action("COMMIT")
+            rollback = Action("ROLLBACK")
+        
+        result = FastAPI("Response")
+        
+        # Horizontal flow with commit/rollback paths
+        api_call >> begin >> work >> validate
+        validate >> Edge(label="Yes", color="green") >> commit >> result
+        validate >> Edge(label="No", color="red") >> rollback >> result
 
 if __name__ == "__main__":
-    print("Generating SQLAlchemy diagrams...")
+    print("Generating SQLAlchemy diagrams with horizontal layouts...")
+    
     generate_sqlalchemy_architecture()
-    print("✓ Generated architecture diagram")
+    print("✓ Generated horizontal architecture diagram")
     
     generate_sqlalchemy_session_lifecycle()
-    print("✓ Generated session lifecycle diagram")
+    print("✓ Generated horizontal session lifecycle diagram")
     
     generate_sqlalchemy_query_flow()
-    print("✓ Generated query flow diagram")
+    print("✓ Generated horizontal query flow diagram")
     
     generate_sqlalchemy_relationship_mapping()
-    print("✓ Generated relationship mapping diagram")
+    print("✓ Generated horizontal relationship mapping diagram")
     
-    print("\nAll diagrams generated successfully in docs/diagrams/assets/shorts/")
+    generate_sqlalchemy_data_flow()
+    print("✓ Generated horizontal data flow diagram")
+    
+    generate_sqlalchemy_transaction_scope()
+    print("✓ Generated horizontal transaction scope diagram")
+    
+    print("\nAll diagrams generated successfully with horizontal layouts in docs/diagrams/assets/shorts/")
