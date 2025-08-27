@@ -1,709 +1,273 @@
 # Magnetiq v2 - Deployment Specification
 
-## Overview
+## Architecture Overview
+![Deployment Architecture](../diagrams/assets/specs/deployment_architecture.png)
 
 Magnetiq v2 deployment focuses on simplicity and rapid deployment using SQLite database and minimal infrastructure requirements. This specification covers Docker-based deployment for both development and production environments.
-
-## Architecture Overview
 
 ### Simple Stack Architecture
 - **Frontend**: React SPA served via Nginx (Port 8036)
 - **Backend**: FastAPI application (Port 3036)
-- **Database**: SQLite file-based database
+- **Database**: SQLite file-based database with WAL mode
 - **Web Server**: Nginx for static files and reverse proxy
-- **No External Dependencies**: No Redis, Celery, or message queuing
+- **No External Dependencies**: No Redis, Celery, or message queuing systems
 
 ## Environment Requirements
 
 ### Development Environment
-- **Docker & Docker Compose**
-- **Node.js 18+** (for frontend development)
-- **Python 3.11+** (for backend development)
-- **4GB RAM minimum**
-- **10GB free disk space**
+- **Docker & Docker Compose** for containerized development
+- **Node.js 18+** for frontend development tooling
+- **Python 3.11+** for backend development
+- **4GB RAM minimum** for comfortable development
+- **10GB free disk space** for containers and data
 
 ### Production Environment
 - **Linux server** (Ubuntu 20.04+ recommended)
-- **Docker & Docker Compose**
-- **2GB RAM minimum**
-- **20GB free disk space**
+- **Docker & Docker Compose** for container orchestration
+- **2GB RAM minimum** for production workload
+- **20GB free disk space** for application data and backups
 - **SSL certificate** (Let's Encrypt recommended)
-- **Domain name** configured with DNS
+- **Domain name** configured with proper DNS records
 
 ## Docker Configuration
 
-### Development Docker Compose
-```yaml
-# docker-compose.dev.yml
-version: '3.8'
+### Container Architecture
+![Container Architecture](../diagrams/assets/specs/container_architecture.png)
 
-services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
-    ports:
-      - "8036:8036"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - VITE_API_BASE_URL=http://localhost:3036
-      - NODE_ENV=development
-    depends_on:
-      - backend
+The application runs as three primary Docker containers:
+- **Frontend Container**: React application with static file serving
+- **Backend Container**: FastAPI application with Python runtime
+- **Nginx Container**: Reverse proxy and SSL termination
 
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
-    ports:
-      - "3036:3036"
-    volumes:
-      - ./backend:/app
-      - ./data:/app/data  # SQLite database storage
-    environment:
-      - DATABASE_URL=sqlite+aiosqlite:///./data/magnetiq_dev.db
-      - SECRET_KEY=dev-secret-key-change-in-production
-      - DEBUG=true
-      - ENVIRONMENT=development
-    depends_on:
-      - nginx
+All containers communicate through a dedicated Docker bridge network with persistent volume mounts for data storage.
 
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/dev.conf:/etc/nginx/nginx.conf
-      - ./frontend/dist:/usr/share/nginx/html
-    depends_on:
-      - frontend
-      - backend
+### Development Environment
+![Development Deployment](../diagrams/assets/specs/development_deployment.png)
 
-volumes:
-  data:
-    driver: local
-```
+The development environment provides:
+- **Hot reload capabilities** for both frontend and backend
+- **Volume mounting** for real-time code changes
+- **Development database** with debugging enabled
+- **Simplified networking** without SSL complexity
+- **Direct port access** for debugging and testing
 
-### Production Docker Compose
-```yaml
-# docker-compose.prod.yml
-version: '3.8'
+### Production Environment  
+![Production Deployment](../diagrams/assets/specs/production_deployment.png)
 
-services:
-  frontend:
-    image: magnetiq-frontend:latest
-    restart: unless-stopped
-    networks:
-      - magnetiq-network
-
-  backend:
-    image: magnetiq-backend:latest
-    restart: unless-stopped
-    volumes:
-      - ./data:/app/data  # SQLite database storage
-      - ./media:/app/media  # Media files storage
-    environment:
-      - DATABASE_URL=sqlite+aiosqlite:///./data/magnetiq_prod.db
-      - SECRET_KEY=${SECRET_KEY}
-      - DEBUG=false
-      - ENVIRONMENT=production
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
-    networks:
-      - magnetiq-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3036/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  nginx:
-    image: nginx:alpine
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/prod.conf:/etc/nginx/nginx.conf
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-      - ./frontend/dist:/usr/share/nginx/html
-    networks:
-      - magnetiq-network
-    depends_on:
-      - frontend
-      - backend
-
-volumes:
-  data:
-    driver: local
-  media:
-    driver: local
-
-networks:
-  magnetiq-network:
-    driver: bridge
-```
+The production environment includes:
+- **SSL termination** at the Nginx layer
+- **Health checks** for container monitoring
+- **Persistent data volumes** for database and media storage
+- **Automated restarts** for container reliability
+- **Security headers** and hardened configurations
+- **Backup systems** for data protection
 
 ## Nginx Configuration
 
-### Development Nginx Configuration
-```nginx
-# nginx/dev.conf
-events {
-    worker_connections 1024;
-}
+### Request Routing
+Nginx handles all incoming requests and routes them appropriately:
+- **Static assets** served directly from filesystem
+- **API requests** proxied to FastAPI backend
+- **SPA routes** handled with fallback to index.html
+- **SSL certificates** managed automatically
+- **Compression** enabled for text-based content
 
-http {
-    upstream backend {
-        server backend:3036;
-    }
-
-    server {
-        listen 80;
-        server_name localhost;
-
-        # Frontend routes
-        location / {
-            root /usr/share/nginx/html;
-            try_files $uri $uri/ /index.html;
-        }
-
-        # API proxy to backend
-        location /api/ {
-            proxy_pass http://backend;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
-
-        # Health check
-        location /health {
-            access_log off;
-            return 200 "healthy\n";
-            add_header Content-Type text/plain;
-        }
-    }
-}
-```
-
-### Production Nginx Configuration
-```nginx
-# nginx/prod.conf
-events {
-    worker_connections 2048;
-}
-
-http {
-    # Basic settings
-    sendfile on;
-    tcp_nopush on;
-    tcp_nodelay on;
-    keepalive_timeout 65;
-    types_hash_max_size 2048;
-    client_max_body_size 50M;
-    
-    # Gzip compression
-    gzip on;
-    gzip_vary on;
-    gzip_min_length 1024;
-    gzip_types
-        text/plain
-        text/css
-        application/json
-        application/javascript
-        text/xml
-        application/xml
-        application/xml+rss
-        text/javascript;
-
-    upstream backend {
-        server backend:3036;
-    }
-
-    # Redirect HTTP to HTTPS
-    server {
-        listen 80;
-        server_name voltaic.systems www.voltaic.systems;
-        location /.well-known/acme-challenge/ {
-            root /var/www/certbot;
-        }
-        location / {
-            return 301 https://$server_name$request_uri;
-        }
-    }
-
-    # HTTPS server
-    server {
-        listen 443 ssl http2;
-        server_name voltaic.systems www.voltaic.systems;
-
-        # SSL configuration
-        ssl_certificate /etc/letsencrypt/live/voltaic.systems/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/voltaic.systems/privkey.pem;
-        ssl_protocols TLSv1.2 TLSv1.3;
-        ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384;
-
-        # Security headers
-        add_header Strict-Transport-Security "max-age=63072000" always;
-        add_header X-Frame-Options DENY always;
-        add_header X-Content-Type-Options nosniff always;
-        add_header X-XSS-Protection "1; mode=block" always;
-
-        # Static files caching
-        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
-            root /usr/share/nginx/html;
-            expires 1y;
-            add_header Cache-Control "public, immutable";
-        }
-
-        # API proxy to backend
-        location /api/ {
-            proxy_pass http://backend;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
-
-        # Media files
-        location /media/ {
-            alias /app/media/;
-            expires 1y;
-            add_header Cache-Control "public, immutable";
-        }
-
-        # Frontend SPA
-        location / {
-            root /usr/share/nginx/html;
-            try_files $uri $uri/ /index.html;
-            
-            # Cache HTML files for short time
-            location ~* \.html$ {
-                expires 1h;
-                add_header Cache-Control "public, must-revalidate";
-            }
-        }
-    }
-}
-```
+### Security Configuration
+Production Nginx includes comprehensive security measures:
+- **HTTPS redirection** for all HTTP requests
+- **Security headers** (HSTS, X-Frame-Options, CSP)
+- **SSL protocols** limited to TLS 1.2 and 1.3
+- **Strong cipher suites** for encryption
+- **Rate limiting** for API endpoints
 
 ## Environment Configuration
 
 ### Development Environment Variables
-```bash
-# .env.dev
-ENVIRONMENT=development
-DEBUG=true
-SECRET_KEY=dev-secret-key-change-in-production
-
-# Database
-DATABASE_URL=sqlite+aiosqlite:///./data/magnetiq_dev.db
-
-# CORS
-ALLOWED_ORIGINS=http://localhost:8036,http://localhost:3000
-
-# Email (development - using Mailtrap)
-SMTP_HOST=smtp.mailtrap.io
-SMTP_PORT=587
-SMTP_USER=your-mailtrap-user
-SMTP_PASSWORD=your-mailtrap-password
-SMTP_FROM_EMAIL=noreply@magnetiq.local
-
-# File uploads
-MAX_FILE_SIZE=10485760  # 10MB
-UPLOAD_DIR=./media
-
-# Communication Services - Social Media Integration
-LINKEDIN_CLIENT_ID=your-dev-linkedin-client-id
-LINKEDIN_CLIENT_SECRET=your-dev-linkedin-client-secret
-LINKEDIN_REDIRECT_URI=http://localhost:8036/auth/linkedin/callback
-
-TWITTER_CLIENT_ID=your-dev-twitter-client-id
-TWITTER_CLIENT_SECRET=your-dev-twitter-client-secret
-TWITTER_REDIRECT_URI=http://localhost:8036/auth/twitter/callback
-
-# OAuth2 Security
-OAUTH_ENCRYPTION_KEY=dev-oauth-encryption-key-32-bytes-minimum
-OAUTH_STATE_TTL=600
-
-# Social Media Rate Limiting
-LINKEDIN_DAILY_POST_LIMIT=25
-LINKEDIN_HOURLY_API_LIMIT=500
-TWITTER_15MIN_TWEET_LIMIT=300
-TWITTER_15MIN_API_LIMIT=75
-
-# Content Security
-CONTENT_VALIDATION_ENABLED=true
-SPAM_DETECTION_THRESHOLD=0.8
-MALICIOUS_URL_CHECK_ENABLED=true
-```
+Development configuration emphasizes ease of use and debugging:
+- **Debug mode enabled** for detailed error messages
+- **Local database** with development seed data
+- **Permissive CORS** for frontend development
+- **Development SMTP** using services like Mailtrap
+- **Social media sandbox** credentials for testing
 
 ### Production Environment Variables
-```bash
-# .env.prod
-ENVIRONMENT=production
-DEBUG=false
-SECRET_KEY=your-super-secure-production-secret-key
-
-# Database
-DATABASE_URL=sqlite+aiosqlite:///./data/magnetiq_prod.db
-
-# CORS
-ALLOWED_ORIGINS=https://voltaic.systems,https://www.voltaic.systems
-
-# Email (production - using Brevo)
-SMTP_HOST=smtp-relay.brevo.com
-SMTP_PORT=587
-SMTP_USER=your-brevo-user
-SMTP_PASSWORD=your-brevo-password
-SMTP_FROM_EMAIL=noreply@voltaic.systems
-
-# File uploads
-MAX_FILE_SIZE=52428800  # 50MB
-UPLOAD_DIR=./data/media
-
-# Communication Services - Social Media Integration
-LINKEDIN_CLIENT_ID=${LINKEDIN_CLIENT_ID}
-LINKEDIN_CLIENT_SECRET=${LINKEDIN_CLIENT_SECRET}
-LINKEDIN_REDIRECT_URI=https://voltaic.systems/auth/linkedin/callback
-
-TWITTER_CLIENT_ID=${TWITTER_CLIENT_ID}
-TWITTER_CLIENT_SECRET=${TWITTER_CLIENT_SECRET}
-TWITTER_REDIRECT_URI=https://voltaic.systems/auth/twitter/callback
-
-# OAuth2 Security
-OAUTH_ENCRYPTION_KEY=${OAUTH_ENCRYPTION_KEY}
-OAUTH_STATE_TTL=600
-
-# Social Media Rate Limiting
-LINKEDIN_DAILY_POST_LIMIT=25
-LINKEDIN_HOURLY_API_LIMIT=500
-TWITTER_15MIN_TWEET_LIMIT=300
-TWITTER_15MIN_API_LIMIT=75
-
-# Content Security
-CONTENT_VALIDATION_ENABLED=true
-SPAM_DETECTION_THRESHOLD=0.8
-MALICIOUS_URL_CHECK_ENABLED=true
-
-# Monitoring & Logging
-SOCIAL_MEDIA_AUDIT_LOGGING=true
-OAUTH_EVENT_LOGGING=true
-```
+Production configuration prioritizes security and performance:
+- **Debug mode disabled** for security
+- **Production database** with optimized settings
+- **Restricted CORS** to allowed domains only
+- **Production SMTP** for transactional emails
+- **Live social media** credentials with proper rate limiting
+- **Enhanced security** with encryption keys and secrets management
 
 ## Deployment Process
 
-### Development Deployment
-```bash
-# Clone repository
-git clone https://github.com/yourusername/magnetiq2.git
-cd magnetiq2
+### Deployment Workflow
+![Deployment Process Flow](../diagrams/assets/specs/deployment_process_flow.png)
 
-# Start development environment
-docker-compose -f docker-compose.dev.yml up -d
-
-# Initialize database
-docker-compose -f docker-compose.dev.yml exec backend python scripts/init_db.py
-
-# Create admin user
-docker-compose -f docker-compose.dev.yml exec backend python scripts/create_admin.py
-
-# Access application
-echo "Frontend: http://localhost:8036"
-echo "Backend API: http://localhost:3036/docs"
+```mermaid
+flowchart LR
+    A[Code Changes] --> B[Local Testing]
+    B --> C[Docker Build]
+    C --> D{Tests Pass?}
+    D -->|Yes| E[Backup Database]
+    D -->|No| F[Fix Issues]
+    F --> A
+    E --> G[Deploy Production]
+    G --> H[Health Checks]
+    H --> I{System Healthy?}
+    I -->|Yes| J[Deployment Success]
+    I -->|No| K[Rollback]
+    K --> L[Investigation]
+    L --> A
 ```
 
-### Production Deployment
-```bash
-# 1. Server preparation
-sudo apt update && sudo apt upgrade -y
-sudo apt install docker.io docker-compose nginx certbot python3-certbot-nginx
+### Development Deployment Process
+1. **Repository clone** with development branch
+2. **Docker Compose startup** using development configuration
+3. **Database initialization** with development schema
+4. **Admin user creation** for testing access
+5. **Service verification** through health check endpoints
 
-# 2. Clone and setup
-git clone https://github.com/yourusername/magnetiq2.git
-cd magnetiq2
-
-# 3. Build production images
-docker build -t magnetiq-frontend:latest -f frontend/Dockerfile.prod frontend/
-docker build -t magnetiq-backend:latest -f backend/Dockerfile.prod backend/
-
-# 4. Setup SSL certificate
-sudo certbot certonly --nginx -d voltaic.systems -d www.voltaic.systems
-
-# 5. Create data directories
-mkdir -p data media
-chmod 755 data media
-
-# 6. Configure environment
-cp .env.prod.example .env
-# Edit .env with production values
-
-# 7. Deploy application
-docker-compose -f docker-compose.prod.yml up -d
-
-# 8. Initialize production database
-docker-compose -f docker-compose.prod.yml exec backend python scripts/init_db.py
-
-# 9. Create admin user
-docker-compose -f docker-compose.prod.yml exec backend python scripts/create_admin.py \
-  --email admin@voltaic.systems \
-  --password secure-password-here
-```
+### Production Deployment Process
+1. **Server preparation** with required system packages
+2. **Application setup** with production configuration
+3. **Docker image building** for frontend and backend
+4. **SSL certificate acquisition** through Let's Encrypt
+5. **Environment configuration** with production secrets
+6. **Application deployment** with health monitoring
+7. **Database initialization** with production schema
+8. **Admin account creation** with secure credentials
 
 ## Database Management
 
-### SQLite Database Operations
-```bash
-# Backup database
-cp data/magnetiq_prod.db backups/magnetiq_backup_$(date +%Y%m%d_%H%M%S).db
+### Database Management & Backup Flow
+![Database Management Flow](../diagrams/assets/specs/database_management_flow.png)
 
-# Database maintenance (run weekly)
-docker-compose -f docker-compose.prod.yml exec backend python -c "
-import sqlite3
-conn = sqlite3.connect('./data/magnetiq_prod.db')
-conn.execute('VACUUM;')
-conn.execute('ANALYZE;')
-conn.close()
-"
+### SQLite Operations
+SQLite serves as the primary database with the following characteristics:
+- **WAL mode enabled** for better concurrent access
+- **VACUUM operations** run weekly for optimization
+- **Integrity checks** performed regularly
+- **Size monitoring** with automated alerts
+- **Backup automation** with retention policies
 
-# Check database size
-ls -lh data/magnetiq_prod.db
-
-# Database integrity check
-sqlite3 data/magnetiq_prod.db "PRAGMA integrity_check;"
-```
-
-### Migration Scripts
-```python
-# scripts/migrate_v2.py
-import sqlite3
-import shutil
-from datetime import datetime
-
-def backup_database(db_path):
-    """Create backup before migration"""
-    backup_path = f"{db_path}.backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-    shutil.copy2(db_path, backup_path)
-    print(f"Database backed up to: {backup_path}")
-    return backup_path
-
-def run_migration(db_path):
-    """Run database migration"""
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    
-    # Example migration
-    try:
-        cursor.execute("ALTER TABLE pages ADD COLUMN sort_order INTEGER DEFAULT 0;")
-        conn.commit()
-        print("Migration completed successfully")
-    except sqlite3.Error as e:
-        print(f"Migration failed: {e}")
-        conn.rollback()
-    finally:
-        conn.close()
-
-if __name__ == "__main__":
-    db_path = "./data/magnetiq_prod.db"
-    backup_database(db_path)
-    run_migration(db_path)
-```
-
-## Monitoring & Health Checks
-
-### Health Check Endpoints
-```bash
-# Application health
-curl https://voltaic.systems/api/v1/health
-
-# Detailed health check
-curl https://voltaic.systems/api/v1/health/detailed
-
-# Database size monitoring
-curl https://voltaic.systems/api/v1/admin/system-health
-```
-
-### Log Management
-```bash
-# View application logs
-docker-compose -f docker-compose.prod.yml logs -f backend
-
-# View nginx logs
-docker-compose -f docker-compose.prod.yml logs -f nginx
-
-# Rotate logs (add to crontab)
-docker-compose -f docker-compose.prod.yml logs --no-color backend > logs/backend_$(date +%Y%m%d).log
-```
-
-## Backup & Recovery
-
-### Automated Backup Script
-```bash
-#!/bin/bash
-# scripts/backup.sh
-
-BACKUP_DIR="/opt/backups"
-DATE=$(date +%Y%m%d_%H%M%S)
-
-# Create backup directory
-mkdir -p $BACKUP_DIR
-
-# Backup database
-cp ./data/magnetiq_prod.db $BACKUP_DIR/magnetiq_db_$DATE.db
-
-# Backup media files
-tar -czf $BACKUP_DIR/magnetiq_media_$DATE.tar.gz ./data/media/
-
-# Backup configuration
-tar -czf $BACKUP_DIR/magnetiq_config_$DATE.tar.gz .env docker-compose.prod.yml nginx/
-
-# Cleanup old backups (keep 7 days)
-find $BACKUP_DIR -name "magnetiq_*" -mtime +7 -delete
-
-echo "Backup completed: $DATE"
-```
-
-### Recovery Procedures
-```bash
-#!/bin/bash
-# scripts/restore.sh
-
-BACKUP_DATE=$1
-
-if [ -z "$BACKUP_DATE" ]; then
-    echo "Usage: $0 <backup_date>"
-    exit 1
-fi
-
-# Stop services
-docker-compose -f docker-compose.prod.yml down
-
-# Restore database
-cp /opt/backups/magnetiq_db_$BACKUP_DATE.db ./data/magnetiq_prod.db
-
-# Restore media files
-tar -xzf /opt/backups/magnetiq_media_$BACKUP_DATE.tar.gz
-
-# Start services
-docker-compose -f docker-compose.prod.yml up -d
-
-echo "Restore completed from backup: $BACKUP_DATE"
-```
+### Migration Management
+Database schema changes are handled through:
+- **Alembic migrations** for schema versioning
+- **Backup creation** before migration execution
+- **Rollback procedures** for migration failures
+- **Testing protocols** for migration validation
 
 ## SSL Certificate Management
 
-### Let's Encrypt Setup
-```bash
-# Initial certificate
-sudo certbot certonly --webroot -w /var/www/certbot -d voltaic.systems -d www.voltaic.systems
+### SSL Certificate Flow
+![SSL Certificate Flow](../diagrams/assets/specs/ssl_certificate_flow.png)
 
-# Auto-renewal (add to crontab)
-0 12 * * * /usr/bin/certbot renew --quiet --hook-pre-stop "docker-compose -f /opt/magnetiq2/docker-compose.prod.yml stop nginx" --hook-post-start "docker-compose -f /opt/magnetiq2/docker-compose.prod.yml start nginx"
+```mermaid
+flowchart LR
+    A[Certbot Client] --> B[ACME Challenge]
+    B --> C[Let's Encrypt CA]
+    C --> D[SSL Certificate]
+    D --> E[Nginx Configuration]
+    F[Cron Scheduler] --> G[Auto Renewal]
+    G --> A
+    G --> H[Nginx Reload]
 ```
+
+### Certificate Lifecycle
+- **Initial certificate acquisition** through domain validation
+- **Automated renewal** via cron jobs every 12 hours
+- **Certificate validation** before deployment
+- **Nginx reloading** without service interruption
+- **Monitoring alerts** for certificate expiry
+
+## Monitoring & Health Checks
+
+### Application Health Monitoring
+- **Health check endpoints** for service status verification
+- **Database connectivity** monitoring and alerting
+- **Disk space monitoring** with threshold alerts
+- **Log aggregation** and rotation management
+- **Performance metrics** collection and analysis
+
+### Operational Procedures
+- **Log management** with automated rotation
+- **System resource monitoring** for capacity planning
+- **Backup verification** and restoration testing
+- **Security updates** and patch management
+- **Performance optimization** based on metrics
+
+## Backup & Recovery
+
+### Backup Strategy
+- **Daily database backups** with timestamp naming
+- **Media file backups** compressed for storage efficiency
+- **Configuration backups** including environment files
+- **Retention policies** maintaining 7-day backup history
+- **Backup verification** through automated testing
+
+### Recovery Procedures
+- **Service shutdown** during restoration process
+- **Database restoration** from specified backup point
+- **Media file restoration** preserving directory structure
+- **Configuration restoration** with environment validation
+- **Service restart** with health verification
 
 ## Performance Optimization
 
-### Server-Level Optimizations
-```bash
-# System limits
-echo "fs.file-max = 2097152" >> /etc/sysctl.conf
-echo "net.core.somaxconn = 65535" >> /etc/sysctl.conf
-sysctl -p
-
-# Docker resource limits
-echo '{
-  "default-ulimits": {
-    "nofile": {
-      "Name": "nofile",
-      "Hard": 64000,
-      "Soft": 64000
-    }
-  }
-}' > /etc/docker/daemon.json
-
-systemctl restart docker
-```
+### System-Level Optimizations
+- **File descriptor limits** increased for high concurrency
+- **Network connection limits** optimized for load
+- **Docker resource limits** configured for stability
+- **Kernel parameters** tuned for web workloads
 
 ### Application-Level Optimizations
-- **SQLite WAL Mode**: Enabled by default for better concurrent reads
-- **Nginx Caching**: Static assets cached for 1 year
-- **Gzip Compression**: Enabled for text-based content
-- **Health Checks**: Regular monitoring of application and database
+- **SQLite WAL mode** for improved concurrent read performance
+- **Nginx caching** with appropriate cache headers
+- **Gzip compression** for text-based content delivery
+- **Static asset optimization** with long-term caching
+- **Database query optimization** with proper indexing
 
 ## Troubleshooting
 
-### Common Issues
+### Common Issues & Resolutions
+- **Database lock errors**: Resolved through connection pool optimization
+- **High memory usage**: Addressed via SQLite cache tuning
+- **SSL certificate problems**: Fixed through automated renewal verification
+- **Container restart loops**: Diagnosed via health check analysis
+- **Network connectivity issues**: Resolved through Docker network inspection
 
-#### Database Locked Error
-```bash
-# Check for long-running transactions
-sqlite3 data/magnetiq_prod.db ".timeout 30000"
+## Migration to v3 Architecture
 
-# Force unlock (use carefully)
-docker-compose -f docker-compose.prod.yml restart backend
-```
+### Future Architecture Considerations
+When upgrading to Magnetiq v3 with Enterprise Service Bus capabilities:
+- **Database transition**: SQLite to PostgreSQL with Redis caching
+- **Message queuing**: Integration of Celery with Redis broker
+- **Service architecture**: Monolithic to microservices approach
+- **Integration patterns**: HTTP clients to ESB-based communication
+- **Deployment complexity**: Single container to multi-service orchestration
 
-#### High Memory Usage
-```bash
-# Check container memory usage
-docker stats
-
-# Optimize SQLite cache size
-# Add to environment: SQLITE_CACHE_SIZE=10000
-```
-
-#### SSL Certificate Issues
-```bash
-# Check certificate status
-sudo certbot certificates
-
-# Force renewal
-sudo certbot renew --force-renewal
-```
-
-## Migration to v3
-
-When ready to upgrade to Magnetiq v3 with lightweight ESB capabilities:
-
-### Data Export
-```bash
-# Export v2 data for v3
-docker-compose -f docker-compose.prod.yml exec backend python scripts/export_for_v3.py
-
-# This creates:
-# - users_export.json
-# - pages_export.json  
-# - webinars_export.json
-# - media_files_export.json
-```
-
-### Architecture Changes
-- **Database**: SQLite → PostgreSQL + Redis
-- **Message Queue**: None → Celery with Redis
-- **Integration**: HTTP clients → ESB patterns
-- **Deployment**: Single container → Multi-service architecture
-
-See [Magnetiq v3 Integration Specification](../spec_v3/integration.md) for detailed upgrade procedures.
-
-## Conclusion
-
-Magnetiq v2 deployment emphasizes simplicity and reliability through SQLite-based architecture. This approach enables rapid deployment with minimal infrastructure while providing solid performance for small to medium-scale applications. The architecture provides a clear upgrade path to v3 when advanced integration capabilities are needed.
+### Data Migration Strategy
+- **Export procedures** for v2 data extraction
+- **Schema mapping** between v2 and v3 data models
+- **Incremental migration** for zero-downtime transitions
+- **Validation procedures** for data integrity verification
 
 ## Support & Maintenance
 
-### Regular Maintenance Tasks
-- **Weekly**: Database VACUUM and ANALYZE
-- **Daily**: Backup database and media files  
-- **Monthly**: Log rotation and cleanup
-- **Quarterly**: Security updates and dependency upgrades
+### Regular Maintenance Schedule
+- **Weekly tasks**: Database optimization and log review
+- **Daily tasks**: Backup verification and system monitoring
+- **Monthly tasks**: Security updates and dependency upgrades
+- **Quarterly tasks**: Performance review and capacity planning
 
 ### Monitoring Checklist
-- [ ] Application health check responding
-- [ ] Database file size within limits
-- [ ] Disk space availability
-- [ ] SSL certificate expiry
-- [ ] Backup completion status
-- [ ] Log file rotation
+- Application health endpoints responding correctly
+- Database file size within acceptable limits
+- System disk space availability above thresholds
+- SSL certificate validity with adequate renewal lead time
+- Backup completion status and restoration capability
+- Log file rotation functioning properly
+- Security patches applied and system updated
+
+This deployment specification provides a comprehensive foundation for reliable Magnetiq v2 operations while maintaining simplicity and enabling future architectural evolution.
