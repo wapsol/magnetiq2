@@ -10,8 +10,8 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
 - **Language**: Python 3.11+
 - **Framework**: FastAPI 0.104+ with async/await support (Port 3036)
 - **ORM**: SQLAlchemy 2.0 with Alembic migrations
-- **Database**: SQLite (all environments - development, testing, production)
-- **API Documentation**: OpenAPI 3.0 with auto-generated Swagger UI
+- **Database**: SQLite (all environments - development, testing, production) (see [Database Schema](./database_schema.md))
+- **API Documentation**: OpenAPI 3.0 with auto-generated Swagger UI (see [Backend API Specification](./backend_api.md))
 - **Validation**: Pydantic v2 for request/response validation
 - **Authentication**: JWT with HS256 algorithm and refresh tokens
 
@@ -20,10 +20,10 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
 - **State Management**: Redux Toolkit with RTK Query for API state
 - **UI Framework**: Tailwind CSS 3.0+ with Headless UI components
 - **Build Tool**: Vite 5.0+ for fast development and builds
-- **Testing**: Vitest + React Testing Library + Playwright (E2E)
+- **Testing**: Vitest + React Testing Library + Playwright (E2E) (see [Testing Strategy](./testing_strategy.md))
 - **Form Handling**: React Hook Form with Zod validation
 - **Routing**: React Router v6 with nested routing
-- **Internationalization**: React i18next for multilingual support
+- **Internationalization**: React i18next for multilingual support (see [Multilingual Support](./multilingual.md))
 - **Port Configuration**: Single port (8036) with routing for public/admin
 
 ### Infrastructure
@@ -31,7 +31,7 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
 - **Web Server**: Nginx with HTTP/2, compression, and caching
 - **Process Manager**: Gunicorn with Uvicorn async workers
 - **File Storage**: Local filesystem with backup capabilities
-- **Security**: Let's Encrypt SSL, security headers, rate limiting
+- **Security**: Let's Encrypt SSL, security headers, rate limiting (see [Security Specification](./security.md))
 
 ## System Architecture
 
@@ -70,6 +70,7 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
 ## Service Architecture
 
 ### 1. Authentication & Authorization Service
+See [Security Specification](./security.md) for detailed implementation.
 - **JWT Authentication**: HS256 tokens with 15-minute access and 7-day refresh tokens
 - **Role-Based Access Control**: Simple hierarchical permissions (Admin > Editor > Viewer)
 - **Session Management**: Database-backed session store
@@ -77,20 +78,22 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
 - **API Security**: Rate limiting, CORS, input validation, SQL injection prevention
 
 ### 2. Content Management Service
+See [Frontend Public Specification](./frontend_public.md) and [Admin Panel Specification](./frontend_admin.md) for UI details.
 - **Page Builder**: Simple component-based page construction
 - **Multilingual Support**: JSONB-based content storage for EN/DE localization
 - **Media Library**: File management with basic optimization
 - **Version Control**: Simple content versioning with rollback capabilities
-- **SEO Optimization**: Meta tags, basic structured data, sitemap generation
+- **SEO Optimization**: Meta tags, basic structured data, sitemap generation (see [Sitemap Specification](./sitemap.md))
 - **Publishing Workflow**: Draft/published states with simple approval
 
 ### 3. Business Operations Service
-- **Webinar Management**: Topic creation, session scheduling, registration handling
-- **Whitepapers**: Whitepaper distribution with basic lead capture
-- **Booking System**: Simple consultation scheduling
+- **Webinar Management**: Topic creation, session scheduling, registration handling (see [Webinars Feature](./features_webinars.md))
+- **Whitepapers**: Whitepaper distribution with basic lead capture (see [Whitepapers Feature](./features_whitepapers.md))
+- **Booking System**: Simple consultation scheduling (see [Booking Feature](./features_booking.md))
 - **Basic Analytics**: Simple metrics on engagement and conversions
 
 ### 4. Communication Services
+See [Communication Services Specification](./features_communication.md) for detailed implementation.
 - **Email Marketing**: Transactional and marketing email campaigns via SMTP
 - **LinkedIn Integration**: Professional content publishing, company page management, engagement analytics
 - **Twitter/X Integration**: Tweet publishing, thread management, multimedia content support
@@ -99,6 +102,8 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
 - **Content Automation**: Scheduled publishing, content templates, AI-powered generation
 
 ## API Design Principles
+
+For complete API documentation, see [Backend API Specification](./backend_api.md).
 
 ### RESTful Standards
 - **Resource-based URLs**: `/api/v1/resources/{id}` with integer identifiers
@@ -143,6 +148,8 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
 
 ## Database Architecture
 
+For complete database schema and table definitions, see [Database Schema Specification](./database_schema.md).
+
 ### SQLite Design
 - **Single File Database**: Simplified deployment and backup
 - **Write-Ahead Logging**: Improved concurrent read performance
@@ -150,7 +157,7 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
 - **Audit Trail**: Soft deletes with basic audit logging
 - **Temporal Data**: created_at, updated_at timestamps
 - **Full-text Search**: SQLite FTS5 for content search
-- **Multilingual**: JSON fields for language-specific content
+- **Multilingual**: JSON fields for language-specific content (see [Multilingual Support](./multilingual.md))
 
 ### Performance Optimization
 - **Connection Management**: Connection pooling with SQLAlchemy
@@ -164,6 +171,8 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
 - **Database Maintenance**: Scheduled VACUUM and ANALYZE operations
 
 ## Security Architecture
+
+For comprehensive security implementation details, see [Security Specification](./security.md).
 
 ### Authentication & Authorization
 - **JWT Implementation**: HS256 algorithm with shared secret
@@ -231,6 +240,21 @@ magnetiq2/
 │   └── tests/               # Frontend tests
 └── docs/
     └── spec_v2/             # System specifications
+        ├── architecture.md      # System architecture (this document)
+        ├── backend_api.md       # API endpoints and documentation
+        ├── database_schema.md   # Database tables and relationships
+        ├── deployment.md        # Deployment procedures
+        ├── features_booking.md  # Booking system specification
+        ├── features_communication.md # Communication services
+        ├── features_webinars.md # Webinar management
+        ├── features_whitepapers.md # Whitepaper distribution
+        ├── frontend_admin.md    # Admin panel specification
+        ├── frontend_public.md   # Public frontend specification
+        ├── integrations.md      # External integrations
+        ├── multilingual.md      # Multilingual support
+        ├── security.md          # Security implementation
+        ├── sitemap.md          # Site structure and navigation
+        └── testing_strategy.md  # Testing approach and standards
 ```
 
 ### Naming Conventions
@@ -241,6 +265,8 @@ magnetiq2/
 - Environment variables: UPPER_SNAKE_CASE
 
 ## External Integrations
+
+For detailed integration patterns and implementation, see [Integrations Specification](./integrations.md).
 
 ### Simple HTTP Client Integrations
 - **Email Service**: SMTP client for transactional emails
@@ -255,6 +281,8 @@ magnetiq2/
 - **Configuration**: Environment-based service configuration
 
 ## Deployment Architecture
+
+For detailed deployment procedures and configurations, see [Deployment Specification](./deployment.md).
 
 ### Environment Strategy
 - **Development**: Local SQLite with Docker Compose

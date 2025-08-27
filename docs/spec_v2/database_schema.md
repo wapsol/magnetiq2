@@ -18,8 +18,10 @@ The Magnetiq v2 database schema is designed for simplicity, maintainability, and
 - **Soft deletes** with `deleted_at` timestamps
 - **Basic audit trails** for critical operations
 - **Simple indexing** strategy for common query patterns
-- **Full-text search** using SQLite FTS5
-- **Multilingual content** using JSON columns
+- **Full-text search** using SQLite FTS5 with language-specific indexes
+- **Multilingual content** using JSON columns with validation
+- **Translation management** for UI strings and content workflows
+- **Language-specific views** for optimized queries
 
 ### SQLite Configuration
 ```sql
@@ -108,14 +110,15 @@ Website pages with multilingual content support.
 
 ```sql
 CREATE TABLE pages (
+    -- IMPORTANT: All multilingual JSON fields must include English ('en') as mandatory
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     slug TEXT UNIQUE NOT NULL,
     
-    -- Multilingual content stored as JSON
-    title TEXT NOT NULL, -- JSON: {"en": "Title", "de": "Titel"}
-    content TEXT NOT NULL, -- JSON: {"en": "Content", "de": "Inhalt"}
-    excerpt TEXT, -- JSON: {"en": "Excerpt", "de": "Auszug"}
-    meta_description TEXT, -- JSON for SEO descriptions
+    -- Multilingual content stored as JSON (English required)
+    title TEXT NOT NULL CHECK (json_extract(title, '$.en') IS NOT NULL), -- JSON: {"en": "Title", "de": "Titel"}
+    content TEXT NOT NULL CHECK (json_extract(content, '$.en') IS NOT NULL), -- JSON: {"en": "Content", "de": "Inhalt"}
+    excerpt TEXT CHECK (excerpt IS NULL OR json_extract(excerpt, '$.en') IS NOT NULL), -- JSON: {"en": "Excerpt", "de": "Auszug"}
+    meta_description TEXT CHECK (meta_description IS NULL OR json_extract(meta_description, '$.en') IS NOT NULL), -- JSON for SEO descriptions
     
     -- Page Configuration
     template TEXT DEFAULT 'default',
@@ -124,8 +127,8 @@ CREATE TABLE pages (
     sort_order INTEGER DEFAULT 0,
     
     -- SEO & Marketing
-    seo_title TEXT, -- JSON for SEO titles
-    seo_keywords TEXT, -- JSON for SEO keywords
+    seo_title TEXT CHECK (seo_title IS NULL OR json_extract(seo_title, '$.en') IS NOT NULL), -- JSON for SEO titles
+    seo_keywords TEXT CHECK (seo_keywords IS NULL OR json_extract(seo_keywords, '$.en') IS NOT NULL), -- JSON for SEO keywords
     canonical_url TEXT,
     
     -- Publishing
@@ -147,21 +150,68 @@ CREATE INDEX idx_pages_published ON pages(published_at);
 CREATE INDEX idx_pages_author ON pages(author_id);
 CREATE INDEX idx_pages_featured ON pages(is_featured);
 
--- Full-text search for pages
-CREATE VIRTUAL TABLE pages_fts USING fts5(title, content, excerpt, content='pages', content_rowid='id');
+-- Language-specific full-text search for pages
+-- English FTS
+CREATE VIRTUAL TABLE pages_fts_en USING fts5(
+    title, content, excerpt,
+    tokenize='porter'
+);
 
--- Triggers to keep FTS table synchronized
-CREATE TRIGGER pages_ai AFTER INSERT ON pages BEGIN
-  INSERT INTO pages_fts(rowid, title, content, excerpt) VALUES (new.id, new.title, new.content, new.excerpt);
+-- German FTS
+CREATE VIRTUAL TABLE pages_fts_de USING fts5(
+    title, content, excerpt,
+    tokenize='porter'
+);
+
+-- Indexes for multilingual JSON queries
+CREATE INDEX idx_pages_title_en ON pages(json_extract(title, '$.en'));
+CREATE INDEX idx_pages_title_de ON pages(json_extract(title, '$.de'));
+
+-- Triggers to keep language-specific FTS tables synchronized
+CREATE TRIGGER pages_fts_en_ai AFTER INSERT ON pages BEGIN
+  INSERT INTO pages_fts_en(rowid, title, content, excerpt) 
+  VALUES (
+    new.id, 
+    json_extract(new.title, '$.en'), 
+    json_extract(new.content, '$.en'), 
+    json_extract(new.excerpt, '$.en')
+  );
 END;
 
-CREATE TRIGGER pages_ad AFTER DELETE ON pages BEGIN
-  INSERT INTO pages_fts(pages_fts, rowid, title, content, excerpt) VALUES('delete', old.id, old.title, old.content, old.excerpt);
+CREATE TRIGGER pages_fts_de_ai AFTER INSERT ON pages 
+WHEN json_extract(new.title, '$.de') IS NOT NULL BEGIN
+  INSERT INTO pages_fts_de(rowid, title, content, excerpt) 
+  VALUES (
+    new.id, 
+    json_extract(new.title, '$.de'), 
+    json_extract(new.content, '$.de'), 
+    json_extract(new.excerpt, '$.de')
+  );
 END;
 
-CREATE TRIGGER pages_au AFTER UPDATE ON pages BEGIN
-  INSERT INTO pages_fts(pages_fts, rowid, title, content, excerpt) VALUES('delete', old.id, old.title, old.content, old.excerpt);
-  INSERT INTO pages_fts(rowid, title, content, excerpt) VALUES (new.id, new.title, new.content, new.excerpt);
+CREATE TRIGGER pages_fts_en_ad AFTER DELETE ON pages BEGIN
+  DELETE FROM pages_fts_en WHERE rowid = old.id;
+END;
+
+CREATE TRIGGER pages_fts_de_ad AFTER DELETE ON pages BEGIN
+  DELETE FROM pages_fts_de WHERE rowid = old.id;
+END;
+
+CREATE TRIGGER pages_fts_en_au AFTER UPDATE ON pages BEGIN
+  UPDATE pages_fts_en SET 
+    title = json_extract(new.title, '$.en'),
+    content = json_extract(new.content, '$.en'),
+    excerpt = json_extract(new.excerpt, '$.en')
+  WHERE rowid = new.id;
+END;
+
+CREATE TRIGGER pages_fts_de_au AFTER UPDATE ON pages 
+WHEN json_extract(new.title, '$.de') IS NOT NULL BEGIN
+  UPDATE pages_fts_de SET 
+    title = json_extract(new.title, '$.de'),
+    content = json_extract(new.content, '$.de'),
+    excerpt = json_extract(new.excerpt, '$.de')
+  WHERE rowid = new.id;
 END;
 ```
 
@@ -219,9 +269,9 @@ Webinar management and scheduling.
 CREATE TABLE webinars (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     
-    -- Basic Information
-    title TEXT NOT NULL, -- JSON for multilingual titles
-    description TEXT, -- JSON for multilingual descriptions
+    -- Basic Information (with validation)
+    title TEXT NOT NULL CHECK (json_extract(title, '$.en') IS NOT NULL), -- JSON for multilingual titles
+    description TEXT CHECK (description IS NULL OR json_extract(description, '$.en') IS NOT NULL), -- JSON for multilingual descriptions
     slug TEXT UNIQUE NOT NULL,
     
     -- Scheduling
@@ -242,7 +292,7 @@ CREATE TABLE webinars (
     
     -- Presenter Information
     presenter_name TEXT,
-    presenter_bio TEXT, -- JSON for multilingual bio
+    presenter_bio TEXT CHECK (presenter_bio IS NULL OR json_extract(presenter_bio, '$.en') IS NOT NULL), -- JSON for multilingual bio
     presenter_avatar_id INTEGER,
     
     -- Timestamps
@@ -310,15 +360,15 @@ Whitepaper and document management.
 CREATE TABLE whitepapers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     
-    -- Basic Information
-    title TEXT NOT NULL, -- JSON for multilingual titles
-    description TEXT, -- JSON for multilingual descriptions
+    -- Basic Information (with validation)
+    title TEXT NOT NULL CHECK (json_extract(title, '$.en') IS NOT NULL), -- JSON for multilingual titles
+    description TEXT CHECK (description IS NULL OR json_extract(description, '$.en') IS NOT NULL), -- JSON for multilingual descriptions
     slug TEXT UNIQUE NOT NULL,
     
     -- Content
     file_id INTEGER NOT NULL,
     thumbnail_id INTEGER,
-    preview_content TEXT, -- JSON for multilingual preview text
+    preview_content TEXT CHECK (preview_content IS NULL OR json_extract(preview_content, '$.en') IS NOT NULL), -- JSON for multilingual preview text
     
     -- Categorization
     category TEXT, -- e.g., 'case-study', 'guide', 'report'
@@ -330,8 +380,8 @@ CREATE TABLE whitepapers (
     lead_magnet_active BOOLEAN DEFAULT 1,
     
     -- SEO & Marketing
-    meta_title TEXT, -- JSON for multilingual meta titles
-    meta_description TEXT, -- JSON for multilingual meta descriptions
+    meta_title TEXT CHECK (meta_title IS NULL OR json_extract(meta_title, '$.en') IS NOT NULL), -- JSON for multilingual meta titles
+    meta_description TEXT CHECK (meta_description IS NULL OR json_extract(meta_description, '$.en') IS NOT NULL), -- JSON for multilingual meta descriptions
     
     -- Status
     status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
@@ -420,9 +470,9 @@ CREATE TABLE bookings (
     duration_minutes INTEGER DEFAULT 30,
     timezone TEXT DEFAULT 'UTC',
     
-    -- Requirements
-    subject TEXT,
-    message TEXT,
+    -- Requirements (Multilingual support)
+    subject TEXT, -- JSON: {"en": "Subject", "de": "Betreff"}
+    message TEXT, -- JSON: {"en": "Message", "de": "Nachricht"}
     budget_range TEXT,
     urgency TEXT, -- low, medium, high, urgent
     
@@ -508,6 +558,82 @@ CREATE INDEX idx_analytics_events_type ON analytics_events(event_type);
 CREATE INDEX idx_analytics_events_category ON analytics_events(event_category);
 CREATE INDEX idx_analytics_events_created ON analytics_events(created_at);
 CREATE INDEX idx_analytics_events_session ON analytics_events(session_id);
+```
+
+### Translation Management
+
+#### `translations`
+Manage UI translations and content translation workflows.
+
+```sql
+CREATE TABLE translations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    namespace TEXT NOT NULL, -- e.g., 'ui', 'content', 'email'
+    key TEXT NOT NULL, -- translation key identifier
+    source_language TEXT DEFAULT 'en' CHECK (source_language IN ('en', 'de')),
+    target_language TEXT NOT NULL CHECK (target_language IN ('en', 'de')),
+    source_text TEXT NOT NULL,
+    translated_text TEXT,
+    context TEXT, -- contextual information for translators
+    
+    -- Translation Status
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'translated', 'reviewed', 'approved', 'rejected')),
+    translation_method TEXT DEFAULT 'manual' CHECK (translation_method IN ('manual', 'ai', 'imported')),
+    confidence_score REAL DEFAULT 0.0 CHECK (confidence_score >= 0.0 AND confidence_score <= 1.0),
+    
+    -- Workflow
+    translator_id INTEGER,
+    reviewer_id INTEGER,
+    translated_at DATETIME,
+    reviewed_at DATETIME,
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (translator_id) REFERENCES admin_users(id),
+    FOREIGN KEY (reviewer_id) REFERENCES admin_users(id),
+    UNIQUE(namespace, key, source_language, target_language)
+);
+
+-- Indexes for translations
+CREATE INDEX idx_translations_namespace_key ON translations(namespace, key);
+CREATE INDEX idx_translations_language ON translations(target_language);
+CREATE INDEX idx_translations_status ON translations(status);
+CREATE INDEX idx_translations_method ON translations(translation_method);
+```
+
+#### `translation_memory`
+Store and reuse previous translations for consistency.
+
+```sql
+CREATE TABLE translation_memory (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    source_text_hash TEXT NOT NULL, -- SHA-256 hash of source text
+    source_language TEXT NOT NULL CHECK (source_language IN ('en', 'de')),
+    target_language TEXT NOT NULL CHECK (target_language IN ('en', 'de')),
+    source_text TEXT NOT NULL,
+    translated_text TEXT NOT NULL,
+    
+    -- Quality Metrics
+    usage_count INTEGER DEFAULT 1,
+    quality_score REAL DEFAULT 0.8 CHECK (quality_score >= 0.0 AND quality_score <= 1.0),
+    
+    -- Context
+    domain TEXT, -- e.g., 'technical', 'marketing', 'legal'
+    project_context TEXT, -- specific project or feature context
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_used_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    UNIQUE(source_text_hash, source_language, target_language)
+);
+
+-- Indexes for translation_memory
+CREATE INDEX idx_translation_memory_hash ON translation_memory(source_text_hash);
+CREATE INDEX idx_translation_memory_languages ON translation_memory(source_language, target_language);
+CREATE INDEX idx_translation_memory_quality ON translation_memory(quality_score);
 ```
 
 ### System Configuration
@@ -601,9 +727,9 @@ CREATE TABLE social_content (
     social_account_id INTEGER NOT NULL,
     platform TEXT NOT NULL, -- linkedin, twitter (redundant but useful for queries)
     
-    -- Content Data
-    title TEXT,
-    content TEXT NOT NULL,
+    -- Content Data (Multilingual)
+    title TEXT CHECK (title IS NULL OR json_extract(title, '$.en') IS NOT NULL), -- JSON: {"en": "Title", "de": "Titel"}
+    content TEXT NOT NULL CHECK (json_extract(content, '$.en') IS NOT NULL), -- JSON: {"en": "Content", "de": "Inhalt"}
     content_type TEXT NOT NULL DEFAULT 'post' CHECK (content_type IN ('post', 'thread', 'story', 'article')),
     
     -- Platform-Specific Configuration
@@ -697,14 +823,14 @@ Email marketing campaign management.
 CREATE TABLE email_campaigns (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     
-    -- Campaign Information
+    -- Campaign Information (Multilingual)
     name TEXT NOT NULL,
-    subject TEXT NOT NULL,
-    preheader TEXT,
+    subject TEXT NOT NULL CHECK (json_extract(subject, '$.en') IS NOT NULL), -- JSON: {"en": "Subject", "de": "Betreff"}
+    preheader TEXT CHECK (preheader IS NULL OR json_extract(preheader, '$.en') IS NOT NULL), -- JSON: {"en": "Preview", "de": "Vorschau"}
     
-    -- Content
-    html_content TEXT,
-    text_content TEXT,
+    -- Content (Multilingual)
+    html_content TEXT CHECK (html_content IS NULL OR json_extract(html_content, '$.en') IS NOT NULL), -- JSON: multilingual HTML content
+    text_content TEXT CHECK (text_content IS NULL OR json_extract(text_content, '$.en') IS NOT NULL), -- JSON: multilingual plain text
     template_id INTEGER,
     
     -- Recipients
@@ -751,15 +877,15 @@ Reusable email templates for campaigns.
 CREATE TABLE email_templates (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     
-    -- Template Information
+    -- Template Information (Multilingual)
     name TEXT NOT NULL,
-    description TEXT,
+    description TEXT CHECK (description IS NULL OR json_extract(description, '$.en') IS NOT NULL), -- JSON: multilingual description
     category TEXT, -- newsletter, promotional, transactional, welcome
     
-    -- Content
-    subject_template TEXT,
-    html_template TEXT NOT NULL,
-    text_template TEXT,
+    -- Content (Multilingual templates)
+    subject_template TEXT CHECK (subject_template IS NULL OR json_extract(subject_template, '$.en') IS NOT NULL), -- JSON: multilingual subject
+    html_template TEXT NOT NULL CHECK (json_extract(html_template, '$.en') IS NOT NULL), -- JSON: multilingual HTML template
+    text_template TEXT CHECK (text_template IS NULL OR json_extract(text_template, '$.en') IS NOT NULL), -- JSON: multilingual plain text template
     
     -- Template Variables
     variables TEXT, -- JSON array of available template variables
@@ -800,6 +926,134 @@ media_files (1) → (N) webinars (presentation/avatar)
 
 webinars (1) → (N) webinar_registrations
 whitepapers (1) → (N) whitepaper_downloads
+
+admin_users (1) → (N) translations (translator/reviewer)
+translations (N) → translation_memory (via text matching)
+```
+
+## Language-Specific Views
+
+### Content Views for Each Language
+```sql
+-- English content view for pages
+CREATE VIEW pages_en AS
+SELECT 
+    id,
+    slug,
+    json_extract(title, '$.en') as title,
+    json_extract(content, '$.en') as content,
+    json_extract(excerpt, '$.en') as excerpt,
+    json_extract(meta_description, '$.en') as meta_description,
+    json_extract(seo_title, '$.en') as seo_title,
+    json_extract(seo_keywords, '$.en') as seo_keywords,
+    template,
+    status,
+    is_featured,
+    sort_order,
+    canonical_url,
+    published_at,
+    author_id,
+    created_at,
+    updated_at
+FROM pages
+WHERE deleted_at IS NULL;
+
+-- German content view for pages
+CREATE VIEW pages_de AS
+SELECT 
+    id,
+    slug,
+    COALESCE(json_extract(title, '$.de'), json_extract(title, '$.en')) as title,
+    COALESCE(json_extract(content, '$.de'), json_extract(content, '$.en')) as content,
+    COALESCE(json_extract(excerpt, '$.de'), json_extract(excerpt, '$.en')) as excerpt,
+    COALESCE(json_extract(meta_description, '$.de'), json_extract(meta_description, '$.en')) as meta_description,
+    COALESCE(json_extract(seo_title, '$.de'), json_extract(seo_title, '$.en')) as seo_title,
+    COALESCE(json_extract(seo_keywords, '$.de'), json_extract(seo_keywords, '$.en')) as seo_keywords,
+    template,
+    status,
+    is_featured,
+    sort_order,
+    canonical_url,
+    published_at,
+    author_id,
+    created_at,
+    updated_at
+FROM pages
+WHERE deleted_at IS NULL;
+
+-- Similar views for webinars
+CREATE VIEW webinars_en AS
+SELECT 
+    id,
+    slug,
+    json_extract(title, '$.en') as title,
+    json_extract(description, '$.en') as description,
+    json_extract(presenter_bio, '$.en') as presenter_bio,
+    scheduled_at,
+    duration_minutes,
+    timezone,
+    max_participants,
+    meeting_url,
+    recording_url,
+    status,
+    presenter_name
+FROM webinars
+WHERE deleted_at IS NULL;
+
+CREATE VIEW webinars_de AS
+SELECT 
+    id,
+    slug,
+    COALESCE(json_extract(title, '$.de'), json_extract(title, '$.en')) as title,
+    COALESCE(json_extract(description, '$.de'), json_extract(description, '$.en')) as description,
+    COALESCE(json_extract(presenter_bio, '$.de'), json_extract(presenter_bio, '$.en')) as presenter_bio,
+    scheduled_at,
+    duration_minutes,
+    timezone,
+    max_participants,
+    meeting_url,
+    recording_url,
+    status,
+    presenter_name
+FROM webinars
+WHERE deleted_at IS NULL;
+
+-- Similar views for whitepapers
+CREATE VIEW whitepapers_en AS
+SELECT 
+    id,
+    slug,
+    json_extract(title, '$.en') as title,
+    json_extract(description, '$.en') as description,
+    json_extract(preview_content, '$.en') as preview_content,
+    json_extract(meta_title, '$.en') as meta_title,
+    json_extract(meta_description, '$.en') as meta_description,
+    file_id,
+    category,
+    status,
+    featured,
+    download_count,
+    view_count
+FROM whitepapers
+WHERE deleted_at IS NULL;
+
+CREATE VIEW whitepapers_de AS
+SELECT 
+    id,
+    slug,
+    COALESCE(json_extract(title, '$.de'), json_extract(title, '$.en')) as title,
+    COALESCE(json_extract(description, '$.de'), json_extract(description, '$.en')) as description,
+    COALESCE(json_extract(preview_content, '$.de'), json_extract(preview_content, '$.en')) as preview_content,
+    COALESCE(json_extract(meta_title, '$.de'), json_extract(meta_title, '$.en')) as meta_title,
+    COALESCE(json_extract(meta_description, '$.de'), json_extract(meta_description, '$.en')) as meta_description,
+    file_id,
+    category,
+    status,
+    featured,
+    download_count,
+    view_count
+FROM whitepapers
+WHERE deleted_at IS NULL;
 ```
 
 ## Performance Optimization
@@ -809,7 +1063,9 @@ whitepapers (1) → (N) whitepaper_downloads
 - **Foreign Keys**: Indexed for join performance
 - **Search Fields**: Email, slug, status fields indexed
 - **Temporal Data**: Created/updated timestamps indexed for sorting
-- **Full-Text Search**: FTS5 virtual tables for content search
+- **Full-Text Search**: Language-specific FTS5 virtual tables for content search
+- **JSON Fields**: Indexed extraction of frequently accessed language keys
+- **Translation Keys**: Composite indexes on namespace and key for fast lookups
 
 ### Query Optimization
 ```sql
@@ -822,16 +1078,38 @@ WHERE status = 'published' AND deleted_at IS NULL
 ORDER BY published_at DESC 
 LIMIT 20 OFFSET 0;
 
--- Search pages content
-SELECT pages.id, pages.title, pages.slug
-FROM pages
-JOIN pages_fts ON pages.id = pages_fts.rowid
-WHERE pages_fts MATCH 'search term'
-AND pages.status = 'published'
+-- Search pages content in English
+SELECT p.id, json_extract(p.title, '$.en') as title, p.slug
+FROM pages p
+JOIN pages_fts_en fts ON p.id = fts.rowid
+WHERE fts.title MATCH 'search term' OR fts.content MATCH 'search term'
+AND p.status = 'published'
 ORDER BY rank;
 
--- Get webinar registrations with contact info
-SELECT w.title, wr.first_name, wr.last_name, wr.email, wr.registered_at
+-- Search pages content in German with fallback
+SELECT p.id, 
+       COALESCE(json_extract(p.title, '$.de'), json_extract(p.title, '$.en')) as title, 
+       p.slug
+FROM pages p
+LEFT JOIN pages_fts_de fts_de ON p.id = fts_de.rowid
+LEFT JOIN pages_fts_en fts_en ON p.id = fts_en.rowid
+WHERE (fts_de.title MATCH 'suchbegriff' OR fts_de.content MATCH 'suchbegriff'
+       OR fts_en.title MATCH 'suchbegriff' OR fts_en.content MATCH 'suchbegriff')
+AND p.status = 'published'
+ORDER BY rank;
+
+-- Get translation for a specific key
+SELECT translated_text
+FROM translations
+WHERE namespace = 'ui' 
+AND key = 'welcome_message'
+AND target_language = 'de'
+AND status = 'approved';
+
+-- Get webinar registrations with multilingual title
+SELECT 
+    COALESCE(json_extract(w.title, '$.de'), json_extract(w.title, '$.en')) as title,
+    wr.first_name, wr.last_name, wr.email, wr.registered_at
 FROM webinar_registrations wr
 JOIN webinars w ON wr.webinar_id = w.id
 WHERE w.scheduled_at > datetime('now')
@@ -880,6 +1158,112 @@ sqlite3 magnetiq_restored.db < magnetiq_backup_20240101_120000.sql
 
 # Verify database integrity
 sqlite3 magnetiq.db "PRAGMA integrity_check;"
+```
+
+## Multilingual Validation Triggers
+
+### JSON Structure Validation
+```sql
+-- Trigger to validate multilingual JSON structure on insert/update
+CREATE TRIGGER validate_multilingual_json_pages
+BEFORE INSERT ON pages
+BEGIN
+  SELECT CASE
+    WHEN json_valid(NEW.title) = 0 THEN
+      RAISE(ABORT, 'Invalid JSON in title field')
+    WHEN json_valid(NEW.content) = 0 THEN
+      RAISE(ABORT, 'Invalid JSON in content field')
+    WHEN NEW.excerpt IS NOT NULL AND json_valid(NEW.excerpt) = 0 THEN
+      RAISE(ABORT, 'Invalid JSON in excerpt field')
+  END;
+END;
+
+-- Trigger to ensure English content is always present
+CREATE TRIGGER ensure_english_content_pages
+BEFORE INSERT ON pages
+BEGIN
+  SELECT CASE
+    WHEN json_extract(NEW.title, '$.en') IS NULL THEN
+      RAISE(ABORT, 'English title is required')
+    WHEN json_extract(NEW.content, '$.en') IS NULL THEN
+      RAISE(ABORT, 'English content is required')
+  END;
+END;
+
+-- Similar triggers for webinars
+CREATE TRIGGER validate_multilingual_json_webinars
+BEFORE INSERT ON webinars
+BEGIN
+  SELECT CASE
+    WHEN json_valid(NEW.title) = 0 THEN
+      RAISE(ABORT, 'Invalid JSON in webinar title')
+    WHEN NEW.description IS NOT NULL AND json_valid(NEW.description) = 0 THEN
+      RAISE(ABORT, 'Invalid JSON in webinar description')
+    WHEN json_extract(NEW.title, '$.en') IS NULL THEN
+      RAISE(ABORT, 'English webinar title is required')
+  END;
+END;
+
+-- Translation completeness tracking
+CREATE TRIGGER update_translation_status
+AFTER UPDATE OF translated_text ON translations
+WHEN NEW.translated_text IS NOT NULL AND OLD.translated_text IS NULL
+BEGIN
+  UPDATE translations
+  SET status = 'translated',
+      translated_at = CURRENT_TIMESTAMP
+  WHERE id = NEW.id;
+END;
+```
+
+### Multilingual Content Helpers
+```sql
+-- Function to check if content is fully translated
+-- SQLite doesn't support stored functions, but this can be used as a pattern
+-- for application-level implementation
+
+-- View to identify missing translations
+CREATE VIEW missing_translations AS
+SELECT 
+    'pages' as table_name,
+    id,
+    slug,
+    CASE 
+        WHEN json_extract(title, '$.de') IS NULL THEN 'title'
+        WHEN json_extract(content, '$.de') IS NULL THEN 'content'
+        WHEN json_extract(excerpt, '$.de') IS NOT NULL AND json_extract(excerpt, '$.de') IS NULL THEN 'excerpt'
+    END as missing_field
+FROM pages
+WHERE status = 'published'
+  AND (json_extract(title, '$.de') IS NULL 
+       OR json_extract(content, '$.de') IS NULL)
+
+UNION ALL
+
+SELECT 
+    'webinars' as table_name,
+    id,
+    slug,
+    CASE 
+        WHEN json_extract(title, '$.de') IS NULL THEN 'title'
+        WHEN json_extract(description, '$.de') IS NULL THEN 'description'
+    END as missing_field
+FROM webinars
+WHERE status IN ('scheduled', 'live')
+  AND (json_extract(title, '$.de') IS NULL 
+       OR json_extract(description, '$.de') IS NULL);
+
+-- View for translation coverage statistics
+CREATE VIEW translation_coverage AS
+SELECT 
+    'overall' as scope,
+    COUNT(*) as total_content,
+    SUM(CASE WHEN json_extract(title, '$.de') IS NOT NULL THEN 1 ELSE 0 END) as translated_titles,
+    SUM(CASE WHEN json_extract(content, '$.de') IS NOT NULL THEN 1 ELSE 0 END) as translated_content,
+    ROUND(100.0 * SUM(CASE WHEN json_extract(title, '$.de') IS NOT NULL 
+                       AND json_extract(content, '$.de') IS NOT NULL THEN 1 ELSE 0 END) / COUNT(*), 2) as coverage_percentage
+FROM pages
+WHERE status = 'published' AND deleted_at IS NULL;
 ```
 
 ## Migration Scripts
@@ -991,4 +1375,22 @@ def export_data_for_v3():
 
 ## Conclusion
 
-The Magnetiq v2 database schema provides a robust foundation using SQLite for all environments. The design balances simplicity with functionality, supporting all core CMS and business automation features while maintaining excellent performance characteristics and providing a clear migration path to PostgreSQL-based v3 when advanced integration capabilities are needed.
+The Magnetiq v2 database schema provides a robust foundation using SQLite for all environments with comprehensive multilingual support. Key features include:
+
+### Multilingual Capabilities
+- **JSON-based content storage** for English and German with mandatory English content
+- **Language-specific full-text search** indexes for optimized search performance
+- **Translation management system** for UI strings and content workflows
+- **Translation memory** for consistency and reuse
+- **Language-specific views** for simplified querying
+- **Validation constraints** ensuring data integrity
+- **Coverage tracking** for monitoring translation completeness
+
+### Core Features
+- **Simple yet powerful schema** supporting all CMS and business automation features
+- **Performance optimization** through strategic indexing and views
+- **Data integrity** with foreign key constraints and validation triggers
+- **Audit trails** and soft deletes for data recovery
+- **Clear migration path** to PostgreSQL-based v3 for advanced integration needs
+
+The schema successfully balances simplicity with functionality while providing enterprise-grade multilingual capabilities suitable for international deployment.
