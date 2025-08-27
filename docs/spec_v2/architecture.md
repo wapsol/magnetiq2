@@ -284,6 +284,9 @@ For enterprises requiring advanced integration capabilities, Magnetiq v3 will pr
 
 See [Magnetiq v3 Integration Specification](../spec_v3/integration.md) for advanced integration patterns.
 
+v2 is forward compatible with v3. 
+v3's main feature will be to introduce ESB.
+
 ### Upgrade Considerations
 - **Database Migration**: SQLite → PostgreSQL migration tools
 - **Feature Compatibility**: API compatibility maintained during upgrade
