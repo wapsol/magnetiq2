@@ -10,8 +10,8 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
 - **Language**: Python 3.11+
 - **Framework**: FastAPI 0.104+ with async/await support (Port 3036)
 - **ORM**: SQLAlchemy 2.0 with Alembic migrations
-- **Database**: SQLite (all environments - development, testing, production) (see [Database Schema](./database_schema.md))
-- **API Documentation**: OpenAPI 3.0 with auto-generated Swagger UI (see [Backend API Specification](./backend_api.md))
+- **Database**: SQLite (all environments - development, testing, production) (see [Database Schema](./backend/database.md))
+- **API Documentation**: OpenAPI 3.0 with auto-generated Swagger UI (see [Backend API Specification](./backend/api.md))
 - **Validation**: Pydantic v2 for request/response validation
 - **Authentication**: JWT with HS256 algorithm and refresh tokens
 
@@ -23,7 +23,7 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
 - **Testing**: Vitest + React Testing Library + Playwright (E2E) (see [Testing Strategy](./testing_strategy.md))
 - **Form Handling**: React Hook Form with Zod validation
 - **Routing**: React Router v6 with nested routing
-- **Internationalization**: React i18next for multilingual support (see [Multilingual Support](./multilingual.md))
+- **Internationalization**: React i18next for multilingual support (see [Multilingual Support](./frontend/multilingual.md))
 - **Port Configuration**: Single port (8036) with routing for public/admin
 
 ### Infrastructure
@@ -78,22 +78,22 @@ See [Security Specification](./security.md) for detailed implementation.
 - **API Security**: Rate limiting, CORS, input validation, SQL injection prevention
 
 ### 2. Content Management Service
-See [Frontend Public Specification](./frontend_public.md) and [Admin Panel Specification](./frontend_admin.md) for UI details.
+See [Frontend Public Specification](./frontend/public/public.md) and [Admin Panel Specification](./frontend/adminpanel/admin.md) for UI details.
 - **Page Builder**: Simple component-based page construction
 - **Multilingual Support**: JSONB-based content storage for EN/DE localization
 - **Media Library**: File management with basic optimization
 - **Version Control**: Simple content versioning with rollback capabilities
-- **SEO Optimization**: Meta tags, basic structured data, sitemap generation (see [Sitemap Specification](./sitemap.md))
+- **SEO Optimization**: Meta tags, basic structured data, sitemap generation (see [Sitemap Specification](./frontend/public/sitemap.md))
 - **Publishing Workflow**: Draft/published states with simple approval
 
 ### 3. Business Operations Service
-- **Webinar Management**: Topic creation, session scheduling, registration handling (see [Webinars Feature](./features_webinars.md))
-- **Whitepapers**: Whitepaper distribution with basic lead capture (see [Whitepapers Feature](./features_whitepapers.md))
-- **Booking System**: Simple consultation scheduling (see [Booking Feature](./features_booking.md))
+- **Webinar Management**: Topic creation, session scheduling, registration handling (see [Webinars Feature](./frontend/public/features/webinars.md))
+- **Whitepapers**: Whitepaper distribution with basic lead capture (see [Whitepapers Feature](./frontend/public/features/whitepapers.md))
+- **Booking System**: Simple consultation scheduling (see [Booking Feature](./frontend/public/features/booking.md))
 - **Basic Analytics**: Simple metrics on engagement and conversions
 
 ### 4. Communication Services
-See [Communication Services Specification](./features_communication.md) for detailed implementation.
+See [Communication Services Specification](./frontend/public/features/communication.md) for detailed implementation.
 - **Email Marketing**: Transactional and marketing email campaigns via SMTP
 - **LinkedIn Integration**: Professional content publishing, company page management, engagement analytics
 - **Twitter/X Integration**: Tweet publishing, thread management, multimedia content support
@@ -103,7 +103,7 @@ See [Communication Services Specification](./features_communication.md) for deta
 
 ## API Design Principles
 
-For complete API documentation, see [Backend API Specification](./backend_api.md).
+For complete API documentation, see [Backend API Specification](./backend/api.md).
 
 ### RESTful Standards
 - **Resource-based URLs**: `/api/v1/resources/{id}` with integer identifiers
@@ -148,7 +148,7 @@ For complete API documentation, see [Backend API Specification](./backend_api.md
 
 ## Database Architecture
 
-For complete database schema and table definitions, see [Database Schema Specification](./database_schema.md).
+For complete database schema and table definitions, see [Database Schema Specification](./backend/database.md).
 
 ### SQLite Design
 - **Single File Database**: Simplified deployment and backup
@@ -157,7 +157,7 @@ For complete database schema and table definitions, see [Database Schema Specifi
 - **Audit Trail**: Soft deletes with basic audit logging
 - **Temporal Data**: created_at, updated_at timestamps
 - **Full-text Search**: SQLite FTS5 for content search
-- **Multilingual**: JSON fields for language-specific content (see [Multilingual Support](./multilingual.md))
+- **Multilingual**: JSON fields for language-specific content (see [Multilingual Support](./frontend/multilingual.md))
 
 ### Performance Optimization
 - **Connection Management**: Connection pooling with SQLAlchemy
@@ -241,20 +241,25 @@ magnetiq2/
 └── docs/
     └── spec_v2/             # System specifications
         ├── architecture.md      # System architecture (this document)
-        ├── backend_api.md       # API endpoints and documentation
-        ├── database_schema.md   # Database tables and relationships
         ├── deployment.md        # Deployment procedures
-        ├── features_booking.md  # Booking system specification
-        ├── features_communication.md # Communication services
-        ├── features_webinars.md # Webinar management
-        ├── features_whitepapers.md # Whitepaper distribution
-        ├── frontend_admin.md    # Admin panel specification
-        ├── frontend_public.md   # Public frontend specification
-        ├── integrations.md      # External integrations
-        ├── multilingual.md      # Multilingual support
-        ├── security.md          # Security implementation
-        ├── sitemap.md          # Site structure and navigation
-        └── testing_strategy.md  # Testing approach and standards
+        ├── security.md          # Security policies and implementation
+        ├── testing_strategy.md  # Testing approach and procedures
+        ├── backend/
+        │   ├── api.md           # API endpoints and documentation
+        │   └── database.md      # Database tables and relationships
+        └── frontend/
+            ├── multilingual.md  # Internationalization support
+            ├── public/
+            │   ├── public.md    # Public frontend specification
+            │   ├── sitemap.md   # SEO and navigation structure
+            │   ├── integrations.md # External service integrations
+            │   └── features/
+            │       ├── booking.md      # Booking system specification
+            │       ├── communication.md # Communication services
+            │       ├── webinars.md     # Webinar management
+            │       └── whitepapers.md  # Whitepaper distribution
+            └── adminpanel/
+                └── admin.md     # Admin panel specification
 ```
 
 ### Naming Conventions
@@ -266,7 +271,7 @@ magnetiq2/
 
 ## External Integrations
 
-For detailed integration patterns and implementation, see [Integrations Specification](./integrations.md).
+For detailed integration patterns and implementation, see [Integrations Specification](./frontend/public/integrations.md).
 
 ### Simple HTTP Client Integrations
 - **Email Service**: SMTP client for transactional emails
