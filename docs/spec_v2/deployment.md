@@ -41,6 +41,11 @@ The application runs as three primary Docker containers:
 
 All containers communicate through a dedicated Docker bridge network with persistent volume mounts for data storage.
 
+### Deployment Dependency Chain
+![Deployment Dependency Chain](../diagrams/assets/shorts/deployment_dependency_chain.png)
+
+The deployment follows a strict dependency order: infrastructure setup → system dependencies → configuration → database initialization → application startup → web server configuration → monitoring setup.
+
 ### Development Environment
 ![Development Deployment](../diagrams/assets/specs/development_deployment.png)
 
@@ -183,6 +188,11 @@ flowchart LR
 
 ## Monitoring & Health Checks
 
+### Comprehensive Health Check Tree
+![Health Check Tree](../diagrams/assets/shorts/comprehensive_health_check_tree.png)
+
+The health monitoring system tracks all critical dependencies including core system health, external services, and feature availability with appropriate alerting thresholds.
+
 ### Application Health Monitoring
 - **Health check endpoints** for service status verification
 - **Database connectivity** monitoring and alerting
@@ -207,6 +217,12 @@ flowchart LR
 - **Backup verification** through automated testing
 
 ### Recovery Procedures
+
+#### Failure Cascade Analysis
+![Failure Cascade Analysis](../diagrams/assets/shorts/failure_cascade_analysis.png)
+
+Understanding failure cascades helps identify root causes and implement appropriate recovery strategies including graceful degradation, circuit breakers, and fallback services.
+
 - **Service shutdown** during restoration process
 - **Database restoration** from specified backup point
 - **Media file restoration** preserving directory structure

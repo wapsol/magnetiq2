@@ -35,6 +35,11 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
 
 ## System Architecture
 
+### Feature Dependency Architecture
+![Feature Dependency Tree](../diagrams/assets/shorts/feature_dependency_tree.png)
+
+The system implements a clear dependency hierarchy from core infrastructure (auth, database, health checks) through content management to business features and external integrations.
+
 ### Simple 3-Tier Architecture
 
 ```
@@ -66,6 +71,11 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
             │   With Write-Ahead Log    │
             └───────────────────────────┘
 ```
+
+### Data Flow Dependencies
+![Data Flow Dependencies](../diagrams/assets/shorts/data_flow_dependencies.png)
+
+Data flows through validation, transformation, business processing, and persistence layers with proper distribution to API responses, notifications, and external webhooks.
 
 ## Service Architecture
 

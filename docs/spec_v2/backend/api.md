@@ -104,6 +104,16 @@ async def enable_wal_mode():
 
 ## API Architecture
 
+### Service Dependency Map
+![Service Layer Dependencies](../../diagrams/assets/shorts/service_layer_dependencies.png)
+
+The service layer implements a clean dependency injection pattern using FastAPI's `Depends()` system, with clear separation between API endpoints, service logic, repository patterns, and cross-cutting concerns.
+
+### Request Lifecycle
+![Request Lifecycle Dependencies](../../diagrams/assets/shorts/request_lifecycle_dependencies.png)
+
+Each request flows through middleware, dependency injection, business logic, and response processing with proper error handling at each stage.
+
 ### Base URL Structure
 - **Development**: `http://localhost:3036/api/v1/`
 - **Production**: `https://api.voltaic.systems/api/v1/`
@@ -294,6 +304,11 @@ def require_permission(permission: Permission):
 
 ## Data Models
 
+### Model Relationships and Dependencies
+![Model Dependencies with Cascades](../../diagrams/assets/shorts/model_dependencies_cascades.png)
+
+The data models implement proper cascade behaviors (CASCADE, SET NULL, RESTRICT) to maintain referential integrity and prevent orphaned records.
+
 ### User Model
 ```python
 # models/user.py
@@ -467,6 +482,11 @@ async def validation_error_handler(request: Request, exc: ValidationError):
 ```
 
 ## Health Checks & Monitoring
+
+### Comprehensive Health Check Dependencies
+![Health Check Tree](../../diagrams/assets/shorts/comprehensive_health_check_tree.png)
+
+The health monitoring system tracks core dependencies, external services, and feature availability to provide comprehensive system status.
 
 ### Health Check Endpoint
 ```python

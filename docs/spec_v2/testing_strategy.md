@@ -6,6 +6,11 @@ The testing strategy for Magnetiq v2 ensures comprehensive coverage across all s
 
 ## Testing Pyramid
 
+### Test Dependencies and Flow
+![Request Lifecycle Dependencies](../diagrams/assets/shorts/request_lifecycle_dependencies.png)
+
+Tests must validate each stage of the request lifecycle including middleware, dependency injection, business logic, and error handling paths.
+
 ### Unit Tests (70% of tests)
 - **Scope**: Individual functions, classes, and components
 - **Tools**: Jest (Frontend), Pytest (Backend)
@@ -263,6 +268,11 @@ class TestWebinarEndpoints:
 ```
 
 ## Database Testing
+
+### Database Model Dependencies
+![Model Dependencies with Cascades](../diagrams/assets/shorts/model_dependencies_cascades.png)
+
+Database tests must validate model relationships, cascade behaviors (CASCADE, SET NULL, RESTRICT), and maintain referential integrity across all operations.
 
 ### Model Testing
 ```python
