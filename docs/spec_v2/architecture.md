@@ -271,7 +271,7 @@ magnetiq2/
 
 ## External Integrations
 
-For detailed integration patterns and implementation, see [Integrations Specification](./frontend/public/integrations.md).
+For detailed integration patterns and implementation, see [Integrations Specification](./integrations/integrations.md).
 
 ### Simple HTTP Client Integrations
 - **Email Service**: SMTP client for transactional emails
