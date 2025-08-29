@@ -4,10 +4,14 @@
 
 The public frontend is a responsive, multilingual website that serves as the primary interface for visitors to interact with voltAIc Systems' content and services. It provides access to webinars, whitepapers, consultation booking, and general company information.
 
+**Important**: The public frontend operates without user authentication. All content and features are accessible without registration or login. Administrative functionality is handled separately through the dedicated admin panel at `/frontend/adminpanel/admin.md`.
+
 ## Technical Foundation
 
 ### Technology Stack
 - **Framework**: React 18 with TypeScript
+- **Content Format**: PortableText for structured content
+- **Content Rendering**: @portabletext/react for PortableText serialization
 - **Styling**: Tailwind CSS with custom design system
 - **State Management**: Redux Toolkit with RTK Query
 - **Routing**: React Router v6
@@ -143,14 +147,67 @@ Features:
 
 #### Content Structure
 ```tsx
-interface TranslatedContent {
-  en: ContentType;
-  de: ContentType;
+// PortableText structure for multilingual content
+interface PortableTextContent {
+  en: PortableTextBlock[];
+  de?: PortableTextBlock[];
   meta: {
     lastUpdated: string;
     translator?: string;
     aiGenerated?: boolean;
   };
+}
+
+// Base PortableText block types
+interface PortableTextBlock {
+  _type: string;
+  _key: string;
+}
+
+// Text block with spans
+interface TextBlock extends PortableTextBlock {
+  _type: 'block';
+  style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote';
+  children: Span[];
+  markDefs?: MarkDefinition[];
+  level?: number;
+  listItem?: 'bullet' | 'number';
+}
+
+// Text span with formatting
+interface Span {
+  _type: 'span';
+  text: string;
+  marks?: string[];
+}
+
+// Custom blocks for Magnetiq
+interface CTABlock extends PortableTextBlock {
+  _type: 'cta';
+  text: string;
+  url: string;
+  style: 'primary' | 'secondary' | 'outline';
+  size: 'small' | 'medium' | 'large';
+}
+
+interface ImageBlock extends PortableTextBlock {
+  _type: 'image';
+  asset: {
+    _ref: string;
+    _type: 'reference';
+  };
+  alt: string;
+  caption?: string;
+  crop?: CropData;
+  hotspot?: HotspotData;
+}
+
+interface VideoBlock extends PortableTextBlock {
+  _type: 'video';
+  url: string;
+  title?: string;
+  thumbnail?: string;
+  autoplay?: boolean;
 }
 ```
 
@@ -165,8 +222,8 @@ interface TranslatedContent {
 #### Hero Section
 ```tsx
 interface HeroSection {
-  headline: TranslatedText;
-  subheadline: TranslatedText;
+  headline: PortableTextContent;
+  subheadline: PortableTextContent;
   ctaButtons: CTAButton[];
   backgroundImage?: string;
   videoBackground?: string;
@@ -194,31 +251,58 @@ Features:
 
 ### 5. Page Builder System
 
-#### Content Blocks
+#### PortableText Content System
 ```tsx
-type ContentBlock = 
-  | HeroBlock
-  | TextBlock  
-  | ImageBlock
-  | VideoBlock
-  | CTABlock
-  | TestimonialBlock
-  | FeaturesBlock
-  | ContactFormBlock;
-
+// PortableText-based page content
 interface PageContent {
-  blocks: ContentBlock[];
+  content: PortableTextContent; // Main PortableText blocks
+  excerpt?: PortableTextContent; // Optional excerpt
   seo: SEOMetadata;
-  multilingual: MultilingualContent;
+  structuredData?: any; // Auto-generated from PortableText
+}
+
+// PortableText renderer configuration
+interface PortableTextComponents {
+  types: {
+    image: React.ComponentType<ImageBlockProps>;
+    video: React.ComponentType<VideoBlockProps>;
+    cta: React.ComponentType<CTABlockProps>;
+    form: React.ComponentType<FormBlockProps>;
+    code: React.ComponentType<CodeBlockProps>;
+  };
+  marks: {
+    link: React.ComponentType<LinkMarkProps>;
+    strong: React.ComponentType<StrongMarkProps>;
+    em: React.ComponentType<EmMarkProps>;
+  };
+  block: {
+    h1: React.ComponentType<BlockProps>;
+    h2: React.ComponentType<BlockProps>;
+    h3: React.ComponentType<BlockProps>;
+    h4: React.ComponentType<BlockProps>;
+    h5: React.ComponentType<BlockProps>;
+    h6: React.ComponentType<BlockProps>;
+    blockquote: React.ComponentType<BlockProps>;
+    normal: React.ComponentType<BlockProps>;
+  };
+  list: {
+    bullet: React.ComponentType<ListProps>;
+    number: React.ComponentType<ListProps>;
+  };
+  listItem: {
+    bullet: React.ComponentType<ListItemProps>;
+    number: React.ComponentType<ListItemProps>;
+  };
 }
 ```
 
-#### Dynamic Pages
-- **Drag-and-drop** page builder (admin only)
-- **Reusable components** with props
-- **Content versioning** and preview
-- **SEO optimization** per page
-- **Performance optimization** with lazy loading
+#### PortableText Rendering
+- **Custom serializers** for each block type
+- **Responsive image handling** with srcset
+- **Lazy loading** for media blocks
+- **SEO optimization** from PortableText structure
+- **Performance optimization** with React.memo and useMemo
+- **Accessibility features** built into block components
 
 ## Resource Pages
 
@@ -238,8 +322,8 @@ interface PageContent {
 ```tsx
 interface WebinarCard {
   id: string;
-  title: TranslatedText;
-  description: TranslatedText;
+  title: Record<string, string>; // Simple multilingual titles
+  description: PortableTextContent; // Rich PortableText descriptions
   speaker: Speaker;
   datetime: Date;
   duration: number; // minutes
@@ -269,12 +353,12 @@ Card Features:
    - Date, time, and duration
    - Registration CTA button
 
-2. **Content Sections**
-   - Full description with rich text
-   - Learning objectives
-   - Target audience
-   - Prerequisites (if any)
-   - Speaker biography
+2. **Content Sections (PortableText)**
+   - Full description as PortableText blocks
+   - Learning objectives as structured lists
+   - Target audience with rich formatting
+   - Prerequisites with conditional rendering
+   - Speaker biography with embedded media
 
 3. **Registration Section**
    - Price display (with currency)
@@ -307,8 +391,9 @@ Card Features:
 ```tsx
 interface WhitepaperCard {
   id: string;
-  title: TranslatedText;
-  description: TranslatedText;
+  title: Record<string, string>; // Simple multilingual titles
+  description: PortableTextContent; // Rich PortableText descriptions
+  previewContent?: PortableTextContent; // PortableText preview snippets
   author: Author;
   publishedDate: Date;
   tags: string[];
@@ -411,20 +496,23 @@ interface WhitepaperCard {
 - **Cumulative Layout Shift**: < 0.1
 
 ### Optimization Strategies
-- **Code splitting** by route
-- **Lazy loading** for images and components
-- **Tree shaking** for unused code
+- **Code splitting** by route and PortableText components
+- **Lazy loading** for PortableText media blocks and components
+- **Tree shaking** for unused PortableText serializers
 - **Bundle analysis** and optimization
-- **CDN delivery** for static assets
-- **Service worker** for caching
+- **CDN delivery** for PortableText assets and static content
+- **Service worker** for caching PortableText content
+- **PortableText caching** with intelligent cache invalidation
+- **Preload critical PortableText blocks** for better performance
 
-### SEO Requirements
-- **Meta tags** for all pages
-- **Open Graph** tags for social sharing
-- **Structured data** (Schema.org markup)
-- **Sitemap** generation
+### SEO Requirements with PortableText
+- **Meta tags** extracted from PortableText content
+- **Open Graph** tags with PortableText excerpts
+- **Structured data** (Schema.org markup) auto-generated from PortableText
+- **Sitemap** generation including PortableText-based pages
 - **Robots.txt** configuration
-- **Canonical URLs** for multilingual content
+- **Canonical URLs** for multilingual PortableText content
+- **Rich snippets** from PortableText structured content
 
 ### Accessibility Standards
 - **WCAG 2.1 AA** compliance
@@ -433,6 +521,328 @@ interface WhitepaperCard {
 - **Color contrast** ratios (4.5:1 minimum)
 - **Alternative text** for all images
 - **Focus indicators** for interactive elements
+
+## PortableText Implementation
+
+### PortableText Renderer Setup
+
+```tsx
+// components/PortableText/PortableTextRenderer.tsx
+import { PortableText } from '@portabletext/react';
+import { PortableTextBlock } from '@portabletext/types';
+import { ImageBlock, VideoBlock, CTABlock, CodeBlock } from './blocks';
+import { LinkMark, StrongMark, EmMark } from './marks';
+
+interface PortableTextRendererProps {
+  content: PortableTextBlock[];
+  language?: 'en' | 'de';
+  className?: string;
+}
+
+// Custom components for PortableText blocks
+const portableTextComponents = {
+  types: {
+    image: ImageBlock,
+    video: VideoBlock,
+    cta: CTABlock,
+    code: CodeBlock,
+    form: FormBlock,
+  },
+  marks: {
+    link: LinkMark,
+    strong: StrongMark,
+    em: EmMark,
+    underline: ({ children }: any) => <u className="underline">{children}</u>,
+    strike: ({ children }: any) => <s className="line-through">{children}</s>,
+    code: ({ children }: any) => (
+      <code className="bg-gray-100 px-1 py-0.5 rounded text-sm font-mono">
+        {children}
+      </code>
+    ),
+  },
+  block: {
+    h1: ({ children }: any) => (
+      <h1 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white">
+        {children}
+      </h1>
+    ),
+    h2: ({ children }: any) => (
+      <h2 className="text-3xl font-semibold mb-5 text-gray-900 dark:text-white">
+        {children}
+      </h2>
+    ),
+    h3: ({ children }: any) => (
+      <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
+        {children}
+      </h3>
+    ),
+    h4: ({ children }: any) => (
+      <h4 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
+        {children}
+      </h4>
+    ),
+    normal: ({ children }: any) => (
+      <p className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+        {children}
+      </p>
+    ),
+    blockquote: ({ children }: any) => (
+      <blockquote className="border-l-4 border-primary-500 pl-6 py-2 mb-6 italic text-gray-600 dark:text-gray-400">
+        {children}
+      </blockquote>
+    ),
+  },
+  list: {
+    bullet: ({ children }: any) => (
+      <ul className="list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300">
+        {children}
+      </ul>
+    ),
+    number: ({ children }: any) => (
+      <ol className="list-decimal pl-6 mb-4 text-gray-700 dark:text-gray-300">
+        {children}
+      </ol>
+    ),
+  },
+  listItem: {
+    bullet: ({ children }: any) => <li className="mb-1">{children}</li>,
+    number: ({ children }: any) => <li className="mb-1">{children}</li>,
+  },
+};
+
+export const PortableTextRenderer: React.FC<PortableTextRendererProps> = ({
+  content,
+  language = 'en',
+  className = ''
+}) => {
+  if (!content || !Array.isArray(content)) {
+    return null;
+  }
+
+  return (
+    <div className={`portable-text ${className}`}>
+      <PortableText 
+        value={content} 
+        components={portableTextComponents}
+      />
+    </div>
+  );
+};
+```
+
+### Custom Block Components
+
+```tsx
+// components/PortableText/blocks/ImageBlock.tsx
+import { useState } from 'react';
+import { ImageBlockProps } from '../types';
+
+export const ImageBlock: React.FC<ImageBlockProps> = ({ value }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  
+  const { asset, alt, caption, crop, hotspot } = value;
+  const imageUrl = `/api/v1/media/${asset._ref}`;
+  
+  const handleLoad = () => setIsLoading(false);
+  const handleError = () => {
+    setIsLoading(false);
+    setHasError(true);
+  };
+  
+  if (hasError) {
+    return (
+      <div className="bg-gray-200 p-8 text-center rounded-lg mb-6">
+        <span className="text-gray-500">Image failed to load</span>
+      </div>
+    );
+  }
+  
+  return (
+    <figure className="mb-6">
+      <div className="relative">
+        {isLoading && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-lg" />
+        )}
+        <img
+          src={imageUrl}
+          alt={alt || 'Image'}
+          className="w-full h-auto rounded-lg shadow-md"
+          onLoad={handleLoad}
+          onError={handleError}
+          loading="lazy"
+        />
+      </div>
+      {caption && (
+        <figcaption className="text-sm text-gray-600 dark:text-gray-400 mt-2 text-center italic">
+          {caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+};
+
+// components/PortableText/blocks/CTABlock.tsx
+import { CTABlockProps } from '../types';
+
+export const CTABlock: React.FC<CTABlockProps> = ({ value }) => {
+  const { text, url, style = 'primary', size = 'medium' } = value;
+  
+  const baseClasses = 'inline-flex items-center justify-center font-medium transition-colors rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2';
+  
+  const styleClasses = {
+    primary: 'bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-500',
+    secondary: 'bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-500',
+    outline: 'border-2 border-primary-600 text-primary-600 hover:bg-primary-50 focus:ring-primary-500'
+  };
+  
+  const sizeClasses = {
+    small: 'px-3 py-2 text-sm',
+    medium: 'px-6 py-3 text-base',
+    large: 'px-8 py-4 text-lg'
+  };
+  
+  const className = `${baseClasses} ${styleClasses[style]} ${sizeClasses[size]}`;
+  
+  return (
+    <div className="my-8 text-center">
+      <a href={url} className={className}>
+        {text}
+      </a>
+    </div>
+  );
+};
+
+// components/PortableText/blocks/VideoBlock.tsx
+import { VideoBlockProps } from '../types';
+
+export const VideoBlock: React.FC<VideoBlockProps> = ({ value }) => {
+  const { url, title, thumbnail, autoplay = false } = value;
+  
+  // Handle different video sources (YouTube, Vimeo, direct)
+  const isYouTube = url.includes('youtube.com') || url.includes('youtu.be');
+  const isVimeo = url.includes('vimeo.com');
+  
+  if (isYouTube || isVimeo) {
+    // Embed video players
+    const embedUrl = isYouTube 
+      ? url.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')
+      : url.replace('vimeo.com/', 'player.vimeo.com/video/');
+    
+    return (
+      <div className="relative aspect-video mb-6 rounded-lg overflow-hidden shadow-md">
+        <iframe
+          src={`${embedUrl}${autoplay ? '?autoplay=1' : ''}`}
+          title={title || 'Video'}
+          className="absolute inset-0 w-full h-full"
+          frameBorder="0"
+          allowFullScreen
+          loading="lazy"
+        />
+      </div>
+    );
+  }
+  
+  // Direct video file
+  return (
+    <div className="mb-6">
+      <video
+        controls
+        autoPlay={autoplay}
+        className="w-full rounded-lg shadow-md"
+        poster={thumbnail}
+      >
+        <source src={url} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      {title && (
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 text-center">
+          {title}
+        </p>
+      )}
+    </div>
+  );
+};
+```
+
+### Multilingual PortableText Hook
+
+```tsx
+// hooks/usePortableText.ts
+import { useMemo } from 'react';
+import { useLanguage } from './useLanguage';
+import { PortableTextContent } from '../types/content';
+
+export const usePortableText = (content: PortableTextContent) => {
+  const { currentLanguage } = useLanguage();
+  
+  const resolvedContent = useMemo(() => {
+    // Return content for current language with fallback to English
+    return content[currentLanguage as keyof PortableTextContent] || content.en;
+  }, [content, currentLanguage]);
+  
+  return {
+    content: resolvedContent,
+    hasTranslation: !!content[currentLanguage as keyof PortableTextContent],
+    availableLanguages: Object.keys(content).filter(key => key !== 'meta'),
+    meta: content.meta
+  };
+};
+```
+
+### Content API Integration
+
+```tsx
+// api/contentApi.ts
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+export const contentApi = createApi({
+  reducerPath: 'contentApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/api/v1/content/'
+  }),
+  tagTypes: ['Page', 'Webinar', 'Whitepaper'],
+  endpoints: (builder) => ({
+    // Get PortableText content
+    getPage: builder.query<PageResponse, { id: string; language?: string }>({
+      query: ({ id, language = 'en' }) => `pages/${id}`,
+      providesTags: ['Page']
+    }),
+    
+    // Get serialized HTML content
+    getPageHTML: builder.query<PageHTMLResponse, { id: string; language?: string }>({
+      query: ({ id, language = 'en' }) => `pages/${id}/html?language=${language}`,
+      providesTags: ['Page']
+    }),
+    
+    // Get serialized Markdown content  
+    getPageMarkdown: builder.query<PageMarkdownResponse, { id: string; language?: string }>({
+      query: ({ id, language = 'en' }) => `pages/${id}/markdown?language=${language}`,
+      providesTags: ['Page']
+    }),
+    
+    // Get webinars with PortableText content
+    getWebinars: builder.query<WebinarsResponse, { language?: string }>({
+      query: ({ language = 'en' }) => `webinars?language=${language}`,
+      providesTags: ['Webinar']
+    }),
+    
+    // Get whitepapers with PortableText content
+    getWhitepapers: builder.query<WhitepapersResponse, { language?: string }>({
+      query: ({ language = 'en' }) => `whitepapers?language=${language}`,
+      providesTags: ['Whitepaper']
+    })
+  })
+});
+
+export const {
+  useGetPageQuery,
+  useGetPageHTMLQuery,
+  useGetPageMarkdownQuery,
+  useGetWebinarsQuery,
+  useGetWhitepapersQuery
+} = contentApi;
+```
 
 ## State Management
 
@@ -449,6 +859,7 @@ interface RootState {
     pages: Record<string, PageContent>;
     webinars: WebinarState;
     whitepapers: WhitepaperState;
+    portableTextCache: Record<string, PortableTextBlock[]>; // Cached PortableText content
   };
   user: {
     preferences: UserPreferences;
@@ -458,11 +869,13 @@ interface RootState {
 ```
 
 ### API Integration
-- **RTK Query** for API calls
-- **Automatic caching** with configurable TTL
+- **RTK Query** for API calls with PortableText support
+- **Automatic caching** with configurable TTL for PortableText content
+- **Content serialization** endpoints (HTML/Markdown/Plain Text)
 - **Error handling** with user feedback
 - **Loading states** for better UX
 - **Retry logic** for failed requests
+- **PortableText validation** on client-side
 
 ## Browser Support
 
@@ -509,11 +922,12 @@ export const Component: FC<ComponentProps> = ({
 ```
 
 ### Testing Strategy
-- **Unit tests** for utilities and hooks
-- **Component tests** with React Testing Library
-- **Integration tests** for user workflows
-- **E2E tests** for critical user journeys
-- **Visual regression tests** for UI consistency
+- **Unit tests** for utilities, hooks, and PortableText serializers
+- **Component tests** with React Testing Library for PortableText blocks
+- **Integration tests** for user workflows with PortableText content
+- **E2E tests** for critical user journeys involving PortableText rendering
+- **Visual regression tests** for UI consistency across PortableText components
+- **PortableText validation tests** for content structure integrity
 
 ### Build Process
 ```json
@@ -524,8 +938,16 @@ export const Component: FC<ComponentProps> = ({
     "preview": "vite preview",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:portable-text": "jest --testPathPattern=portabletext",
     "lint": "eslint src --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "validate-content": "node scripts/validatePortableText.js"
+  },
+  "dependencies": {
+    "@portabletext/react": "^3.0.0",
+    "@portabletext/types": "^2.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
 ```

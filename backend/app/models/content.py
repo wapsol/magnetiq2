@@ -16,8 +16,13 @@ class Page(Base):
     excerpt = Column(JSON)  # {"en": "Excerpt", "de": "Auszug"}
     meta_description = Column(JSON)  # JSON for SEO descriptions
     
+    # Block-based content structure for flexible layouts
+    content_blocks = Column(JSON)  # {"en": [{"_type": "hero", "props": {...}}, ...], "de": [...]}
+    layout_config = Column(JSON)  # Layout metadata: {"template": "default", "responsive": true, "theme": "light"}
+    
     # Page Configuration
     template = Column(String(50), default='default')
+    content_format = Column(String(20), nullable=False, default='legacy', index=True)  # 'legacy', 'blocks', 'portable_text'
     status = Column(String(20), nullable=False, default='draft', index=True)
     is_featured = Column(Boolean, default=False, index=True)
     sort_order = Column(Integer, default=0)

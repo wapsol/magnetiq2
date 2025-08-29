@@ -1,4 +1,4 @@
-We learnt a bunch about operating an AI-coder from [wapsol/voltaic-recharge-hub](https://github.com/wapsol/voltaic-recharge-hub), a website originally produced by Lovable, and converted into a CMS with lead-gen features using ClaudeCode.
+We learnt a bunch about operating an AI-coder from [wapsol/voltAIc-recharge-hub](https://github.com/wapsol/voltAIc-recharge-hub), a website originally produced by Lovable, and converted into a CMS with lead-gen features using ClaudeCode.
 
 We faced challenges:
 

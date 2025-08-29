@@ -110,7 +110,7 @@ Then update frontend API URL:
 ```typescript
 // In src/services/booking.ts
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://voltaic.systems' 
+  ? 'https://voltAIc.systems' 
   : 'http://localhost:8001'; // Changed port
 ```
 
@@ -215,7 +215,7 @@ uvicorn main:app --host 0.0.0.0 --port 8000
     "consultant": {
       "id": "pascal",
       "name": "Pascal Köth, Dipl. Ök.",
-      "email": "pko@voltaic.systems"
+      "email": "pko@voltAIc.systems"
     },
     "status": "confirmed",
     "calendar_event_created": true,

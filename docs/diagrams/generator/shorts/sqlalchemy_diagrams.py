@@ -45,7 +45,7 @@ def generate_sqlalchemy_architecture():
         with Cluster("Services"):
             content_svc = Python("Content")
             auth_svc = Python("Auth")
-            booking_svc = Python("Booking")
+            book_a_meeting_svc = Python("BookAMeeting")
             
         # Column 4: ORM Layer
         with Cluster("SQLAlchemy 2.0"):
@@ -60,8 +60,8 @@ def generate_sqlalchemy_architecture():
         
         # Horizontal connections
         client >> api
-        api >> Edge(label="DI") >> [content_svc, auth_svc, booking_svc]
-        [content_svc, auth_svc, booking_svc] >> models
+        api >> Edge(label="DI") >> [content_svc, auth_svc, book_a_meeting_svc]
+        [content_svc, auth_svc, book_a_meeting_svc] >> models
         models >> session >> engine >> db
         alembic >> Edge(style="dashed") >> db
 
@@ -159,13 +159,13 @@ def generate_sqlalchemy_relationship_mapping():
             content = Python("Content\nBlock\nid, type")
         
         with Cluster("Business"):
-            booking = Python("Booking\nid, date\nstatus")
+            book_a_meeting = Python("BookAMeeting\nid, date\nstatus")
             webinar = Python("Webinar\nid, topic")
         
         # Horizontal relationships
         user >> Edge(label="1:N author", style="bold") >> page
         page >> Edge(label="1:N blocks", style="bold") >> content
-        user >> Edge(label="1:N bookings", style="bold") >> booking
+        user >> Edge(label="1:N book_a_meetings", style="bold") >> book_a_meeting
         user >> Edge(label="N:M attendees", style="bold") >> webinar
 
 def generate_sqlalchemy_data_flow():

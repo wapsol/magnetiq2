@@ -114,10 +114,10 @@ CREATE TABLE pages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     slug TEXT UNIQUE NOT NULL,
     
-    -- Multilingual content stored as JSON (English required)
+    -- Multilingual PortableText content (English required)
     title TEXT NOT NULL CHECK (json_extract(title, '$.en') IS NOT NULL), -- JSON: {"en": "Title", "de": "Titel"}
-    content TEXT NOT NULL CHECK (json_extract(content, '$.en') IS NOT NULL), -- JSON: {"en": "Content", "de": "Inhalt"}
-    excerpt TEXT CHECK (excerpt IS NULL OR json_extract(excerpt, '$.en') IS NOT NULL), -- JSON: {"en": "Excerpt", "de": "Auszug"}
+    content TEXT NOT NULL CHECK (json_extract(content, '$.en') IS NOT NULL), -- PortableText JSON: {"en": [...blocks], "de": [...blocks]}
+    excerpt TEXT CHECK (excerpt IS NULL OR json_extract(excerpt, '$.en') IS NOT NULL), -- PortableText JSON: {"en": [...blocks], "de": [...blocks]}
     meta_description TEXT CHECK (meta_description IS NULL OR json_extract(meta_description, '$.en') IS NOT NULL), -- JSON for SEO descriptions
     
     -- Page Configuration
@@ -129,6 +129,7 @@ CREATE TABLE pages (
     -- SEO & Marketing
     seo_title TEXT CHECK (seo_title IS NULL OR json_extract(seo_title, '$.en') IS NOT NULL), -- JSON for SEO titles
     seo_keywords TEXT CHECK (seo_keywords IS NULL OR json_extract(seo_keywords, '$.en') IS NOT NULL), -- JSON for SEO keywords
+    structured_data TEXT, -- PortableText-derived structured data for SEO
     canonical_url TEXT,
     
     -- Publishing
@@ -167,14 +168,14 @@ CREATE VIRTUAL TABLE pages_fts_de USING fts5(
 CREATE INDEX idx_pages_title_en ON pages(json_extract(title, '$.en'));
 CREATE INDEX idx_pages_title_de ON pages(json_extract(title, '$.de'));
 
--- Triggers to keep language-specific FTS tables synchronized
+-- Triggers to keep language-specific FTS tables synchronized (with PortableText extraction)
 CREATE TRIGGER pages_fts_en_ai AFTER INSERT ON pages BEGIN
   INSERT INTO pages_fts_en(rowid, title, content, excerpt) 
   VALUES (
     new.id, 
     json_extract(new.title, '$.en'), 
-    json_extract(new.content, '$.en'), 
-    json_extract(new.excerpt, '$.en')
+    portable_text_to_plain_text(json_extract(new.content, '$.en')), -- Extract plain text from PortableText
+    portable_text_to_plain_text(json_extract(new.excerpt, '$.en'))
   );
 END;
 
@@ -184,8 +185,8 @@ WHEN json_extract(new.title, '$.de') IS NOT NULL BEGIN
   VALUES (
     new.id, 
     json_extract(new.title, '$.de'), 
-    json_extract(new.content, '$.de'), 
-    json_extract(new.excerpt, '$.de')
+    portable_text_to_plain_text(json_extract(new.content, '$.de')), 
+    portable_text_to_plain_text(json_extract(new.excerpt, '$.de'))
   );
 END;
 
@@ -200,8 +201,8 @@ END;
 CREATE TRIGGER pages_fts_en_au AFTER UPDATE ON pages BEGIN
   UPDATE pages_fts_en SET 
     title = json_extract(new.title, '$.en'),
-    content = json_extract(new.content, '$.en'),
-    excerpt = json_extract(new.excerpt, '$.en')
+    content = portable_text_to_plain_text(json_extract(new.content, '$.en')),
+    excerpt = portable_text_to_plain_text(json_extract(new.excerpt, '$.en'))
   WHERE rowid = new.id;
 END;
 
@@ -209,8 +210,8 @@ CREATE TRIGGER pages_fts_de_au AFTER UPDATE ON pages
 WHEN json_extract(new.title, '$.de') IS NOT NULL BEGIN
   UPDATE pages_fts_de SET 
     title = json_extract(new.title, '$.de'),
-    content = json_extract(new.content, '$.de'),
-    excerpt = json_extract(new.excerpt, '$.de')
+    content = portable_text_to_plain_text(json_extract(new.content, '$.de')),
+    excerpt = portable_text_to_plain_text(json_extract(new.excerpt, '$.de'))
   WHERE rowid = new.id;
 END;
 ```
@@ -269,9 +270,9 @@ Webinar management and scheduling.
 CREATE TABLE webinars (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     
-    -- Basic Information (with validation)
+    -- Basic Information (with PortableText validation)
     title TEXT NOT NULL CHECK (json_extract(title, '$.en') IS NOT NULL), -- JSON for multilingual titles
-    description TEXT CHECK (description IS NULL OR json_extract(description, '$.en') IS NOT NULL), -- JSON for multilingual descriptions
+    description TEXT CHECK (description IS NULL OR json_extract(description, '$.en') IS NOT NULL), -- PortableText JSON for multilingual descriptions
     slug TEXT UNIQUE NOT NULL,
     
     -- Scheduling
@@ -292,7 +293,7 @@ CREATE TABLE webinars (
     
     -- Presenter Information
     presenter_name TEXT,
-    presenter_bio TEXT CHECK (presenter_bio IS NULL OR json_extract(presenter_bio, '$.en') IS NOT NULL), -- JSON for multilingual bio
+    presenter_bio TEXT CHECK (presenter_bio IS NULL OR json_extract(presenter_bio, '$.en') IS NOT NULL), -- PortableText JSON for multilingual bio
     presenter_avatar_id INTEGER,
     
     -- Timestamps
@@ -360,15 +361,15 @@ Whitepaper and document management.
 CREATE TABLE whitepapers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     
-    -- Basic Information (with validation)
+    -- Basic Information (with PortableText validation)
     title TEXT NOT NULL CHECK (json_extract(title, '$.en') IS NOT NULL), -- JSON for multilingual titles
-    description TEXT CHECK (description IS NULL OR json_extract(description, '$.en') IS NOT NULL), -- JSON for multilingual descriptions
+    description TEXT CHECK (description IS NULL OR json_extract(description, '$.en') IS NOT NULL), -- PortableText JSON for multilingual descriptions
     slug TEXT UNIQUE NOT NULL,
     
     -- Content
     file_id INTEGER NOT NULL,
     thumbnail_id INTEGER,
-    preview_content TEXT CHECK (preview_content IS NULL OR json_extract(preview_content, '$.en') IS NOT NULL), -- JSON for multilingual preview text
+    preview_content TEXT CHECK (preview_content IS NULL OR json_extract(preview_content, '$.en') IS NOT NULL), -- PortableText JSON for multilingual preview text
     
     -- Categorization
     category TEXT, -- e.g., 'case-study', 'guide', 'report'
@@ -381,7 +382,8 @@ CREATE TABLE whitepapers (
     
     -- SEO & Marketing
     meta_title TEXT CHECK (meta_title IS NULL OR json_extract(meta_title, '$.en') IS NOT NULL), -- JSON for multilingual meta titles
-    meta_description TEXT CHECK (meta_description IS NULL OR json_extract(meta_description, '$.en') IS NOT NULL), -- JSON for multilingual meta descriptions
+    meta_description TEXT CHECK (meta_description IS NULL OR json_extract(meta_description, '$.en') IS NOT NULL), -- PortableText JSON for multilingual meta descriptions
+    content_summary TEXT, -- Auto-generated plain text summary from PortableText content
     
     -- Status
     status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
@@ -465,14 +467,14 @@ CREATE TABLE bookings (
     phone TEXT,
     
     -- Booking Details
-    booking_type TEXT NOT NULL, -- consultation, demo, support
+    meeting_type TEXT NOT NULL, -- consultation, demo, support
     preferred_date DATETIME NOT NULL,
     duration_minutes INTEGER DEFAULT 30,
     timezone TEXT DEFAULT 'UTC',
     
-    -- Requirements (Multilingual support)
+    -- Requirements (PortableText Multilingual support)
     subject TEXT, -- JSON: {"en": "Subject", "de": "Betreff"}
-    message TEXT, -- JSON: {"en": "Message", "de": "Nachricht"}
+    message TEXT, -- PortableText JSON: {"en": [...blocks], "de": [...blocks]}
     budget_range TEXT,
     urgency TEXT, -- low, medium, high, urgent
     
@@ -727,9 +729,9 @@ CREATE TABLE social_content (
     social_account_id INTEGER NOT NULL,
     platform TEXT NOT NULL, -- linkedin, twitter (redundant but useful for queries)
     
-    -- Content Data (Multilingual)
+    -- Content Data (PortableText Multilingual)
     title TEXT CHECK (title IS NULL OR json_extract(title, '$.en') IS NOT NULL), -- JSON: {"en": "Title", "de": "Titel"}
-    content TEXT NOT NULL CHECK (json_extract(content, '$.en') IS NOT NULL), -- JSON: {"en": "Content", "de": "Inhalt"}
+    content TEXT NOT NULL CHECK (json_extract(content, '$.en') IS NOT NULL), -- PortableText JSON: {"en": [...blocks], "de": [...blocks]}
     content_type TEXT NOT NULL DEFAULT 'post' CHECK (content_type IN ('post', 'thread', 'story', 'article')),
     
     -- Platform-Specific Configuration
@@ -823,14 +825,15 @@ Email marketing campaign management.
 CREATE TABLE email_campaigns (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     
-    -- Campaign Information (Multilingual)
+    -- Campaign Information (PortableText Multilingual)
     name TEXT NOT NULL,
     subject TEXT NOT NULL CHECK (json_extract(subject, '$.en') IS NOT NULL), -- JSON: {"en": "Subject", "de": "Betreff"}
     preheader TEXT CHECK (preheader IS NULL OR json_extract(preheader, '$.en') IS NOT NULL), -- JSON: {"en": "Preview", "de": "Vorschau"}
     
-    -- Content (Multilingual)
-    html_content TEXT CHECK (html_content IS NULL OR json_extract(html_content, '$.en') IS NOT NULL), -- JSON: multilingual HTML content
-    text_content TEXT CHECK (text_content IS NULL OR json_extract(text_content, '$.en') IS NOT NULL), -- JSON: multilingual plain text
+    -- Content (PortableText Multilingual)
+    html_content TEXT CHECK (html_content IS NULL OR json_extract(html_content, '$.en') IS NOT NULL), -- PortableText JSON: serialized to HTML per language
+    text_content TEXT CHECK (text_content IS NULL OR json_extract(text_content, '$.en') IS NOT NULL), -- PortableText JSON: serialized to plain text per language
+    portable_content TEXT CHECK (portable_content IS NULL OR json_extract(portable_content, '$.en') IS NOT NULL), -- PortableText JSON: {"en": [...blocks], "de": [...blocks]}
     template_id INTEGER,
     
     -- Recipients
@@ -877,15 +880,16 @@ Reusable email templates for campaigns.
 CREATE TABLE email_templates (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     
-    -- Template Information (Multilingual)
+    -- Template Information (PortableText Multilingual)
     name TEXT NOT NULL,
-    description TEXT CHECK (description IS NULL OR json_extract(description, '$.en') IS NOT NULL), -- JSON: multilingual description
+    description TEXT CHECK (description IS NULL OR json_extract(description, '$.en') IS NOT NULL), -- PortableText JSON: multilingual description
     category TEXT, -- newsletter, promotional, transactional, welcome
     
-    -- Content (Multilingual templates)
+    -- Content (PortableText Multilingual templates)
     subject_template TEXT CHECK (subject_template IS NULL OR json_extract(subject_template, '$.en') IS NOT NULL), -- JSON: multilingual subject
-    html_template TEXT NOT NULL CHECK (json_extract(html_template, '$.en') IS NOT NULL), -- JSON: multilingual HTML template
-    text_template TEXT CHECK (text_template IS NULL OR json_extract(text_template, '$.en') IS NOT NULL), -- JSON: multilingual plain text template
+    html_template TEXT NOT NULL CHECK (json_extract(html_template, '$.en') IS NOT NULL), -- PortableText JSON: serialized to HTML per language
+    text_template TEXT CHECK (text_template IS NULL OR json_extract(text_template, '$.en') IS NOT NULL), -- PortableText JSON: serialized to plain text per language
+    portable_template TEXT CHECK (portable_template IS NULL OR json_extract(portable_template, '$.en') IS NOT NULL), -- PortableText JSON: {"en": [...blocks], "de": [...blocks]}
     
     -- Template Variables
     variables TEXT, -- JSON array of available template variables
@@ -935,14 +939,14 @@ translations (N) → translation_memory (via text matching)
 
 ### Content Views for Each Language
 ```sql
--- English content view for pages
+-- English content view for pages (with PortableText serialization)
 CREATE VIEW pages_en AS
 SELECT 
     id,
     slug,
     json_extract(title, '$.en') as title,
-    json_extract(content, '$.en') as content,
-    json_extract(excerpt, '$.en') as excerpt,
+    json_extract(content, '$.en') as content, -- PortableText JSON
+    json_extract(excerpt, '$.en') as excerpt, -- PortableText JSON
     json_extract(meta_description, '$.en') as meta_description,
     json_extract(seo_title, '$.en') as seo_title,
     json_extract(seo_keywords, '$.en') as seo_keywords,
@@ -958,14 +962,14 @@ SELECT
 FROM pages
 WHERE deleted_at IS NULL;
 
--- German content view for pages
+-- German content view for pages (with PortableText fallback)
 CREATE VIEW pages_de AS
 SELECT 
     id,
     slug,
     COALESCE(json_extract(title, '$.de'), json_extract(title, '$.en')) as title,
-    COALESCE(json_extract(content, '$.de'), json_extract(content, '$.en')) as content,
-    COALESCE(json_extract(excerpt, '$.de'), json_extract(excerpt, '$.en')) as excerpt,
+    COALESCE(json_extract(content, '$.de'), json_extract(content, '$.en')) as content, -- PortableText JSON with fallback
+    COALESCE(json_extract(excerpt, '$.de'), json_extract(excerpt, '$.en')) as excerpt, -- PortableText JSON with fallback
     COALESCE(json_extract(meta_description, '$.de'), json_extract(meta_description, '$.en')) as meta_description,
     COALESCE(json_extract(seo_title, '$.de'), json_extract(seo_title, '$.en')) as seo_title,
     COALESCE(json_extract(seo_keywords, '$.de'), json_extract(seo_keywords, '$.en')) as seo_keywords,
@@ -981,14 +985,14 @@ SELECT
 FROM pages
 WHERE deleted_at IS NULL;
 
--- Similar views for webinars
+-- Similar views for webinars (with PortableText)
 CREATE VIEW webinars_en AS
 SELECT 
     id,
     slug,
     json_extract(title, '$.en') as title,
-    json_extract(description, '$.en') as description,
-    json_extract(presenter_bio, '$.en') as presenter_bio,
+    json_extract(description, '$.en') as description, -- PortableText JSON
+    json_extract(presenter_bio, '$.en') as presenter_bio, -- PortableText JSON
     scheduled_at,
     duration_minutes,
     timezone,
@@ -1005,8 +1009,8 @@ SELECT
     id,
     slug,
     COALESCE(json_extract(title, '$.de'), json_extract(title, '$.en')) as title,
-    COALESCE(json_extract(description, '$.de'), json_extract(description, '$.en')) as description,
-    COALESCE(json_extract(presenter_bio, '$.de'), json_extract(presenter_bio, '$.en')) as presenter_bio,
+    COALESCE(json_extract(description, '$.de'), json_extract(description, '$.en')) as description, -- PortableText JSON with fallback
+    COALESCE(json_extract(presenter_bio, '$.de'), json_extract(presenter_bio, '$.en')) as presenter_bio, -- PortableText JSON with fallback
     scheduled_at,
     duration_minutes,
     timezone,
@@ -1018,14 +1022,14 @@ SELECT
 FROM webinars
 WHERE deleted_at IS NULL;
 
--- Similar views for whitepapers
+-- Similar views for whitepapers (with PortableText)
 CREATE VIEW whitepapers_en AS
 SELECT 
     id,
     slug,
     json_extract(title, '$.en') as title,
-    json_extract(description, '$.en') as description,
-    json_extract(preview_content, '$.en') as preview_content,
+    json_extract(description, '$.en') as description, -- PortableText JSON
+    json_extract(preview_content, '$.en') as preview_content, -- PortableText JSON
     json_extract(meta_title, '$.en') as meta_title,
     json_extract(meta_description, '$.en') as meta_description,
     file_id,
@@ -1042,8 +1046,8 @@ SELECT
     id,
     slug,
     COALESCE(json_extract(title, '$.de'), json_extract(title, '$.en')) as title,
-    COALESCE(json_extract(description, '$.de'), json_extract(description, '$.en')) as description,
-    COALESCE(json_extract(preview_content, '$.de'), json_extract(preview_content, '$.en')) as preview_content,
+    COALESCE(json_extract(description, '$.de'), json_extract(description, '$.en')) as description, -- PortableText JSON with fallback
+    COALESCE(json_extract(preview_content, '$.de'), json_extract(preview_content, '$.en')) as preview_content, -- PortableText JSON with fallback
     COALESCE(json_extract(meta_title, '$.de'), json_extract(meta_title, '$.en')) as meta_title,
     COALESCE(json_extract(meta_description, '$.de'), json_extract(meta_description, '$.en')) as meta_description,
     file_id,
@@ -1160,6 +1164,215 @@ sqlite3 magnetiq_restored.db < magnetiq_backup_20240101_120000.sql
 sqlite3 magnetiq.db "PRAGMA integrity_check;"
 ```
 
+## PortableText Implementation
+
+### PortableText Helper Functions
+
+Since SQLite doesn't have native PortableText support, we implement helper functions for common operations:
+
+```python
+# Helper functions for PortableText processing in application layer
+def portable_text_to_plain_text(portable_text_json: str) -> str:
+    """Extract plain text from PortableText JSON for FTS indexing"""
+    if not portable_text_json:
+        return ''
+    
+    try:
+        blocks = json.loads(portable_text_json)
+        text_parts = []
+        
+        for block in blocks:
+            if block.get('_type') == 'block':
+                # Extract text from spans within the block
+                children = block.get('children', [])
+                for child in children:
+                    if child.get('_type') == 'span':
+                        text_parts.append(child.get('text', ''))
+            elif block.get('_type') == 'heading':
+                # Handle heading blocks
+                text_parts.append(block.get('text', ''))
+        
+        return ' '.join(text_parts)
+    except (json.JSONDecodeError, TypeError):
+        return ''
+
+def validate_portable_text_structure(portable_text_json: str) -> bool:
+    """Validate that JSON follows PortableText specification"""
+    try:
+        blocks = json.loads(portable_text_json)
+        if not isinstance(blocks, list):
+            return False
+        
+        for block in blocks:
+            # Each block must have _type
+            if '_type' not in block:
+                return False
+            
+            # Block type validation
+            block_type = block['_type']
+            if block_type == 'block':
+                # Block must have children array
+                if 'children' not in block or not isinstance(block['children'], list):
+                    return False
+                
+                # Validate spans within block
+                for child in block['children']:
+                    if '_type' not in child or child['_type'] != 'span':
+                        return False
+                    if 'text' not in child:
+                        return False
+        
+        return True
+    except (json.JSONDecodeError, TypeError, KeyError):
+        return False
+
+def serialize_portable_text_to_html(portable_text_json: str) -> str:
+    """Serialize PortableText to HTML for frontend rendering"""
+    # Implementation would use a PortableText serializer library
+    # This is a simplified example
+    pass
+
+def serialize_portable_text_to_markdown(portable_text_json: str) -> str:
+    """Serialize PortableText to Markdown for exports"""
+    # Implementation would use a PortableText serializer library
+    pass
+```
+
+### PortableText Schema Definition
+
+#### Core Block Types
+
+```typescript
+// Standard PortableText block types used in Magnetiq
+interface PortableTextBlock {
+  _type: string;
+  _key: string;
+}
+
+// Text block with formatting
+interface TextBlock extends PortableTextBlock {
+  _type: 'block';
+  style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote';
+  children: Span[];
+  markDefs?: MarkDefinition[];
+  level?: number; // for list items
+  listItem?: 'bullet' | 'number';
+}
+
+// Inline text span
+interface Span {
+  _type: 'span';
+  text: string;
+  marks?: string[]; // References to mark definitions
+}
+
+// Mark definitions for links, formatting, etc.
+interface MarkDefinition {
+  _type: string;
+  _key: string;
+}
+
+// Link mark
+interface LinkMark extends MarkDefinition {
+  _type: 'link';
+  href: string;
+  title?: string;
+  target?: '_blank' | '_self';
+}
+```
+
+#### Custom Block Types for Magnetiq
+
+```typescript
+// Call-to-action block
+interface CTABlock extends PortableTextBlock {
+  _type: 'cta';
+  text: string;
+  url: string;
+  style: 'primary' | 'secondary' | 'outline';
+  size: 'small' | 'medium' | 'large';
+}
+
+// Video embed block
+interface VideoBlock extends PortableTextBlock {
+  _type: 'video';
+  url: string;
+  title?: string;
+  thumbnail?: string;
+  autoplay?: boolean;
+  controls?: boolean;
+}
+
+// Image block with enhanced metadata
+interface ImageBlock extends PortableTextBlock {
+  _type: 'image';
+  asset: {
+    _ref: string; // Reference to media_files table
+    _type: 'reference';
+  };
+  alt: string;
+  caption?: string;
+  crop?: {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  };
+  hotspot?: {
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+  };
+}
+
+// Form embed block
+interface FormBlock extends PortableTextBlock {
+  _type: 'form';
+  formType: 'contact' | 'newsletter' | 'booking' | 'whitepaper';
+  formId?: string;
+  title?: string;
+  description?: string;
+}
+
+// SEO/Metadata block (admin use)
+interface SEOBlock extends PortableTextBlock {
+  _type: 'seo';
+  title: string;
+  description: string;
+  keywords: string[];
+  canonicalUrl?: string;
+}
+
+// Code block for technical content
+interface CodeBlock extends PortableTextBlock {
+  _type: 'code';
+  language: string;
+  code: string;
+  filename?: string;
+  highlightLines?: number[];
+}
+```
+
+### PortableText Validation Triggers
+
+```sql
+-- Trigger to validate PortableText JSON structure
+CREATE TRIGGER validate_portable_text_pages
+BEFORE INSERT ON pages
+BEGIN
+  SELECT CASE
+    WHEN json_valid(NEW.content) = 0 THEN
+      RAISE(ABORT, 'Invalid JSON in PortableText content field')
+    WHEN NOT is_valid_portable_text(NEW.content) THEN
+      RAISE(ABORT, 'Invalid PortableText structure in content field')
+  END;
+END;
+
+-- Note: is_valid_portable_text() would be implemented as a custom SQLite function
+-- or validated at the application layer before database insertion
+```
+
 ## Multilingual Validation Triggers
 
 ### JSON Structure Validation
@@ -1222,7 +1435,7 @@ END;
 -- SQLite doesn't support stored functions, but this can be used as a pattern
 -- for application-level implementation
 
--- View to identify missing translations
+-- View to identify missing PortableText translations
 CREATE VIEW missing_translations AS
 SELECT 
     'pages' as table_name,
@@ -1230,8 +1443,8 @@ SELECT
     slug,
     CASE 
         WHEN json_extract(title, '$.de') IS NULL THEN 'title'
-        WHEN json_extract(content, '$.de') IS NULL THEN 'content'
-        WHEN json_extract(excerpt, '$.de') IS NOT NULL AND json_extract(excerpt, '$.de') IS NULL THEN 'excerpt'
+        WHEN json_extract(content, '$.de') IS NULL THEN 'content (PortableText)'
+        WHEN json_extract(excerpt, '$.de') IS NOT NULL AND json_extract(excerpt, '$.de') IS NULL THEN 'excerpt (PortableText)'
     END as missing_field
 FROM pages
 WHERE status = 'published'
@@ -1301,7 +1514,7 @@ def initialize_database():
         INSERT INTO admin_users (email, hashed_password, first_name, last_name, role, is_active)
         VALUES (?, ?, ?, ?, ?, ?)
     """, (
-        "admin@voltaic.systems",
+        "admin@voltAIc.systems",
         "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBP7QQQ7NTGdzi",  # hashed "admin123"
         "System",
         "Administrator", 

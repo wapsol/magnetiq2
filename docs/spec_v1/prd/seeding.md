@@ -10,4 +10,4 @@
 
 6. Seed maximum of 5 records.
 
-7. Use semantics / AI / LLM to create seed data that is relevant to the industry in which the user operates (visit https://voltaic.systems).
+7. Use semantics / AI / LLM to create seed data that is relevant to the industry in which the user operates (visit https://voltAIc.systems).

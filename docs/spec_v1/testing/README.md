@@ -159,7 +159,7 @@ cd backend && python -m pytest -m auth      # Authentication tests only
 ## Test Data and Constants
 
 ### Test Users
-- **Email**: `test@voltaic.systems`
+- **Email**: `test@voltAIc.systems`
 - **Password**: `testpassword123`
 - **Role**: `admin`
 - **Super Admin**: `true`

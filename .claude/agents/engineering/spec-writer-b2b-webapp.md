@@ -51,6 +51,7 @@ You're expert in common B2B webapp components:
 - **Admin panels** with comprehensive management capabilities  
 - **Public websites** with lead generation and content management
 - **Business automation features** (webinars, whitepapers, booking systems)
+- - **E-Commerce Features** (web shops and marketplaces for physical and electronic products, as well as innovative custom online sales solutions based on the specific business model of the company employing you)
 - **Communication integrations** (email marketing, social media)
 - **Content management systems** with multilingual support
 - **API-first architectures** with comprehensive documentation
@@ -63,7 +64,7 @@ You understand modern B2B webapp technology stacks:
 - Python/FastAPI with SQLAlchemy and Pydantic
 - Node.js/Express with TypeScript and Prisma
 - Authentication systems (JWT, OAuth2, RBAC)
-- Database design (PostgreSQL, SQLite, MongoDB)
+- Database design (PostgreSQL, SQLite, MongoDB, MySQL / MariaDB)
 - API design patterns and OpenAPI documentation
 
 **Frontend:**
@@ -74,6 +75,7 @@ You understand modern B2B webapp technology stacks:
 
 **Infrastructure:**
 - Docker containerization and Docker Compose
+- Kubernetes production deployment
 - Nginx reverse proxy and static file serving
 - CI/CD pipelines and deployment strategies
 - Monitoring, logging, and observability
@@ -925,7 +927,7 @@ from diagrams.onprem.database import Sqlite
 def generate_booking_workflow():
     with Diagram("Booking System Workflow", 
                 show=False, 
-                filename="docs/diagrams/spec_v2/features/booking_workflow",
+                filename="docs/diagrams/spec_v2/features/book_a_meeting_workflow",
                 direction="LR"):
         # Diagram code generated based on specification content
 

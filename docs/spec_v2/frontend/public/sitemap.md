@@ -391,16 +391,16 @@ const routes = [
 **Meta Tags Structure**:
 ```html
 <!-- English pages -->
-<link rel="canonical" href="https://voltaic.systems/services/ai-consulting/" />
-<link rel="alternate" hreflang="en" href="https://voltaic.systems/services/ai-consulting/" />
-<link rel="alternate" hreflang="de" href="https://voltaic.systems/de/dienstleistungen/ki-beratung/" />
-<link rel="alternate" hreflang="x-default" href="https://voltaic.systems/services/ai-consulting/" />
+<link rel="canonical" href="https://voltAIc.systems/services/ai-consulting/" />
+<link rel="alternate" hreflang="en" href="https://voltAIc.systems/services/ai-consulting/" />
+<link rel="alternate" hreflang="de" href="https://voltAIc.systems/de/dienstleistungen/ki-beratung/" />
+<link rel="alternate" hreflang="x-default" href="https://voltAIc.systems/services/ai-consulting/" />
 
 <!-- German pages -->
-<link rel="canonical" href="https://voltaic.systems/de/dienstleistungen/ki-beratung/" />
-<link rel="alternate" hreflang="en" href="https://voltaic.systems/services/ai-consulting/" />
-<link rel="alternate" hreflang="de" href="https://voltaic.systems/de/dienstleistungen/ki-beratung/" />
-<link rel="alternate" hreflang="x-default" href="https://voltaic.systems/services/ai-consulting/" />
+<link rel="canonical" href="https://voltAIc.systems/de/dienstleistungen/ki-beratung/" />
+<link rel="alternate" hreflang="en" href="https://voltAIc.systems/services/ai-consulting/" />
+<link rel="alternate" hreflang="de" href="https://voltAIc.systems/de/dienstleistungen/ki-beratung/" />
+<link rel="alternate" hreflang="x-default" href="https://voltAIc.systems/services/ai-consulting/" />
 ```
 
 **Structured Data**:

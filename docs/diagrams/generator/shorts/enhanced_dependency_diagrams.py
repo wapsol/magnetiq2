@@ -55,7 +55,7 @@ def generate_enhanced_model_relationships_with_cascades():
             webinar_registration = Python("Registration\nid, user_id\nwebinar_id")
             whitepaper = Python("Whitepaper\nid, title, file\ndescription")
             download = Python("Download\nid, user_id\nwhitepaper_id")
-            booking = Python("Booking\nid, user_id\ndate, status")
+            book_a_meeting = Python("BookAMeeting\nid, user_id\ndate, status")
             
         # Communication Domain
         with Cluster("Communication Domain"):
@@ -74,7 +74,7 @@ def generate_enhanced_model_relationships_with_cascades():
         webinar >> Edge(label="1:N\nCASCADE", color="red", style="bold") >> webinar_registration
         user >> Edge(label="1:N\nRESTRICT", color="blue") >> download  
         whitepaper >> Edge(label="1:N\nCASCADE", color="red", style="bold") >> download
-        user >> Edge(label="1:N\nSET NULL", color="orange") >> booking
+        user >> Edge(label="1:N\nSET NULL", color="orange") >> book_a_meeting
         
         # Communication relationships
         user >> Edge(label="1:N\nSET NULL", color="orange") >> email_recipient

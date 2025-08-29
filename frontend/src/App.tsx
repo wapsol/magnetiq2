@@ -10,7 +10,7 @@ import AuthLayout from './components/layouts/AuthLayout'
 import HomePage from './pages/public/HomePage'
 import WebinarsPage from './pages/public/WebinarsPage'
 import WhitepapersPage from './pages/public/WhitepapersPage'
-import BookingPage from './pages/public/BookingPage'
+import BookAMeetingPage from './pages/public/BookAMeetingPage'
 import TemplateShowcasePage from './pages/public/TemplateShowcasePage'
 
 // Auth pages
@@ -38,7 +38,7 @@ function App() {
           <Route path="webinars/:slug" element={<WebinarsPage />} />
           <Route path="whitepapers" element={<WhitepapersPage />} />
           <Route path="whitepapers/:slug" element={<WhitepapersPage />} />
-          <Route path="book-consultation" element={<BookingPage />} />
+          <Route path="book-consultation" element={<BookAMeetingPage />} />
           <Route path="templates" element={<TemplateShowcasePage />} />
           <Route path="pages/:slug" element={<HomePage />} />
         </Route>

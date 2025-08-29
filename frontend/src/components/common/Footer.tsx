@@ -48,7 +48,7 @@ const Footer = () => {
               <div className="space-y-3">
                 <div className="flex items-center space-x-3 text-gray-500 dark:text-gray-200">
                   <EnvelopeIcon className="h-5 w-5 text-gray-400 dark:text-gray-300" />
-                  <span>datadriven@voltaic.systems</span>
+                  <span>datadriven@voltAIc.systems</span>
                 </div>
                 <div className="flex items-center space-x-3 text-gray-500 dark:text-gray-200">
                   <PhoneIcon className="h-5 w-5 text-gray-400 dark:text-gray-300" />

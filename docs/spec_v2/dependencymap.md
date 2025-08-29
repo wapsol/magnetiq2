@@ -60,10 +60,10 @@ This document demonstrates the comprehensive dependency mapping capabilities of 
   - Lead capture integration with user accounts
   - Download history tracking
 
-- **Booking System** → `/frontend/public/features/booking.md`
+- **Booking System** → `/frontend/public/features/book-a-meeting.md`
   - User authentication for consultation bookings
   - Calendar integration requires authenticated sessions
-  - Booking history and management
+  - Book-a-meeting history and management
 
 - **Communication** → `/frontend/public/features/communication.md`
   - Authenticated access for communication preferences
@@ -113,7 +113,7 @@ graph LR
     F --> G[Feature Access]
     G --> H[Webinar Registration]
     G --> I[Whitepaper Download]
-    G --> J[Booking Creation]
+    G --> J[Book-a-Meeting Creation]
 ```
 
 ### Cyclical Dependency Detection

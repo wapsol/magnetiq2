@@ -62,7 +62,7 @@ Bidirectional integration with Odoo for CRM, Events, and Products synchronizatio
 ### Configuration
 ```python
 class OdooConfig:
-    URL: str = "https://odoo.voltaic.systems"
+    URL: str = "https://odoo.voltAIc.systems"
     DATABASE: str = "voltaic_production"
     USERNAME: str = "api_user"
     API_KEY: str = "encrypted_api_key"

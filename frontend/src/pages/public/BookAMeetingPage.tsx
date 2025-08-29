@@ -28,7 +28,7 @@ interface FormData {
   message: string
 }
 
-const BookingPage = () => {
+const BookAMeetingPage = () => {
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
@@ -671,4 +671,4 @@ const BookingPage = () => {
   )
 }
 
-export default BookingPage
+export default BookAMeetingPage

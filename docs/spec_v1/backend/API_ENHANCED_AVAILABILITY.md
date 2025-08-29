@@ -36,7 +36,7 @@ GET /api/v1/bookings/availability?consultant_id=pascal&date=2024-01-15
   "consultant": {
     "id": "pascal",
     "name": "Pascal Köth, Dipl. Ök.",
-    "email": "pko@voltaic.systems",
+    "email": "pko@voltAIc.systems",
     "role": "Co-founder, Business Development and Partnerships",
     "expertise": "Business strategy, partnerships, and AI adoption"
   },
@@ -61,7 +61,7 @@ GET /api/v1/bookings/calendar?start_date=2024-01-15&weeks=6
       "consultant": {
         "id": "pascal",
         "name": "Pascal Köth, Dipl. Ök.",
-        "email": "pko@voltaic.systems",
+        "email": "pko@voltAIc.systems",
         "role": "Co-founder, Business Development and Partnerships",
         "expertise": "Business strategy, partnerships, and AI adoption"
       },
@@ -89,7 +89,7 @@ GET /api/v1/bookings/calendar?start_date=2024-01-15&weeks=6
       "consultant": {
         "id": "ashant", 
         "name": "Ashant Chalasani, M.Sc.",
-        "email": "ach@voltaic.systems",
+        "email": "ach@voltAIc.systems",
         "role": "Co-founder, Product and Engineering",
         "expertise": "Technical architecture, product development, and AI systems"
       },

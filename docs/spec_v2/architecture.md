@@ -99,7 +99,7 @@ See [Frontend Public Specification](./frontend/public/public.md) and [Admin Pane
 ### 3. Business Operations Service
 - **Webinar Management**: Topic creation, session scheduling, registration handling (see [Webinars Feature](./frontend/public/features/webinars.md))
 - **Whitepapers**: Whitepaper distribution with basic lead capture (see [Whitepapers Feature](./frontend/public/features/whitepapers.md))
-- **Booking System**: Simple consultation scheduling (see [Booking Feature](./frontend/public/features/booking.md))
+- **Booking System**: Simple consultation scheduling (see [Booking Feature](./frontend/public/features/book-a-meeting.md))
 - **Basic Analytics**: Simple metrics on engagement and conversions
 
 ### 4. Communication Services
@@ -264,7 +264,7 @@ magnetiq2/
             │   ├── sitemap.md   # SEO and navigation structure
             │   ├── integrations.md # External service integrations
             │   └── features/
-            │       ├── booking.md      # Booking system specification
+            │       ├── book-a-meeting.md      # Booking system specification
             │       ├── communication.md # Communication services
             │       ├── webinars.md     # Webinar management
             │       └── whitepapers.md  # Whitepaper distribution

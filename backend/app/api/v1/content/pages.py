@@ -6,6 +6,7 @@ from app.database import get_db
 from app.models.content import Page
 from app.models.user import AdminUser
 from app.schemas.content import PageCreate, PageUpdate, PageResponse, PageListResponse
+from app.services.content_renderer import ContentRendererService
 from app.dependencies import (
     get_current_user, require_editor, require_viewer, 
     CommonQueryParams
@@ -79,11 +80,25 @@ async def create_page(
             detail="Page with this slug already exists"
         )
     
+    # Initialize content renderer service
+    content_renderer = ContentRendererService()
+    
+    # Validate content structure
+    validation_result = content_renderer.validate_content_structure(page_data.dict())
+    if not validation_result['is_valid']:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Content validation failed: {'; '.join(validation_result['errors'])}"
+        )
+    
     # Create page
     page = Page(
         slug=page_data.slug,
         title=page_data.title,
         content=page_data.content,
+        content_blocks=page_data.content_blocks,
+        content_format=page_data.content_format,
+        layout_config=page_data.layout_config,
         excerpt=page_data.excerpt,
         meta_description=page_data.meta_description,
         template=page_data.template,
@@ -165,6 +180,23 @@ async def update_page(
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Page with this slug already exists"
+            )
+    
+    # Validate content structure if content is being updated
+    content_renderer = ContentRendererService()
+    if page_data.content_blocks or page_data.content_format:
+        # Build validation data from current page + updates
+        validation_data = {
+            'content_format': page_data.content_format or page.content_format,
+            'content_blocks': page_data.content_blocks or page.content_blocks,
+            'content': page_data.content or page.content
+        }
+        
+        validation_result = content_renderer.validate_content_structure(validation_data)
+        if not validation_result['is_valid']:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Content validation failed: {'; '.join(validation_result['errors'])}"
             )
     
     # Update fields

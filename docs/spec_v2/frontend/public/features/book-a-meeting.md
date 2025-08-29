@@ -1,8 +1,8 @@
-# Magnetiq v2 - Consultation Booking Feature Specification
+# Magnetiq v2 - Consultation Book-a-Meeting Feature Specification
 
 ## Overview
 
-The consultation booking system provides a seamless way for potential clients to schedule meetings with voltAIc Systems consultants. It integrates calendar availability checking, automated confirmations, and CRM synchronization to deliver a professional booking experience.
+The consultation book-a-meeting system provides a seamless way for potential clients to schedule meetings with voltAIc Systems consultants. It integrates calendar availability checking, automated confirmations, and CRM synchronization to deliver a professional book-a-meeting experience.
 
 ## System Architecture
 
@@ -33,7 +33,7 @@ interface Consultant {
     workingHours: WeeklySchedule;
     holidays: DateRange[];
     isOnline: boolean;
-    isAcceptingBookings: boolean;
+    isAcceptingMeetings: boolean;
   };
   
   integration: {
@@ -42,14 +42,14 @@ interface Consultant {
   };
   
   analytics: {
-    totalBookings: number;
+    totalMeetings: number;
     averageRating: number;
     responseTime: number;
     completionRate: number;
   };
 }
 
-interface Booking {
+interface BookAMeeting {
   id: string;
   reference: string; // VLT-YYYYMMDD-XXXX format
   
@@ -71,7 +71,7 @@ interface Booking {
     position?: string;
   };
   
-  // Booking Content
+  // Meeting Content
   subject?: string;
   message?: string;
   preparationNotes?: string;
@@ -83,7 +83,7 @@ interface Booking {
   
   // Status & Tracking
   status: 'confirmed' | 'cancelled' | 'completed' | 'no_show' | 'rescheduled';
-  bookingSource: 'website' | 'referral' | 'direct' | 'social';
+  meetingSource: 'website' | 'referral' | 'direct' | 'social';
   
   // Integration
   googleCalendarEventId?: string;
@@ -140,11 +140,11 @@ interface TimeSlot {
 
 ## Public Frontend Features
 
-### Booking Landing Page (`/book-consultation`)
+### Book-a-Meeting Landing Page (`/book-a-meeting`)
 
 #### Page Structure
 ```tsx
-interface BookingPageLayout {
+interface BookAMeetingPageLayout {
   hero: {
     title: TranslatedText;
     subtitle: TranslatedText;
@@ -152,7 +152,7 @@ interface BookingPageLayout {
     socialProof?: {
       clientLogos: string[];
       testimonials: Testimonial[];
-      statsDisplay: BookingStats;
+      statsDisplay: BookAMeetingStats;
     };
   };
   
@@ -165,7 +165,7 @@ interface BookingPageLayout {
     filterOptions: ConsultantFilter[];
   };
   
-  bookingProcess: {
+  meetingProcess: {
     stepIndicator: boolean;
     progressSaving: boolean;
     multiStepForm: boolean;
@@ -223,7 +223,7 @@ interface ConsultantCardElements {
   socialProof: {
     rating: number;
     reviewCount: number;
-    completedBookings: number;
+    completedMeetings: number;
     recentTestimonial?: string;
   };
   
@@ -253,7 +253,7 @@ interface ConsultantFilters {
 }
 ```
 
-### Multi-Step Booking Process
+### Multi-Step Book-a-Meeting Process
 
 #### Step 1: Consultant Selection
 ```typescript
@@ -343,8 +343,8 @@ interface ContactInformationStep {
 
 #### Step 4: Confirmation & Summary
 ```typescript
-interface BookingConfirmationStep {
-  bookingSummary: {
+interface BookAMeetingConfirmationStep {
+  meetingSummary: {
     consultant: ConsultantSummary;
     datetime: Date;
     duration: number;
@@ -448,7 +448,7 @@ interface CalendarWidgetProps {
 }
 ```
 
-### Booking Confirmation System
+### Book-a-Meeting Confirmation System
 
 #### Confirmation Page
 ```tsx
@@ -459,7 +459,7 @@ interface ConfirmationPageContent {
     thankYouNote: TranslatedText;
   };
   
-  bookingDetails: {
+  meetingDetails: {
     reference: string;
     consultant: ConsultantInfo;
     datetime: FormattedDateTime;
@@ -493,13 +493,13 @@ interface ConfirmationPageContent {
 #### Calendar Invite Generation
 ```typescript
 interface CalendarInviteGenerator {
-  generateICSFile(booking: Booking): Promise<string>;
+  generateICSFile(meeting: BookAMeeting): Promise<string>;
   
-  generateGoogleCalendarUrl(booking: Booking): string;
+  generateGoogleCalendarUrl(meeting: BookAMeeting): string;
   
-  generateOutlookUrl(booking: Booking): string;
+  generateOutlookUrl(meeting: BookAMeeting): string;
   
-  createEmailInvite(booking: Booking): Promise<EmailInvite>;
+  createEmailInvite(meeting: BookAMeeting): Promise<EmailInvite>;
 }
 
 interface EmailInvite {
@@ -516,30 +516,30 @@ interface EmailInvite {
 
 ## Admin Panel Features
 
-### Booking Management Dashboard
+### Book-a-Meeting Management Dashboard
 
 #### Overview Analytics
 ```typescript
-interface BookingDashboard {
+interface BookAMeetingDashboard {
   summary: {
-    totalBookings: number;
-    upcomingBookings: number;
-    completedBookings: number;
-    cancelledBookings: number;
+    totalMeetings: number;
+    upcomingMeetings: number;
+    completedMeetings: number;
+    cancelledMeetings: number;
     noShowRate: number;
     averageRating: number;
   };
   
   trends: {
-    bookingTrends: TimeSeriesData[];
+    meetingTrends: TimeSeriesData[];
     conversionRates: ConversionData[];
     consultantPerformance: ConsultantStats[];
   };
   
   recentActivity: {
-    newBookings: BookingActivity[];
-    upcomingMeetings: BookingActivity[];
-    overdueFollowUps: BookingActivity[];
+    newMeetings: MeetingActivity[];
+    upcomingMeetings: MeetingActivity[];
+    overdueFollowUps: MeetingActivity[];
   };
   
   insights: {
@@ -551,11 +551,11 @@ interface BookingDashboard {
 }
 ```
 
-### Booking List Management
+### Book-a-Meeting List Management
 
-#### Booking List Interface
+#### Meeting List Interface
 ```tsx
-interface BookingListView {
+interface BookAMeetingListView {
   filters: {
     dateRange: DateRangeFilter;
     consultant: ConsultantFilter;
@@ -596,15 +596,15 @@ interface BookingListView {
 }
 ```
 
-#### Individual Booking Management
+#### Individual Meeting Management
 ```tsx
-interface BookingDetailsView {
-  booking: Booking;
+interface BookAMeetingDetailsView {
+  meeting: BookAMeeting;
   
   clientInfo: {
     contactDetails: ContactDetails;
     companyInfo: CompanyInfo;
-    bookingHistory: BookingHistory[];
+    meetingHistory: MeetingHistory[];
     communicationLog: CommunicationEntry[];
   };
   
@@ -652,9 +652,9 @@ interface ScheduleEditor {
   
   availability: {
     bufferTime: BufferTimeSettings;
-    maximumAdvanceBooking: number; // days
-    minimumAdvanceBooking: number; // hours
-    dailyBookingLimit: number;
+    maximumAdvanceMeeting: number; // days
+    minimumAdvanceMeeting: number; // hours
+    dailyMeetingLimit: number;
   };
   
   holidays: {
@@ -676,7 +676,7 @@ interface ScheduleEditor {
 
 #### Cross-Platform Follow-up Strategy
 ```typescript
-interface BookingCommunicationStrategy {
+interface BookAMeetingCommunicationStrategy {
   confirmationWorkflow: {
     emailConfirmation: EmailTemplate;
     linkedinConnection: {
@@ -723,20 +723,20 @@ interface BookingCommunicationStrategy {
 ```typescript
 interface EmailTemplateManager {
   templates: {
-    bookingConfirmation: {
+    meetingConfirmation: {
       subject: TranslatedText;
       htmlTemplate: string;
       textTemplate: string;
       variables: TemplateVariable[];
     };
     
-    bookingReminder: {
+    meetingReminder: {
       subject: TranslatedText;
       htmlTemplate: string;
       timing: number[]; // days before: [7, 1]
     };
     
-    bookingCancellation: {
+    meetingCancellation: {
       subject: TranslatedText;
       htmlTemplate: string;
       refundPolicy: string;
@@ -759,23 +759,23 @@ interface EmailTemplateManager {
 
 ## Automation Features
 
-### Booking Workflow Automation
+### Book-a-Meeting Workflow Automation
 
 #### Automated Confirmations
 ```typescript
-interface BookingAutomation {
+interface BookAMeetingAutomation {
   confirmationWorkflow: {
     immediateConfirmation: {
       email: boolean;
       sms?: boolean;
-      template: 'booking_confirmation';
+      template: 'meeting_confirmation';
       calendarInvite: boolean;
     };
     
     consultantNotification: {
       email: boolean;
       slackNotification?: boolean;
-      template: 'new_booking_consultant';
+      template: 'new_meeting_consultant';
       includeClientDetails: boolean;
     };
     
@@ -831,8 +831,8 @@ interface BookingAutomation {
 #### Real-time Calendar Updates
 ```typescript
 interface CalendarSyncManager {
-  syncBookingToCalendar(
-    booking: Booking,
+  syncMeetingToCalendar(
+    meeting: BookAMeeting,
     action: 'create' | 'update' | 'cancel'
   ): Promise<SyncResult>;
   
@@ -865,7 +865,7 @@ interface SchedulingIntelligence {
     constraints: SchedulingConstraints
   ): Promise<TimeSlotSuggestion[]>;
   
-  predictBookingLikelihood(
+  predictMeetingLikelihood(
     slot: AvailabilitySlot,
     clientProfile: ClientProfile
   ): Promise<number>; // 0-1 probability
@@ -875,10 +875,10 @@ interface SchedulingIntelligence {
     timeframe: DateRange
   ): Promise<ScheduleOptimization>;
   
-  analyzeBookingPatterns(
+  analyzeMeetingPatterns(
     consultantId: string,
     period: 'month' | 'quarter' | 'year'
-  ): Promise<BookingPatternAnalysis>;
+  ): Promise<MeetingPatternAnalysis>;
 }
 ```
 
@@ -889,17 +889,17 @@ interface SchedulingIntelligence {
 #### Bi-directional Synchronization
 ```typescript
 interface GoogleCalendarIntegration {
-  createBookingEvent(
-    booking: Booking,
+  createMeetingEvent(
+    meeting: BookAMeeting,
     consultantCalendarId: string
   ): Promise<string>; // Returns event ID
   
-  updateBookingEvent(
+  updateMeetingEvent(
     eventId: string,
-    booking: Booking
+    meeting: BookAMeeting
   ): Promise<boolean>;
   
-  cancelBookingEvent(
+  cancelMeetingEvent(
     eventId: string,
     cancellationReason: string
   ): Promise<boolean>;
@@ -920,23 +920,23 @@ interface GoogleCalendarIntegration {
 #### Lead and Opportunity Management
 ```typescript
 interface CrmIntegration {
-  createLeadFromBooking(
-    booking: Booking
+  createLeadFromMeeting(
+    meeting: BookAMeeting
   ): Promise<number>; // Returns Odoo lead ID
   
   updateOpportunityStage(
-    bookingId: string,
+    meetingId: string,
     stage: 'scheduled' | 'completed' | 'follow_up_required'
   ): Promise<boolean>;
   
   createFollowUpActivity(
-    bookingId: string,
+    meetingId: string,
     activityType: 'call' | 'email' | 'meeting',
     dueDate: Date
   ): Promise<number>; // Returns activity ID
   
-  syncBookingNotes(
-    bookingId: string,
+  syncMeetingNotes(
+    meetingId: string,
     notes: string
   ): Promise<boolean>;
 }
@@ -944,19 +944,19 @@ interface CrmIntegration {
 
 ## Analytics & Reporting
 
-### Booking Analytics
+### Book-a-Meeting Analytics
 
 #### Performance Metrics
 ```typescript
-interface BookingAnalytics {
+interface BookAMeetingAnalytics {
   conversionMetrics: {
-    landingPageToBooking: number;
-    consultantViewToBooking: number;
-    calendarViewToBooking: number;
+    landingPageToMeeting: number;
+    consultantViewToMeeting: number;
+    calendarViewToMeeting: number;
     formStartToCompletion: number;
   };
   
-  bookingPatterns: {
+  meetingPatterns: {
     popularTimeSlots: TimeSlotStats[];
     seasonalTrends: SeasonalData[];
     dayOfWeekDistribution: DayStats[];
@@ -971,7 +971,7 @@ interface BookingAnalytics {
   };
   
   consultantPerformance: {
-    bookingVolume: ConsultantBookingStats[];
+    meetingVolume: ConsultantMeetingStats[];
     clientSatisfaction: ConsultantRatingStats[];
     responseTime: ConsultantResponseStats[];
     completionRate: ConsultantCompletionStats[];
@@ -982,7 +982,7 @@ interface BookingAnalytics {
 #### Revenue Attribution
 ```typescript
 interface RevenueAnalytics {
-  bookingValue: {
+  meetingValue: {
     averageClientValue: number;
     conversionToSale: number;
     timeToConversion: number;
@@ -1008,11 +1008,11 @@ interface RevenueAnalytics {
 
 ## Quality Assurance & Testing
 
-### Booking Flow Testing
+### Book-a-Meeting Flow Testing
 ```typescript
-interface BookingFlowTests {
-  // Complete Booking Flow
-  testSuccessfulBooking: () => void;
+interface BookAMeetingFlowTests {
+  // Complete Meeting Flow
+  testSuccessfulMeeting: () => void;
   testMultipleConsultantSelection: () => void;
   testTimezoneHandling: () => void;
   testFormValidation: () => void;
@@ -1029,7 +1029,7 @@ interface BookingFlowTests {
   testCalendarInviteGeneration: () => void;
   
   // Edge Cases
-  testDoubleBookingPrevention: () => void;
+  testDoubleMeetingPrevention: () => void;
   testCancellationHandling: () => void;
   testReschedulingFlow: () => void;
   testNoShowHandling: () => void;
@@ -1043,9 +1043,9 @@ interface BookingFlowTests {
 
 ### Load Testing
 ```python
-class BookingLoadTests:
-    def test_concurrent_bookings(self):
-        """Test 100 concurrent booking attempts."""
+class BookAMeetingLoadTests:
+    def test_concurrent_meetings(self):
+        """Test 100 concurrent meeting attempts."""
         pass
     
     def test_availability_checking_load(self):
@@ -1060,31 +1060,31 @@ class BookingLoadTests:
 ## Success Metrics & KPIs
 
 ### Business Impact Metrics
-- **Booking Conversion Rate**: Website visitors to completed bookings
+- **Meeting Conversion Rate**: Website visitors to completed meetings
 - **Consultant Utilization**: Percentage of available slots booked
 - **Client Satisfaction**: Average rating and feedback scores
-- **No-Show Rate**: Percentage of bookings that result in no-shows
-- **Lead Quality**: Booking-to-opportunity conversion rate
-- **Time to Book**: Average time from first visit to completed booking
+- **No-Show Rate**: Percentage of meetings that result in no-shows
+- **Lead Quality**: Meeting-to-opportunity conversion rate
+- **Time to Book**: Average time from first visit to completed meeting
 - **Revenue Attribution**: Revenue generated from booked consultations
-- **Client Retention**: Repeat booking rate
+- **Client Retention**: Repeat meeting rate
 
 ### Technical Performance Metrics
-- **Page Load Speed**: <2 seconds for booking pages
+- **Page Load Speed**: <2 seconds for meeting pages
 - **Availability Check Speed**: <500ms for calendar queries
 - **Email Delivery Rate**: >99% successful delivery
 - **Calendar Sync Accuracy**: >99.5% successful synchronization
 - **Form Completion Rate**: >80% completion once started
-- **Mobile Booking Rate**: Percentage of bookings from mobile devices
+- **Mobile Meeting Rate**: Percentage of meetings from mobile devices
 - **Integration Reliability**: >99% successful CRM synchronization
 
 ### User Experience Metrics
-- **Booking Flow Abandonment**: Where users drop off in the process
-- **Time to Complete Booking**: Average time to complete booking flow
+- **Meeting Flow Abandonment**: Where users drop off in the process
+- **Time to Complete Meeting**: Average time to complete meeting flow
 - **Mobile Usability**: Mobile-specific conversion and satisfaction rates
 - **Calendar Widget Usage**: Interaction patterns with calendar interface
 - **Consultant Selection Patterns**: How users choose consultants
-- **Preferred Time Slots**: Most popular booking times and days
-- **Support Ticket Volume**: Booking-related support requests
+- **Preferred Time Slots**: Most popular meeting times and days
+- **Support Ticket Volume**: Meeting-related support requests
 
-This comprehensive booking specification provides a complete framework for implementing a professional consultation booking system that integrates seamlessly with the broader Magnetiq ecosystem while delivering exceptional user experience and business value.
+This comprehensive book-a-meeting specification provides a complete framework for implementing a professional consultation meeting system that integrates seamlessly with the broader Magnetiq ecosystem while delivering exceptional user experience and business value.

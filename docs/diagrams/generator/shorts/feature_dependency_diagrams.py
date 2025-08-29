@@ -58,7 +58,7 @@ def generate_feature_dependency_tree():
         with Cluster("Business Features", graph_attr=get_cluster_style("layer")):
             webinars = Python("Webinar\nManagement")
             whitepapers = Python("Whitepaper\nDownloads")
-            bookings = Python("Booking\nSystem")
+            book_a_meetings = Python("BookAMeeting\nSystem")
         
         # Communication Services Layer
         with Cluster("Communication Services", graph_attr=get_cluster_style("component")):
@@ -78,14 +78,14 @@ def generate_feature_dependency_tree():
         database >> Edge(label="stores", color=MAGNETIQ_COLORS["primary"]) >> [auth, content_api]
         
         # Content management dependencies
-        content_api >> Edge(label="enables", color=MAGNETIQ_COLORS["accent"]) >> [webinars, whitepapers, bookings]
+        content_api >> Edge(label="enables", color=MAGNETIQ_COLORS["accent"]) >> [webinars, whitepapers, book_a_meetings]
         media_upload >> Edge(label="supports", color=MAGNETIQ_COLORS["accent"]) >> cms
         auth >> Edge(label="protects", color=MAGNETIQ_COLORS["primary"]) >> media_upload
         
         # Business feature interconnections
         webinars >> Edge(label="triggers", color=MAGNETIQ_COLORS["secondary"]) >> email_campaigns
         whitepapers >> Edge(label="triggers", color=MAGNETIQ_COLORS["secondary"]) >> email_campaigns
-        bookings >> Edge(label="notifies", color=MAGNETIQ_COLORS["secondary"]) >> [email_campaigns, social_linkedin]
+        book_a_meetings >> Edge(label="notifies", color=MAGNETIQ_COLORS["secondary"]) >> [email_campaigns, social_linkedin]
         
         # External service dependencies
         email_campaigns >> Edge(label="requires", color=MAGNETIQ_COLORS["warning"], style="dashed") >> smtp_service
@@ -122,7 +122,7 @@ def generate_fastapi_service_dependencies():
         with Cluster("Services"):
             auth_service = Python("AuthService")
             content_service = Python("ContentService") 
-            booking_service = Python("BookingService")
+            book_a_meeting_service = Python("BookAMeetingService")
             email_service = Python("EmailService")
             social_service = Python("SocialService")
         
@@ -143,30 +143,30 @@ def generate_fastapi_service_dependencies():
         # Route to service dependencies
         auth_routes >> auth_service
         content_routes >> content_service
-        business_routes >> booking_service
+        business_routes >> book_a_meeting_service
         comm_routes >> [email_service, social_service]
         admin_routes >> [auth_service, content_service]
         
         # Service dependencies on shared components
-        [auth_service, content_service, booking_service] >> db_session
-        [content_service, booking_service, email_service, social_service] >> current_user
-        [content_service, booking_service, admin_routes] >> permissions
+        [auth_service, content_service, book_a_meeting_service] >> db_session
+        [content_service, book_a_meeting_service, email_service, social_service] >> current_user
+        [content_service, book_a_meeting_service, admin_routes] >> permissions
         [email_service, social_service] >> config
         
         # Utility dependencies
         auth_service >> validators
         content_service >> validators  
-        booking_service >> validators
+        book_a_meeting_service >> validators
         email_service >> validators
         social_service >> validators
         
         auth_service >> serializers
         content_service >> serializers
-        booking_service >> serializers
+        book_a_meeting_service >> serializers
         
         auth_service >> exceptions >> logging
         content_service >> exceptions >> logging
-        booking_service >> exceptions >> logging
+        book_a_meeting_service >> exceptions >> logging
         email_service >> exceptions >> logging
         social_service >> exceptions >> logging
 

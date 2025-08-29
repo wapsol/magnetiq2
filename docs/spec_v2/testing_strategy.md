@@ -75,7 +75,7 @@ describe('WebinarCard', () => {
 ### API Integration Testing
 ```typescript
 // Example: API service tests
-import { bookingService } from '@/services/booking';
+import { bookAMeetingService } from '@/services/bookAMeeting';
 import { server } from '@/test-utils/mock-server';
 
 describe('BookingService', () => {
@@ -83,7 +83,7 @@ describe('BookingService', () => {
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
 
-  it('creates booking successfully', async () => {
+  it('creates book-a-meeting successfully', async () => {
     const bookingData = {
       consultantId: 'consultant-1',
       datetime: new Date('2024-02-20T10:00:00Z'),
@@ -95,13 +95,13 @@ describe('BookingService', () => {
       }
     };
 
-    const result = await bookingService.createBooking(bookingData);
+    const result = await bookAMeetingService.createBooking(bookingData);
 
     expect(result.success).toBe(true);
     expect(result.data.reference).toMatch(/^VLT-\d{8}-\w{4}$/);
   });
 
-  it('handles booking conflicts', async () => {
+  it('handles book-a-meeting conflicts', async () => {
     server.use(
       rest.post('/api/v1/public/bookings', (req, res, ctx) => {
         return res(
@@ -117,7 +117,7 @@ describe('BookingService', () => {
       })
     );
 
-    const result = await bookingService.createBooking(bookingData);
+    const result = await bookAMeetingService.createBooking(bookingData);
 
     expect(result.success).toBe(false);
     expect(result.error.code).toBe('TIME_SLOT_UNAVAILABLE');
@@ -207,7 +207,7 @@ async def client():
 @pytest.fixture
 async def admin_headers(client):
     # Login as admin and get token
-    login_data = {"email": "admin@voltaic.systems", "password": "test-pass"}
+    login_data = {"email": "admin@voltAIc.systems", "password": "test-pass"}
     response = await client.post("/api/v1/auth/login", json=login_data)
     token = response.json()["data"]["access_token"]
     return {"Authorization": f"Bearer {token}"}
@@ -278,12 +278,12 @@ Database tests must validate model relationships, cascade behaviors (CASCADE, SE
 ```python
 # Example: SQLAlchemy model tests
 import pytest
-from models.booking import Booking, BookingStatus
+from models.book_a_meeting import BookAMeeting, BookingStatus
 from datetime import datetime, timedelta
 
 class TestBookingModel:
     def test_booking_creation(self, db_session):
-        booking = Booking(
+        booking = BookAMeeting(
             consultant_id="consultant-1",
             datetime=datetime.now() + timedelta(days=1),
             duration=60,
@@ -300,7 +300,7 @@ class TestBookingModel:
         assert booking.status == BookingStatus.CONFIRMED
 
     def test_booking_reference_generation(self, db_session):
-        booking = Booking(
+        booking = BookAMeeting(
             consultant_id="consultant-1",
             datetime=datetime(2024, 2, 15, 10, 0),
             duration=60,
@@ -394,7 +394,7 @@ class TestOAuth2Integration:
         """Test LinkedIn OAuth2 flow initiation"""
         user_id = "user123"
         platform = "linkedin"
-        redirect_uri = "https://voltaic.systems/auth/callback"
+        redirect_uri = "https://voltAIc.systems/auth/callback"
         
         result = await oauth_service.initiate_oauth_flow(
             platform, user_id, redirect_uri
@@ -410,7 +410,7 @@ class TestOAuth2Integration:
         """Test Twitter OAuth2 with PKCE implementation"""
         user_id = "user123"
         platform = "twitter"
-        redirect_uri = "https://voltaic.systems/auth/callback"
+        redirect_uri = "https://voltAIc.systems/auth/callback"
         
         result = await oauth_service.initiate_oauth_flow(
             platform, user_id, redirect_uri
@@ -443,7 +443,7 @@ class TestSocialMediaContent:
         """Test malicious content detection and sanitization"""
         malicious_content = {
             "text": "<script>alert('xss')</script>Check out our services!",
-            "links": ["https://voltaic.systems"]
+            "links": ["https://voltAIc.systems"]
         }
         
         result = await content_validator.validate_social_content(
@@ -540,7 +540,7 @@ class TestEmailIntegration:
         config = {
             "smtp_host": "smtp.test.com",
             "smtp_port": 587,
-            "username": "test@voltaic.systems",
+            "username": "test@voltAIc.systems",
             "password": "test-password"
         }
         return EmailService(config)
@@ -611,7 +611,7 @@ class TestCalendarIntegration:
             "duration": 60,
             "client_name": "John Doe",
             "client_email": "john@example.com",
-            "consultant_calendar_id": "consultant@voltaic.systems"
+            "consultant_calendar_id": "consultant@voltAIc.systems"
         }
         
         mock_event = {
@@ -634,7 +634,7 @@ class TestCalendarIntegration:
             mock_service.events().list().execute.return_value = {"items": []}
             
             is_available = await calendar_service.check_consultant_availability(
-                "consultant@voltaic.systems",
+                "consultant@voltAIc.systems",
                 datetime(2024, 2, 15, 14, 0),
                 datetime(2024, 2, 15, 15, 0)
             )
@@ -902,7 +902,7 @@ from factories import (
 def test_admin_user(db_session):
     """Create test admin user"""
     return UserFactory(
-        email="admin@voltaic.systems",
+        email="admin@voltAIc.systems",
         role="admin",
         first_name="Test",
         last_name="Admin"
@@ -914,7 +914,7 @@ def test_consultant(db_session):
     return ConsultantFactory(
         first_name="Dr. Pascal",
         last_name="Köth",
-        email="pascal@voltaic.systems",
+        email="pascal@voltAIc.systems",
         expertise=["AI", "Digital Transformation"],
         is_online=True
     )
@@ -978,13 +978,13 @@ class TestDataSeeder:
         """Seed admin users for testing"""
         users = [
             {
-                "email": "admin@voltaic.systems",
+                "email": "admin@voltAIc.systems",
                 "role": "super_admin",
                 "first_name": "Super",
                 "last_name": "Admin"
             },
             {
-                "email": "editor@voltaic.systems", 
+                "email": "editor@voltAIc.systems", 
                 "role": "editor",
                 "first_name": "Content",
                 "last_name": "Editor"
@@ -1003,7 +1003,7 @@ class TestDataSeeder:
             {
                 "first_name": "Dr. Pascal",
                 "last_name": "Köth",
-                "email": "pascal@voltaic.systems",
+                "email": "pascal@voltAIc.systems",
                 "expertise": ["AI Strategy", "Digital Transformation"],
                 "biography": {
                     "en": "Leading AI strategist with 15+ years experience",

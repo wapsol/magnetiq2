@@ -72,7 +72,7 @@ def generate_comprehensive_health_check_tree():
             content_feature = Python("Content\nManagement")
             email_feature = Storage("Email\nCampaigns")
             social_feature = Python("Social\nPosting")
-            booking_feature = Python("Booking\nSystem")
+            book_a_meeting_feature = Python("BookAMeeting\nSystem")
             media_upload = Storage("Media\nUpload")
         
         # Health Status Aggregation
@@ -103,7 +103,7 @@ def generate_comprehensive_health_check_tree():
         [db_query, filesystem] >> content_feature
         [smtp_auth, auth_feature] >> email_feature
         [linkedin_api, twitter_api, auth_feature] >> social_feature
-        [db_query, auth_feature] >> booking_feature
+        [db_query, auth_feature] >> book_a_meeting_feature
         [filesystem, auth_feature] >> media_upload
         
         # Health status determination - Critical dependencies
@@ -113,7 +113,7 @@ def generate_comprehensive_health_check_tree():
         [smtp_connectivity, linkedin_api, twitter_api] >> Edge(label="degraded", color="orange") >> degraded_status
         
         # Health status determination - All good
-        [auth_feature, content_feature, email_feature, social_feature, booking_feature] >> Edge(label="operational", color="green") >> healthy_status
+        [auth_feature, content_feature, email_feature, social_feature, book_a_meeting_feature] >> Edge(label="operational", color="green") >> healthy_status
         
         # Monitoring and alerting
         [healthy_status, degraded_status, unhealthy_status] >> dashboard
@@ -267,7 +267,7 @@ def generate_failure_cascade_analysis():
         with Cluster("Secondary Impact"):
             user_registration_blocked = Action("User Registration\nBlocked")
             content_management_limited = Action("Content Management\nLimited")
-            booking_system_degraded = Decision("Booking System\nDegraded")
+            book_a_meeting_system_degraded = Decision("BookAMeeting System\nDegraded")
             notifications_failed = Action("Notifications\nFailed")
         
         # Business Impact

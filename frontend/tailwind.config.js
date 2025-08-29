@@ -8,19 +8,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Monday.com Inspired Brand Colors
+        // voltAIc-inspired Brand Colors (Purple-focused like the website)
         primary: {
           50: '#f3f2ff',
           100: '#ebe8ff',
           200: '#d9d4ff',
           300: '#beb5ff',
-          400: '#9f8aff',
-          500: '#7c5aff',
-          600: '#5034ff',
-          700: '#4426e6',
-          800: '#3920b3',
-          900: '#2d1b7a',
-          950: '#1f1252',
+          400: '#a78bfa',
+          500: '#8b5cf6',
+          600: '#7c3aed',
+          700: '#6d28d9',
+          800: '#5b21b6',
+          900: '#4c1d95',
+          950: '#2e1065',
         },
         secondary: {
           50: '#f8fafc',
@@ -82,7 +82,7 @@ export default {
           800: '#991b1b',
           900: '#7f1d1d',
         },
-        // Additional neutral grays
+        // voltAIc Dark Theme Grays (inspired by the dark website)
         gray: {
           25: '#fcfcfd',
           50: '#f9fafb',
@@ -94,8 +94,20 @@ export default {
           600: '#4b5563',
           700: '#374151',
           800: '#1f2937',
-          900: '#111827',
-          950: '#030712',
+          900: '#0f0f23', // voltAIc dark background
+          950: '#0a0a1a', // Even darker for cards/sections
+        },
+        // Dark theme specific colors
+        dark: {
+          bg: '#0f0f23', // Main dark background from voltAIc
+          surface: '#1a1b3d', // Card/surface color 
+          'surface-light': '#252761', // Lighter surface
+          border: '#2d2f5f', // Border color
+          text: {
+            primary: '#ffffff',
+            secondary: '#cbd5e1',
+            muted: '#94a3b8',
+          }
         },
       },
       fontFamily: {

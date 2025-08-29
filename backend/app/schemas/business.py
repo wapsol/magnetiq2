@@ -158,14 +158,14 @@ class WhitepaperDownloadCreate(BaseModel):
     utm_campaign: Optional[str] = None
 
 
-class BookingCreate(BaseModel):
+class BookAMeetingCreate(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
     company: Optional[str] = None
     job_title: Optional[str] = None
     phone: Optional[str] = None
-    booking_type: str
+    meeting_type: str
     preferred_date: datetime
     duration_minutes: int = 30
     timezone: str = "UTC"
@@ -178,7 +178,7 @@ class BookingCreate(BaseModel):
     utm_campaign: Optional[str] = None
 
 
-class BookingUpdate(BaseModel):
+class BookAMeetingUpdate(BaseModel):
     status: Optional[str] = None
     confirmed_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
@@ -188,7 +188,7 @@ class BookingUpdate(BaseModel):
     assigned_to: Optional[int] = None
 
 
-class BookingResponse(BaseModel):
+class BookAMeetingResponse(BaseModel):
     id: int
     first_name: str
     last_name: str
@@ -196,7 +196,7 @@ class BookingResponse(BaseModel):
     company: Optional[str] = None
     job_title: Optional[str] = None
     phone: Optional[str] = None
-    booking_type: str
+    meeting_type: str
     preferred_date: datetime
     duration_minutes: int
     timezone: str

@@ -31,7 +31,7 @@
   - ✅ Admin Login Page: Now loading correctly at
   http://localhost:8088/admin/login
   - ✅ Login Functionality: Working with credentials
-  admin@voltaic.systems / Admin123!
+  admin@voltAIc.systems / Admin123!
   - ✅ Password Reset: Fully functional with email sending
   - ✅ Frontend Stability: React app no longer crashing
   - ✅ All Admin Routes: Accessible and functional

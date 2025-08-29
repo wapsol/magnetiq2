@@ -120,7 +120,7 @@ npm run dev
 ## Default Admin Credentials
 
 For development/testing:
-- **Email:** admin@voltaic.systems
+- **Email:** admin@voltAIc.systems
 - **Password:** admin123
 
 **Note:** Change these credentials in production!

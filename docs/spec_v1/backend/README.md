@@ -39,11 +39,11 @@ SMTP_HOST=smtp-relay.brevo.com
 SMTP_PORT=587
 SMTP_USERNAME=your_smtp_username
 SMTP_PASSWORD=your_smtp_password
-SMTP_FROM_EMAIL=noreply@voltaic.systems
+SMTP_FROM_EMAIL=noreply@voltAIc.systems
 SMTP_FROM_NAME=voltAIc Systems
 
 # Business Configuration
-BUSINESS_EMAIL_CRM=steam@voltaic.systems
+BUSINESS_EMAIL_CRM=steam@voltAIc.systems
 
 # Application
 ENVIRONMENT=development
@@ -258,7 +258,7 @@ Log levels: INFO, WARNING, ERROR with structured formatting.
 ## Support
 
 For technical support or questions:
-- Email: steam@voltaic.systems
+- Email: steam@voltAIc.systems
 - Documentation: This README and API docs at `/docs`
 
 ## License

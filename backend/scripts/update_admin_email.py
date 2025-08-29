@@ -21,7 +21,7 @@ async def update_admin_email():
     print("Updating admin email...")
     
     old_email = "admin@magnetiq.local"
-    new_email = "admin@voltaic.systems"
+    new_email = "admin@voltAIc.systems"
     
     # Create database connection
     engine = create_async_engine(settings.database_url)

@@ -8,40 +8,44 @@ The Admin Panel is a comprehensive dashboard for managing all aspects of the Mag
 
 ### Technology Stack
 - **Framework**: React 18 with TypeScript
+- **Content Format**: PortableText for all structured content
+- **Content Editor**: Custom PortableText editor with block-based interface
 - **Styling**: Tailwind CSS with Headless UI components
 - **State Management**: Redux Toolkit with RTK Query
 - **Tables**: TanStack Table v8 (React Table)
 - **Forms**: React Hook Form with Zod validation
 - **Charts**: Recharts for analytics visualization
-- **Rich Text**: Tiptap editor with extensions
-- **Drag & Drop**: dnd-kit for page builder
+- **Rich Text**: PortableText editor with custom blocks
+- **Drag & Drop**: dnd-kit for PortableText block arrangement
 
 ### Access Configuration
 - **URL**: `http://localhost:8088` (development)
-- **Production URL**: `https://admin.voltaic.systems`
+- **Production URL**: `https://admin.voltAIc.systems`
 - **Authentication**: JWT-based with role-based access control
 - **Session Management**: Auto-logout after inactivity
 
 ## Authentication System
 
+The Admin Panel uses a dedicated authentication system separate from public users. For complete authentication specifications, see: `/frontend/adminpanel/authentication.md`
+
 ### Login Interface
 ```tsx
-interface LoginForm {
-  email: string; // Primary identifier (not username)
+interface AdminLogin {
+  email: string; // Primary identifier (no usernames)
   password: string;
   rememberMe?: boolean;
-  captcha?: string; // After 3 failed attempts
 }
 ```
 
 ### Security Features
-- **Email-based authentication** (no usernames)
-- **Account lockout** after 5 failed attempts
-- **Password complexity requirements**
-- **Two-factor authentication** support (future)
-- **Session timeout** after 30 minutes inactivity
-- **Password reset** via email link
-- **Login audit trail**
+- **Email-based admin authentication** (no usernames)
+- **Enhanced account lockout** after 3 failed attempts (stricter than public)
+- **Strong password complexity requirements** (12+ characters)
+- **Multi-factor authentication** for super admins
+- **Shortened session timeout** after 30 minutes inactivity
+- **Secure password reset** via super admin approval
+- **Comprehensive login audit trail**
+- **Permission-based access control**
 
 ### User Role Hierarchy
 ```tsx
@@ -208,45 +212,217 @@ interface SystemHealth {
 
 ### Page Builder Interface
 
-#### Drag & Drop System
-- **Component Library**: Pre-built blocks (hero, text, images, forms)
-- **Visual Editor**: WYSIWYG editing with live preview
-- **Layout System**: Grid-based responsive design
-- **Component Properties**: Sidebar panel for customization
-- **Undo/Redo**: History management for changes
+#### PortableText Editor System
+- **Block Library**: PortableText block types with previews
+- **Visual Editor**: Block-based editing with live preview
+- **Block Arrangement**: Drag-and-drop reordering of PortableText blocks
+- **Block Properties**: Sidebar panel for block configuration
+- **Undo/Redo**: History management for PortableText changes
+- **Multi-language Editing**: Side-by-side editing for translations
+- **Content Validation**: Real-time PortableText structure validation
+- **Auto-save**: Continuous saving of PortableText content
 
-#### Page Management
+#### PortableText Page Management
 ```tsx
 interface Page {
   id: string;
-  title: TranslatedText;
+  title: Record<string, string>; // Simple multilingual titles
   slug: string;
   status: 'draft' | 'published' | 'archived';
   author: AdminUser;
-  blocks: PageBlock[];
+  content: PortableTextContent; // PortableText blocks
+  excerpt?: PortableTextContent; // Optional PortableText excerpt
   seo: SEOSettings;
+  structuredData?: any; // Auto-generated from PortableText
   publishedAt?: Date;
   scheduledAt?: Date;
 }
+
+// PortableText content structure for admin
+interface PortableTextContent {
+  en: PortableTextBlock[];
+  de?: PortableTextBlock[];
+  meta: {
+    lastUpdated: string;
+    editedBy: string;
+    wordCount: number;
+    readingTime: number;
+  };
+}
 ```
 
-#### Content Blocks
-- **Hero Block**: Background image/video + CTA
-- **Text Block**: Rich text with formatting
-- **Image Block**: Single/gallery with captions
-- **Video Block**: Embedded or uploaded videos
-- **CTA Block**: Call-to-action buttons
-- **Form Block**: Contact/subscription forms
-- **Testimonial Block**: Customer testimonials
-- **Feature Block**: Product/service highlights
+#### PortableText Block System
+- **Text Block**: Rich text with inline formatting (spans with marks)
+- **Heading Block**: H1-H6 with SEO optimization
+- **Image Block**: Responsive images with alt text and captions
+- **Video Block**: YouTube/Vimeo embeds or direct video files
+- **CTA Block**: Customizable call-to-action buttons
+- **Form Block**: Embedded forms with validation
+- **Code Block**: Syntax-highlighted code snippets
+- **Quote Block**: Formatted blockquotes
+- **List Block**: Bullet and numbered lists
+- **Divider Block**: Visual content separators
+- **Custom Blocks**: Extensible for business-specific content
 
-### Media Library
-- **File Upload**: Drag & drop with progress indicators
-- **Image Optimization**: Automatic resizing and compression
-- **File Organization**: Folders and tagging system
-- **Search & Filter**: By type, size, date, tags
-- **CDN Integration**: Automatic asset distribution
-- **Alt Text Management**: Accessibility compliance
+### PortableText Editor Implementation
+
+#### Core Editor Features
+```tsx
+interface PortableTextEditor {
+  content: PortableTextBlock[];
+  language: 'en' | 'de';
+  readOnly: boolean;
+  onContentChange: (content: PortableTextBlock[]) => void;
+  validation: {
+    maxBlocks?: number;
+    allowedBlockTypes: string[];
+    requiredBlocks?: string[];
+    customValidation?: (blocks: PortableTextBlock[]) => ValidationError[];
+  };
+  toolbar: {
+    blockTypes: BlockTypeOption[];
+    inlineMarks: MarkOption[];
+    customButtons: CustomToolbarButton[];
+  };
+}
+```
+
+#### Block Type Library
+```tsx
+interface BlockTypeDefinition {
+  type: string;
+  name: string;
+  icon: IconComponent;
+  description: string;
+  category: 'text' | 'media' | 'layout' | 'interactive';
+  component: React.ComponentType<BlockEditProps>;
+  preview: React.ComponentType<BlockPreviewProps>;
+  schema: BlockSchema;
+  defaultValue: () => PortableTextBlock;
+}
+
+// Available block types in admin
+const ADMIN_BLOCK_TYPES: BlockTypeDefinition[] = [
+  {
+    type: 'block',
+    name: 'Text Block',
+    category: 'text',
+    icon: TextIcon,
+    description: 'Rich text with formatting options',
+  },
+  {
+    type: 'heading',
+    name: 'Heading',
+    category: 'text',
+    icon: HeadingIcon,
+    description: 'Page headings (H1-H6)',
+  },
+  {
+    type: 'image',
+    name: 'Image',
+    category: 'media',
+    icon: ImageIcon,
+    description: 'Responsive images with captions',
+  },
+  {
+    type: 'video',
+    name: 'Video',
+    category: 'media',
+    icon: VideoIcon,
+    description: 'Embedded or uploaded videos',
+  },
+  {
+    type: 'cta',
+    name: 'Call to Action',
+    category: 'interactive',
+    icon: ButtonIcon,
+    description: 'Customizable action buttons',
+  },
+  {
+    type: 'form',
+    name: 'Form',
+    category: 'interactive',
+    icon: FormIcon,
+    description: 'Embedded contact or signup forms',
+  },
+  {
+    type: 'code',
+    name: 'Code Block',
+    category: 'text',
+    icon: CodeIcon,
+    description: 'Syntax-highlighted code snippets',
+  },
+  {
+    type: 'quote',
+    name: 'Quote',
+    category: 'text',
+    icon: QuoteIcon,
+    description: 'Formatted blockquotes',
+  }
+];
+```
+
+#### Multi-language Editing Interface
+```tsx
+interface MultilingualEditor {
+  primaryLanguage: 'en' | 'de';
+  secondaryLanguage?: 'en' | 'de';
+  syncMode: 'independent' | 'synchronized';
+  translationAssistance: {
+    enabled: boolean;
+    autoTranslate: boolean;
+    showTranslationMemory: boolean;
+    highlightUntranslated: boolean;
+  };
+  layout: 'tabbed' | 'side-by-side' | 'stacked';
+}
+```
+
+#### Block Configuration Panel
+```tsx
+interface BlockConfigPanel {
+  selectedBlock: PortableTextBlock;
+  schema: BlockSchema;
+  onConfigChange: (config: any) => void;
+  previewMode: boolean;
+  validationErrors: ValidationError[];
+  
+  sections: {
+    content: ConfigSection; // Block-specific content settings
+    style: ConfigSection;   // Visual styling options
+    seo: ConfigSection;     // SEO-related settings
+    advanced: ConfigSection; // Advanced technical options
+  };
+}
+```
+
+#### Content Validation System
+```tsx
+interface ContentValidator {
+  validateStructure: (blocks: PortableTextBlock[]) => ValidationResult;
+  validateSEO: (blocks: PortableTextBlock[]) => SEOValidationResult;
+  validateAccessibility: (blocks: PortableTextBlock[]) => A11yValidationResult;
+  validateTranslations: (content: PortableTextContent) => TranslationValidationResult;
+  
+  rules: {
+    maxWordCount?: number;
+    minWordCount?: number;
+    requiredHeadingStructure?: boolean;
+    altTextRequired: boolean;
+    linkValidation: boolean;
+  };
+}
+```
+
+### Media Library with PortableText Integration
+- **File Upload**: Drag & drop with PortableText asset tagging
+- **Image Optimization**: Automatic resizing for PortableText blocks
+- **File Organization**: Folders and tagging for PortableText assets
+- **Search & Filter**: By type, size, date, tags, PortableText usage
+- **CDN Integration**: Automatic asset distribution for PortableText media
+- **Alt Text Management**: Integrated with PortableText image blocks
+- **Asset References**: Track usage across PortableText content
+- **Bulk Operations**: Mass updates for PortableText-referenced assets
 
 ## Business Management
 
@@ -272,11 +448,12 @@ interface Consultant {
     photo: string;
   };
   professionalInfo: {
-    biography: TranslatedText;
+    biography: PortableTextContent; // Rich biography with PortableText
     expertise: string[];
     linkedin?: string;
     certifications: Certification[];
     languages: ('en' | 'de')[];
+    specializations: PortableTextContent; // Detailed specialization descriptions
   };
   availability: {
     timezone: string;
@@ -309,11 +486,12 @@ interface Consultant {
 - **Analytics**: Performance metrics
 - **Settings**: Program configuration
 
-#### Session Management
+#### Session Management with PortableText
 ```tsx
 interface WebinarSession {
   id: string;
-  topic: WebinarTopic;
+  title: Record<string, string>; // Multilingual titles
+  description: PortableTextContent; // Rich PortableText descriptions
   speaker: Speaker;
   datetime: Date;
   duration: number;
@@ -324,6 +502,12 @@ interface WebinarSession {
   registrations: Registration[];
   recordingUrl?: string;
   materials: Material[];
+  content: {
+    agenda: PortableTextContent;
+    objectives: PortableTextContent;
+    prerequisites?: PortableTextContent;
+    targetAudience: PortableTextContent;
+  };
 }
 ```
 
@@ -392,18 +576,19 @@ interface AdminUser {
 
 ### 4. Communication Services Management (`/admin/communication`)
 
-#### Email Campaign Management
+#### Email Campaign Management with PortableText
 ```tsx
 interface EmailCampaignInterface {
   campaignDetails: {
     name: string;
-    subject: string;
-    preheader: string;
+    subject: Record<string, string>; // Multilingual subjects
+    preheader: Record<string, string>; // Multilingual preheaders
     templateId?: number;
   };
   content: {
-    htmlContent: string;
-    textContent: string;
+    portableContent: PortableTextContent; // Main PortableText content
+    htmlContent: Record<string, string>; // Serialized HTML per language
+    textContent: Record<string, string>; // Serialized plain text per language
     variables: Record<string, any>;
   };
   recipients: {
@@ -453,13 +638,14 @@ interface SocialAccountInterface {
 }
 ```
 
-#### Social Media Content Creation
+#### Social Media Content Creation with PortableText
 ```tsx
 interface SocialContentInterface {
   platform: 'linkedin' | 'twitter';
   content: {
-    title?: string;
-    text: string;
+    title?: Record<string, string>; // Multilingual titles
+    portableContent: PortableTextContent; // Rich PortableText content
+    formattedText: Record<string, string>; // Platform-formatted text per language
     contentType: 'post' | 'thread' | 'article';
     platformConfig: PlatformSpecificConfig;
   };
@@ -545,24 +731,29 @@ interface TranslationManager {
 }
 ```
 
-#### Translation Features
-- **Side-by-side editor** for manual translations
-- **AI translation** with human review workflow
-- **Translation memory** for consistency
-- **Progress tracking** per language/content type
-- **Quality assurance** tools and validation
-- **Bulk translation** operations
+#### PortableText Translation Features
+- **Block-level translation** with PortableText structure preservation
+- **Side-by-side PortableText editors** for manual translations
+- **AI translation** with PortableText block awareness
+- **Translation memory** for PortableText content consistency
+- **Progress tracking** per PortableText block and language
+- **Quality assurance** tools for PortableText translations
+- **Bulk translation** operations for multiple PortableText blocks
+- **Structure validation** to ensure translated blocks maintain proper format
 
 ### 2. Analytics & Reporting
 
-#### Report Builder
-- **Custom Dashboards**: Drag-and-drop widget creation
-- **Scheduled Reports**: Automated email delivery
-- **Export Options**: PDF, Excel, CSV formats
-- **Data Filtering**: Date ranges, categories, users
-- **Comparative Analysis**: Period-over-period comparisons
+#### Report Builder with PortableText Analytics
+- **Custom Dashboards**: Drag-and-drop widget creation including PortableText metrics
+- **Content Performance Reports**: PortableText block effectiveness analysis
+- **Translation Reports**: Multilingual content coverage and quality metrics
+- **SEO Reports**: PortableText-based SEO performance and recommendations
+- **Scheduled Reports**: Automated email delivery with PortableText insights
+- **Export Options**: PDF, Excel, CSV formats including PortableText data
+- **Data Filtering**: Date ranges, categories, users, content types, block types
+- **Comparative Analysis**: Period-over-period comparisons including content changes
 
-#### Key Performance Indicators
+#### Key Performance Indicators with PortableText Analytics
 ```tsx
 interface KPIMetrics {
   traffic: {
@@ -582,6 +773,21 @@ interface KPIMetrics {
     socialShares: number;
     contentRating: number;
     userRetention: number;
+  };
+  content: {
+    portableTextPerformance: {
+      blockEngagement: Record<string, number>; // Engagement by block type
+      averageReadingTime: number;
+      contentCompletionRate: number;
+      translationCoverage: number;
+      seoScore: number;
+    };
+    contentHealth: {
+      untranslatedBlocks: number;
+      brokenAssetReferences: number;
+      validationErrors: number;
+      outdatedContent: number;
+    };
   };
 }
 ```
@@ -662,25 +868,41 @@ interface TableConfig<T> {
 - **Export**: Selected or all data export
 - **Column Visibility**: User-customizable columns
 
-### Form Management
+### Form Management with PortableText
 ```tsx
 interface FormConfig {
   validation: ZodSchema;
   fields: FormField[];
+  portableTextFields: PortableTextFieldConfig[]; // PortableText-specific field configs
   layout: 'vertical' | 'horizontal' | 'grid';
   submitBehavior: 'save' | 'saveAndNew' | 'saveAndEdit';
   autosave: boolean;
   dirtyWarning: boolean;
 }
+
+// PortableText field configuration
+interface PortableTextFieldConfig {
+  name: string;
+  label: Record<string, string>; // Multilingual labels
+  placeholder?: Record<string, string>; // Multilingual placeholders
+  required: boolean;
+  multilingual: boolean;
+  maxBlocks?: number;
+  allowedBlockTypes: string[];
+  validation?: PortableTextValidationConfig;
+}
 ```
 
-### Form Features
-- **Real-time Validation**: Immediate feedback
-- **Auto-save**: Prevent data loss
-- **Dirty State Warning**: Unsaved changes alert
-- **Field Dependencies**: Conditional field visibility
-- **Rich Text Editing**: WYSIWYG content editor
-- **File Upload**: Drag-and-drop with progress
+### Form Features with PortableText
+- **Real-time Validation**: Immediate feedback including PortableText structure validation
+- **Auto-save**: Prevent data loss with PortableText content preservation
+- **Dirty State Warning**: Unsaved changes alert for PortableText fields
+- **Field Dependencies**: Conditional field visibility including PortableText fields
+- **PortableText Editing**: Block-based content editor with live preview
+- **File Upload**: Drag-and-drop with PortableText asset integration
+- **Content Preview**: Live preview of PortableText rendering
+- **Translation Support**: Multilingual PortableText field editing
+- **Block Validation**: Real-time PortableText block structure validation
 
 ## Error Handling & Notifications
 
@@ -767,10 +989,17 @@ interface AuditLog {
         "manualChunks": {
           "vendor": ["react", "react-dom"],
           "ui": ["@headlessui/react", "recharts"],
+          "portabletext": ["@portabletext/react", "@portabletext/types"],
+          "editor": ["./src/components/PortableTextEditor"],
           "admin": ["./src/admin"]
         }
       }
     }
+  },
+  "dependencies": {
+    "@portabletext/react": "^3.0.0",
+    "@portabletext/types": "^2.0.0",
+    "@portabletext/editor": "^1.0.0"
   }
 }
 ```
@@ -783,10 +1012,18 @@ VITE_ADMIN_PORT=8088
 VITE_SESSION_TIMEOUT=1800000
 VITE_AUTO_LOGOUT_WARNING=300000
 
+# PortableText Configuration
+VITE_PORTABLETEXT_MAX_BLOCKS=100
+VITE_PORTABLETEXT_AUTO_SAVE_INTERVAL=5000
+VITE_PORTABLETEXT_VALIDATION_STRICT=true
+VITE_ENABLE_AI_TRANSLATION=true
+
 # Feature Flags
 VITE_ENABLE_ADVANCED_ANALYTICS=true
 VITE_ENABLE_BULK_OPERATIONS=true
 VITE_ENABLE_AUDIT_LOGS=true
+VITE_ENABLE_PORTABLETEXT_EDITOR=true
+VITE_ENABLE_MULTILINGUAL_EDITING=true
 ```
 
 ### Performance Monitoring
@@ -799,16 +1036,23 @@ VITE_ENABLE_AUDIT_LOGS=true
 ## Future Enhancements
 
 ### Planned Features
-- **Advanced Permissions**: Fine-grained access control
-- **Workflow Engine**: Approval workflows for content
+- **Advanced PortableText Blocks**: Custom business-specific block types
+- **PortableText Templates**: Pre-built content templates and layouts
+- **Advanced Permissions**: Fine-grained access control including block-level permissions
+- **Workflow Engine**: Approval workflows for PortableText content
 - **API Management**: Admin API for third-party integrations
-- **Advanced Analytics**: Machine learning insights
-- **Mobile App**: Native mobile administration
-- **Collaborative Editing**: Real-time content collaboration
+- **Advanced Analytics**: Machine learning insights for content performance
+- **Mobile App**: Native mobile administration with PortableText editing
+- **Collaborative Editing**: Real-time PortableText content collaboration
+- **Version Control**: Git-like versioning for PortableText content
+- **AI Content Assistant**: AI-powered content suggestions and optimization
 
 ### Technical Roadmap
-- **Performance Optimization**: Code splitting improvements
-- **Enhanced Security**: Additional security measures
-- **Better UX**: User experience enhancements
-- **Integration Expansion**: Additional third-party services
-- **Scalability**: Architecture improvements for growth
+- **PortableText Performance**: Optimized rendering and editing performance
+- **Enhanced PortableText Features**: Advanced block types and serialization options
+- **Better Content UX**: Improved PortableText editing experience
+- **Content Migration Tools**: Tools for migrating legacy content to PortableText
+- **Integration Expansion**: PortableText integration with additional services
+- **Scalability**: Architecture improvements for large-scale PortableText content management
+- **Enhanced Security**: Content-level security and validation improvements
+- **AI Integration**: Enhanced AI features for PortableText content creation and optimization

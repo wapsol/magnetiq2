@@ -162,8 +162,8 @@ class WhitepaperDownload(Base):
     whitepaper = relationship("Whitepaper", backref="downloads")
 
 
-class Booking(Base):
-    __tablename__ = "bookings"
+class BookAMeeting(Base):
+    __tablename__ = "book_a_meetings"
 
     id = Column(Integer, primary_key=True, index=True)
     
@@ -175,8 +175,8 @@ class Booking(Base):
     job_title = Column(String(255))
     phone = Column(String(50))
     
-    # Booking Details
-    booking_type = Column(String(50), nullable=False)  # consultation, demo, support
+    # Book-a-Meeting Details
+    meeting_type = Column(String(50), nullable=False)  # consultation, demo, support
     preferred_date = Column(DateTime(timezone=True), nullable=False, index=True)
     duration_minutes = Column(Integer, default=30)
     timezone = Column(String(50), default='UTC')
@@ -213,4 +213,4 @@ class Booking(Base):
     deleted_at = Column(DateTime(timezone=True))
 
     # Relationships
-    assigned_user = relationship("AdminUser", backref="assigned_bookings")
+    assigned_user = relationship("AdminUser", backref="assigned_book_a_meetings")

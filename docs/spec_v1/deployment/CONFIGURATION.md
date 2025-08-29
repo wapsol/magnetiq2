@@ -46,7 +46,7 @@ SMTP_HOST=smtp-relay.brevo.com
 SMTP_PORT=587
 SMTP_USERNAME=your-smtp-username
 SMTP_PASSWORD=your-smtp-password
-SMTP_FROM_EMAIL=noreply@voltaic.systems
+SMTP_FROM_EMAIL=noreply@voltAIc.systems
 SMTP_FROM_NAME=voltAIc Systems
 ```
 

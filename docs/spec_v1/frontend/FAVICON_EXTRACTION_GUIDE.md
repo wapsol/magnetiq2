@@ -1,15 +1,15 @@
-# Favicon Extraction from voltaic.systems Logo
+# Favicon Extraction from voltAIc.systems Logo
 
 ## Logo URL
 The logo can be found at:
 ```
-https://o18-1.voltaic.systems/web/image/website/1/logo/voltaic.systems%20%7C%20Enterprise%20AI%20Agents%20and%20Semantic%20Data%20Management?unique=28cf50b
+https://o18-1.voltAIc.systems/web/image/website/1/logo/voltAIc.systems%20%7C%20Enterprise%20AI%20Agents%20and%20Semantic%20Data%20Management?unique=28cf50b
 ```
 
 ## Steps to Extract and Create Favicon
 
 ### 1. Download the Logo
-1. Visit: https://o18-1.voltaic.systems/
+1. Visit: https://o18-1.voltAIc.systems/
 2. Right-click on the voltAIc logo 
 3. Select "Save image as..." or "Copy image"
 4. Save as `voltaic-logo.png` or similar
@@ -79,7 +79,7 @@ Create `public/site.webmanifest`:
 
 ## Current Status
 - ✅ Backend implementation completed
-- ❌ Favicon needs to be extracted from voltaic.systems logo
+- ❌ Favicon needs to be extracted from voltAIc.systems logo
 - ❌ Multiple favicon sizes need to be generated
 - ❌ HTML head needs favicon links
 
