@@ -2,7 +2,11 @@
 
 ## Overview
 
-The webinar system is a comprehensive platform for managing online educational events, from creation and promotion to registration, delivery, and follow-up. It integrates with the broader Magnetiq ecosystem to provide seamless lead generation, customer engagement, and business intelligence.
+The webinar system is a comprehensive platform for managing online educational events with integrated consultant expertise, from creation and promotion to registration, delivery, and follow-up. It seamlessly integrates consultants as subject matter experts with the broader Magnetiq ecosystem to provide enhanced lead generation, customer engagement, and business intelligence through expert-led sessions.
+
+→ **Consultant Integration**: [Consultant Management System](../../users/knowhow-bearer.md) provides expert presenters and thought leadership
+← **Supports Business Goals**: [Lead Generation](../../../business/lead-generation.md), [Expert Positioning](../../../business/thought-leadership.md)
+🔗 **Cross-References**: [Consultant Booking System](../booking.md), [Payment Processing](../../../integrations/payment.md), [CRM Integration](../../../integrations/crm.md)
 
 ## System Architecture
 
@@ -10,16 +14,38 @@ The webinar system is a comprehensive platform for managing online educational e
 ```
 Webinar Topic (Template)
 ├── Multiple Sessions (Instances)
-│   ├── Speaker Assignment
+│   ├── Consultant/Speaker Assignment
+│   │   ├── Single Consultant Sessions
+│   │   ├── Panel Discussions (Multiple Consultants)
+│   │   └── Guest Expert Integration
 │   ├── Multiple Registrations
+│   │   ├── Consultant-Specific Registration Paths
+│   │   └── Cross-Selling Consultant Services
 │   ├── Materials & Resources
+│   │   ├── Consultant Bio & Credentials
+│   │   ├── Related Consultant Whitepapers
+│   │   └── Expert Testimonials
 │   └── Analytics Data
+│       ├── Consultant Performance Metrics
+│       ├── Attendee Engagement by Expert
+│       └── Revenue Attribution
 └── Integration Points
     ├── Calendar Events
-    ├── Communication Services
-    │   ├── Email Campaigns
-    │   ├── LinkedIn Promotion
-    │   └── Social Media Analytics
+    ├── Consultant Management System
+    │   ├── LinkedIn Profile Integration
+    │   ├── Availability Checking
+    │   └── Performance Tracking
+    ├── Payment Processing
+    │   ├── Revenue Sharing with Consultants
+    │   └── Consultant Payment Management
+    ├── Booking System Integration
+    │   ├── Post-Webinar Consultation Booking
+    │   └── Follow-up Session Scheduling
+    └── Communication Services
+        ├── Email Campaigns
+        ├── LinkedIn Promotion
+        ├── Consultant-Specific Messaging
+        └── Social Media Analytics
 ```
 
 ### Core Entities
@@ -67,12 +93,34 @@ interface WebinarSession {
   duration: number; // minutes
   timezone: string;
   
-  // Pricing & Capacity
+  // Multiple Consultant Support
+  speakers: {
+    primary: string; // Primary consultant/speaker ID
+    panelists?: string[]; // Additional consultants for panel sessions
+    moderatorId?: string; // Moderator for panel discussions
+  };
+  
+  // Session Type & Format
+  sessionType: 'single-speaker' | 'panel-discussion' | 'workshop' | 'q-and-a';
+  consultantFocus: {
+    primaryExpertise: string;
+    secondaryTopics: string[];
+    targetAudience: string[];
+  };
+  
+  // Pricing & Capacity with Consultant Revenue
   price: number;
   currency: string;
   capacity?: number;
   registrationCount: number;
   attendanceCount: number;
+  
+  // Revenue Management
+  revenueSharing: {
+    consultantRevenue: number;
+    platformRevenue: number;
+    revenueSharePercentage: number;
+  };
   
   // Platform Integration
   meetingUrl?: string;
@@ -89,10 +137,26 @@ interface WebinarSession {
   registrationOpensAt?: Date;
   registrationClosesAt?: Date;
   
-  // Analytics
+  // Enhanced Analytics with Consultant Focus
   viewCount: number;
   completionRate?: number;
   averageRating?: number;
+  
+  // Consultant-Specific Analytics
+  consultantMetrics: {
+    expertiseRelevanceScore: number;
+    audienceEngagementRate: number;
+    followUpBookings: number;
+    leadQualityScore: number;
+  };
+  
+  // Post-Webinar Opportunities
+  followUpOpportunities: {
+    consultationRequests: number;
+    whitepaperDownloads: number;
+    socialConnections: number;
+    businessInquiries: number;
+  };
   
   // Integration
   odooEventId?: number;
@@ -106,8 +170,12 @@ interface WebinarSession {
 }
 ```
 
-#### Speakers
-Profiles of webinar presenters with their expertise and credentials.
+#### Speakers & Consultants
+Profiles of webinar presenters with enhanced consultant integration and credentials.
+
+→ **Consultant Profiles**: [Knowhow Bearer Persona](../../users/knowhow-bearer.md#consultant-profiles)
+🔗 **LinkedIn Integration**: [LinkedIn Service](../../../integrations/linkedin.md#profile-sync)
+↔️ **Performance Analytics**: [Consultant Analytics](../../backend/analytics.md#consultant-metrics)
 
 ```typescript
 interface WebinarSpeaker {
@@ -124,11 +192,66 @@ interface WebinarSpeaker {
   photoUrl?: string;
   linkedinUrl?: string;
   websiteUrl?: string;
-  consultantId?: string; // Link to consultant if internal
+  
+  // Enhanced Consultant Integration
+  consultantId?: string; // Link to consultant profile
   isInternal: boolean;
+  consultantType: 'internal' | 'external' | 'partner';
+  
+  // LinkedIn Data Integration
+  linkedinData?: {
+    profileId: string;
+    headline: string;
+    connections: number;
+    recommendations: number;
+    lastSynced: Date;
+  };
+  
+  // Credentials & Expertise
+  credentials: {
+    certifications: string[];
+    education: string[];
+    publications: string[];
+    speakingExperience: number; // years
+  };
+  
+  // Performance Metrics
+  performance: {
+    totalWebinars: number;
+    averageRating: number;
+    attendeeCount: number;
+    engagementRate: number;
+    conversionRate: number; // attendees to consultations
+    repeatBookings: number;
+  };
+  
+  // Revenue & Business
+  businessSettings?: {
+    hourlyRate?: number;
+    availableForConsultations: boolean;
+    revenueSharePercentage: number;
+    preferredPaymentTerms: string;
+  };
+  
+  // Content & Branding
+  branding?: {
+    logoUrl?: string;
+    brandColors: string[];
+    customTemplates: string[];
+  };
+  
+  // Status & Availability
   isActive: boolean;
-  totalWebinars: number;
-  averageRating: number;
+  availabilityStatus: 'available' | 'busy' | 'unavailable';
+  nextAvailableDate?: Date;
+  
+  // Quality Metrics
+  qualityMetrics: {
+    contentQualityScore: number;
+    technicalSetupScore: number;
+    engagementScore: number;
+    professionalismScore: number;
+  };
 }
 ```
 
@@ -189,6 +312,10 @@ interface WebinarRegistration {
 
 ### Webinar Overview Page (`/webinars`)
 
+→ **Consultant Discovery**: Enhanced filtering and search by consultant expertise
+🔗 **Related Features**: [Consultant Directory](../consultants.md), [Expert Search](../search.md#consultant-search)
+← **Feeds into**: [Lead Generation](../../backend/crm.md#webinar-leads)
+
 #### Layout & Design
 - **Hero Section**: Compelling headline about the webinar program
 - **Filter Bar**: Easy-to-use filtering options
@@ -196,16 +323,33 @@ interface WebinarRegistration {
 - **Pagination**: Handle large numbers of webinars efficiently
 - **Search**: Full-text search across titles and descriptions
 
-#### Filtering Options
+#### Enhanced Filtering Options with Consultant Integration
 ```typescript
 interface WebinarFilters {
   timeframe: 'this-week' | 'this-month' | 'all-upcoming' | 'past';
   category?: string;
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
   price?: 'free' | 'paid' | 'all';
+  
+  // Enhanced Consultant Filtering
   speaker?: string;
+  consultantType?: 'internal' | 'external' | 'partner' | 'all';
+  expertise?: string[]; // Multiple expertise areas
+  consultantRating?: number; // Minimum rating
+  hasFollowUpConsultation?: boolean;
+  
+  // Advanced Consultant Filters
+  industry?: string[]; // Consultant industry experience
+  experienceLevel?: 'junior' | 'senior' | 'expert'; // Consultant experience
+  certifications?: string[]; // Required certifications
+  availableForConsultation?: boolean;
+  
   language: 'en' | 'de' | 'all';
   search?: string;
+  
+  // Session Format Filters
+  sessionType?: 'single-speaker' | 'panel-discussion' | 'workshop' | 'q-and-a' | 'all';
+  panelSize?: 'single' | 'small-panel' | 'large-panel';
 }
 ```
 
@@ -221,17 +365,33 @@ interface WebinarCardProps {
 }
 ```
 
-**Card Elements:**
-- **Thumbnail Image**: Eye-catching visual representation
+**Enhanced Card Elements with Consultant Integration:**
+- **Thumbnail Image**: Eye-catching visual with consultant branding
 - **Title & Description**: Clear, compelling copy in selected language
-- **Speaker Info**: Photo, name, title, and brief bio
+- **Enhanced Speaker Info**: 
+  - Consultant photo with professional badge
+  - Name, title, and credentials
+  - LinkedIn connection count and verification badge
+  - Brief expertise summary
+  - Consultant rating and review count
 - **Date & Time**: Prominently displayed with timezone handling
 - **Duration**: Clear indication of session length
-- **Price**: Free/paid indicator with amount if applicable
+- **Price**: Free/paid indicator with consultant revenue sharing info
 - **Capacity**: "X of Y spots remaining" if limited
-- **Tags**: Difficulty level, category, key topics
-- **CTA Button**: "Learn More" or "Register Now"
-- **Social Share**: LinkedIn, Twitter sharing buttons
+- **Enhanced Tags**: 
+  - Difficulty level and category
+  - Consultant expertise badges
+  - Session type (single/panel)
+  - Industry focus tags
+- **Multiple CTAs**: 
+  - "Register Now" primary button
+  - "View Consultant Profile" secondary link
+  - "Book Consultation" if consultant available
+- **Social Proof**: 
+  - Previous attendee count
+  - Consultant testimonials preview
+  - Company logos of past attendees
+- **Social Share**: Enhanced LinkedIn, Twitter sharing with consultant tags
 
 #### Advanced Features
 - **Calendar Quick Add**: "Add to Calendar" button with .ics download
@@ -265,12 +425,53 @@ interface WebinarCardProps {
 </section>
 ```
 
-**2. Speaker Section**
-- **Speaker Photo**: Professional headshot
-- **Bio & Credentials**: Detailed background information
-- **Social Links**: LinkedIn, company website
-- **Other Sessions**: Link to speaker's other webinars
-- **Contact Option**: Link to book consultation if internal speaker
+**2. Enhanced Consultant/Speaker Section**
+→ **Consultant Profile Integration**: [Consultant Management](../../users/knowhow-bearer.md#profile-management)
+🔗 **LinkedIn Sync**: [LinkedIn Integration](../../../integrations/linkedin.md#profile-data)
+↔️ **Booking System**: [Consultant Booking](../booking.md#consultant-booking)
+
+- **Professional Presentation**:
+  - High-resolution consultant photo with verification badge
+  - Professional title and current position
+  - LinkedIn connection count and industry recognition
+  - Years of expertise and speaking experience
+  
+- **Comprehensive Credentials**:
+  - Educational background and certifications
+  - Notable publications and thought leadership content
+  - Industry awards and recognition
+  - Previous speaking engagements and conferences
+  
+- **Expertise & Specializations**:
+  - Primary and secondary areas of expertise
+  - Industry sectors served
+  - Consulting specializations
+  - Technology and methodology expertise
+  
+- **Performance Metrics & Social Proof**:
+  - Average session rating and attendee feedback
+  - Total webinars conducted and attendees reached
+  - Engagement metrics and interaction rates
+  - Client testimonials and success stories
+  
+- **Interactive Elements**:
+  - "View Full Consultant Profile" comprehensive link
+  - "Connect on LinkedIn" direct integration button
+  - "Book 1:1 Consultation" scheduling interface
+  - "Download Consultant Whitepapers" content library
+  - "Follow Consultant" for future session notifications
+  
+- **Related Content & Cross-Selling**:
+  - Other upcoming sessions by this consultant
+  - Related whitepapers and thought leadership content
+  - Previous session recordings and highlights
+  - Consultant's published articles and insights
+  
+- **Panel Discussion Enhancement** (for multi-consultant sessions):
+  - All panelist profiles with individual expertise
+  - Moderator introduction and facilitation experience
+  - Panel dynamic and interaction format
+  - Individual consultant booking options post-session
 
 **3. Content Details**
 - **Learning Objectives**: Bulleted list of what attendees will learn
@@ -279,35 +480,125 @@ interface WebinarCardProps {
 - **Agenda**: Detailed session breakdown with timestamps
 - **Materials**: Information about downloadable resources
 
-**4. Registration Section**
+**4. Enhanced Registration Section with Consultant Integration**
 ```typescript
 interface RegistrationSectionProps {
   session: WebinarSession;
+  consultants: WebinarSpeaker[];
   isFullyBooked: boolean;
   userHasRegistered: boolean;
   remainingSpots?: number;
+  
+  // Consultant-specific features
+  consultantAvailability: {
+    consultantId: string;
+    availableForFollowUp: boolean;
+    nextAvailableSlot?: Date;
+    consultationRate?: number;
+  }[];
+  
+  // Cross-selling opportunities
+  relatedServices: {
+    consultations: boolean;
+    workshops: boolean;
+    whitepapers: boolean;
+  };
 }
 ```
 
-**Elements:**
-- **Availability Status**: "X spots remaining" or "Fully booked"
-- **Price Display**: Clear pricing with currency
-- **Registration Form**: Modal or embedded form
-- **Payment Integration**: Stripe/PayPal for paid webinars
-- **Waitlist Option**: If session is full
-- **Terms & Conditions**: Link and checkbox
+**Enhanced Registration Elements:**
+- **Availability Status**: "X spots remaining" with consultant-specific messaging
+- **Consultant Context**: 
+  - "Learn directly from [Consultant Name], expert in [expertise]"
+  - "Ask questions to our [industry] specialist"
+  - Preview of consultant's approach and methodology
+- **Price Display**: 
+  - Clear pricing with currency and value proposition
+  - "Investment in learning from industry expert" messaging
+  - Early bird pricing with consultant endorsement
+- **Enhanced Registration Form**: 
+  - Consultant-specific interest fields
+  - Industry and role matching for personalized follow-up
+  - Specific question submission for consultant preparation
+- **Payment Integration**: 
+  - Stripe/PayPal with consultant revenue sharing
+  - Corporate billing options for enterprise attendees
+- **Cross-Selling Integration**:
+  - "Add 1:1 consultation with [Consultant]" upsell option
+  - "Download [Consultant's] whitepapers" lead magnet
+  - "Join [Consultant's] LinkedIn network" connection opportunity
+- **Waitlist Enhancement**: 
+  - Priority access for consultant's future sessions
+  - Alternative session recommendations with same consultant
+- **Legal & Consent**:
+  - Terms & Conditions with consultant interaction guidelines
+  - Permission for consultant follow-up communications
+  - Data sharing consent for personalized recommendations
 
-**5. Related Content**
-- **Upcoming Webinars**: 4 randomly selected future sessions
-- **Related Topics**: Webinars in the same category
-- **Speaker's Sessions**: Other webinars by the same speaker
-- **Recommended**: Based on user's previous activity
+**5. Enhanced Related Content with Consultant Focus**
+→ **Consultant Content Strategy**: [Content Management](../../backend/cms.md#consultant-content)
+🔗 **Recommendation Engine**: [AI Recommendations](../../backend/ai.md#content-recommendations)
 
-**6. Social Proof & Reviews**
-- **Past Attendee Count**: "Join X professionals who attended"
-- **Testimonials**: Reviews from previous sessions
-- **Company Logos**: Organizations whose employees attended
-- **Ratings**: Average rating from past sessions
+- **Consultant's Complete Portfolio**:
+  - All upcoming sessions by this consultant
+  - Previous session recordings and highlights
+  - Published whitepapers and thought leadership
+  - Client case studies and success stories
+  
+- **Expert Network Recommendations**:
+  - Sessions by consultants with complementary expertise
+  - Panel discussions featuring this consultant
+  - Cross-functional expert collaborations
+  
+- **Personalized Suggestions**:
+  - Based on user's industry and role
+  - Matched to user's previous consultant interactions
+  - Progression paths for skill development
+  - Advanced sessions for returning attendees
+  
+- **Industry-Specific Content**:
+  - Webinars targeting user's business sector
+  - Consultant expertise in user's technology stack
+  - Solutions for user's company size and challenges
+  
+- **Consultant Ecosystem**:
+  - "Clients who worked with [Consultant] also attended..."
+  - Popular sessions in consultant's expertise area
+  - Trending topics in consultant's industry focus
+
+**6. Enhanced Social Proof & Consultant Credibility**
+← **Testimonial Management**: [Review System](../../backend/reviews.md#consultant-reviews)
+🔗 **Company Directory**: [Client Showcase](../clients.md#case-studies)
+
+- **Consultant Authority & Recognition**:
+  - "Featured expert at [prestigious conferences/events]"
+  - "Trusted advisor to [number] Fortune 500 companies"
+  - "Published author with [number] industry publications"
+  - "LinkedIn thought leader with [connection count] followers"
+  
+- **Session-Specific Social Proof**:
+  - "Join [number] professionals who attended [consultant's] sessions"
+  - Recent attendee testimonials with consultant-specific praise
+  - Success stories from consultant's previous webinar attendees
+  - Follow-up success metrics from past participants
+  
+- **Client & Company Validation**:
+  - Logos of companies whose employees attended consultant sessions
+  - Industry leaders who have worked with this consultant
+  - Enterprise clients who regularly book this consultant
+  - Startups that grew with consultant's guidance
+  
+- **Performance & Quality Metrics**:
+  - Consultant's overall rating across all sessions
+  - Session completion rates and engagement scores
+  - Repeat attendance rates for consultant's sessions
+  - Net Promoter Score specifically for this consultant
+  
+- **Real-Time Social Indicators**:
+  - "[Number] people are currently viewing this session"
+  - "[Number] consultations booked with this expert this month"
+  - "Top-rated consultant in [expertise area] category"
+  - Live updates on registration momentum
 
 ### Registration Modal
 
@@ -325,13 +616,35 @@ interface RegistrationFormData {
   position?: string;
   website?: string;
   
+  // Consultant-Specific Information
+  industryVertical?: string;
+  currentChallenges?: string[];
+  expertiseInterest?: string[];
+  consultationInterest: boolean;
+  
+  // Pre-Session Preparation
+  specificQuestions?: string;
+  learningObjectives?: string;
+  followUpPreferences?: 'email' | 'consultation' | 'resources' | 'none';
+  
+  // Cross-Selling Opportunities
+  interestedServices: {
+    oneOnOneConsultation: boolean;
+    workshopSeries: boolean;
+    whitepaperDownloads: boolean;
+    ongoingMentorship: boolean;
+  };
+  
   // Special Requirements
   specialRequirements?: string;
+  accessibilityNeeds?: string;
   
-  // Legal Consent
+  // Enhanced Legal Consent
   termsAccepted: boolean;
   marketingConsent: boolean;
   privacyConsent: boolean;
+  consultantFollowUpConsent: boolean;
+  dataProcessingConsent: boolean;
   
   // Session Information (hidden)
   sessionId: string;
@@ -366,14 +679,44 @@ const registrationSchema = z.object({
 7. **Calendar integration** creates calendar event
 8. **Thank you page** with next steps
 
-#### Thank You Page Features
-- **Confirmation Message**: "You're registered for [Webinar Title]"
-- **Session Details**: Date, time, duration, timezone
-- **Calendar Downloads**: Google Calendar, Outlook, .ics file
-- **Next Steps**: What to expect, preparation materials
-- **Social Sharing**: "I just registered for..." with pre-filled text
-- **Meeting Access**: Instructions on how to join (closer to event date)
-- **Additional Resources**: Related content recommendations
+#### Enhanced Thank You Page with Consultant Integration
+→ **Consultant Preparation**: [Session Preparation](../../backend/session-management.md#preparation)
+🔗 **Follow-up Automation**: [Email Workflows](../../../integrations/email.md#consultant-workflows)
+
+**Enhanced Confirmation Features:**
+- **Personalized Confirmation**: 
+  - "You're registered to learn from [Consultant Name], expert in [expertise]"
+  - Consultant's personal welcome message and session preview
+  - Customized agenda based on consultant's teaching style
+  
+- **Consultant Connection Opportunities**:
+  - "Connect with [Consultant] on LinkedIn" direct link
+  - "Follow [Consultant] for ongoing insights" subscription option
+  - "Join [Consultant's] professional network" community invitation
+  
+- **Pre-Session Preparation**:
+  - Consultant-recommended preparation materials
+  - Industry-specific case studies from consultant's experience
+  - Pre-reading materials authored by the consultant
+  - "What to expect from [Consultant's] teaching approach"
+  
+- **Cross-Selling Integration**:
+  - "Book a 1:1 consultation with [Consultant]" scheduling link
+  - "Download [Consultant's] exclusive whitepaper" lead magnet
+  - "Join [Consultant's] upcoming workshop series" registration
+  - "Get priority access to [Consultant's] future sessions"
+  
+- **Enhanced Social Sharing**:
+  - "I'm learning from [Consultant Name], industry expert in [field]"
+  - Pre-filled LinkedIn posts with consultant tags and expertise hashtags
+  - Twitter threads highlighting consultant's background
+  - Company page sharing for corporate attendees
+  
+- **Consultant-Specific Resources**:
+  - Curated reading list from consultant's recommendations
+  - Access to consultant's previous session recordings
+  - Industry reports and insights from consultant's research
+  - Tools and templates shared by the consultant
 
 ### Session Management System
 
@@ -429,25 +772,78 @@ interface WebinarDashboard {
 }
 ```
 
-### Session Management
+### Enhanced Session Management with Consultant Integration
 
-#### Session Creation Workflow
-1. **Select Topic**: Choose from existing topics or create new
-2. **Assign Speaker**: Select internal or external speaker
-3. **Schedule Session**: Date, time, duration with timezone
-4. **Configure Details**: Price, capacity, registration windows
-5. **Setup Platform**: Meeting URL, passwords, recording settings
-6. **Review & Publish**: Preview page before going live
-7. **Promotion**: Generate marketing materials and links
+→ **Consultant Assignment**: [Consultant Management](../../users/knowhow-bearer.md#assignment-workflow)
+🔗 **Revenue Tracking**: [Payment Processing](../../../integrations/payment.md#revenue-sharing)
+↔️ **Performance Analytics**: [Consultant Analytics](../../backend/analytics.md#consultant-performance)
+
+#### Enhanced Session Creation Workflow with Consultant Integration
+1. **Select Topic & Match Consultant**: 
+   - Choose from existing topics or create new
+   - AI-powered consultant matching based on expertise
+   - View consultant availability and preferred session types
+   
+2. **Consultant Assignment & Configuration**:
+   - Select primary consultant and optional panelists
+   - Configure consultant-specific session settings
+   - Set up revenue sharing percentages
+   - Define consultant's role and responsibilities
+   
+3. **Schedule Session with Consultant Availability**:
+   - Integration with consultant's calendar systems
+   - Automatic timezone coordination
+   - Buffer time for consultant preparation and follow-up
+   - Conflict resolution with existing consultant commitments
+   
+4. **Enhanced Session Configuration**:
+   - Consultant-specific pricing and value propositions
+   - Capacity management with consultant preferences
+   - Registration windows optimized for consultant promotion
+   - Cross-selling opportunities configuration
+   
+5. **Platform Setup & Consultant Onboarding**:
+   - Meeting platform configuration with consultant preferences
+   - Consultant technical setup and testing
+   - Recording permissions and content rights
+   - Backup facilitator assignment for technical issues
+   
+6. **Content Preparation & Consultant Support**:
+   - Consultant content review and approval
+   - Marketing materials creation with consultant input
+   - Social media content preparation
+   - Consultant promotional toolkit provision
+   
+7. **Review & Publish with Consultant Approval**:
+   - Consultant final review of session details
+   - Marketing content approval and customization
+   - Cross-platform promotion coordination
+   - Launch sequence with consultant engagement
+   
+8. **Enhanced Promotion & Consultant Amplification**:
+   - Consultant's network promotion and social sharing
+   - LinkedIn articles and thought leadership content
+   - Industry publication outreach
+   - Partner and client network invitation
 
 #### Session Configuration
 ```typescript
 interface SessionCreationForm {
   // Basic Information
   topicId: string;
-  speakerId: string;
-  title?: TranslatedText; // Override topic title
-  description?: TranslatedText; // Override topic description
+  
+  // Enhanced Consultant Assignment
+  primaryConsultantId: string;
+  additionalConsultantIds?: string[]; // For panel discussions
+  moderatorId?: string; // For panel sessions
+  consultantConfiguration: {
+    sessionType: 'single-expert' | 'panel-discussion' | 'workshop' | 'mentorship';
+    consultantRole: 'presenter' | 'facilitator' | 'advisor';
+    interactionLevel: 'lecture' | 'interactive' | 'hands-on';
+  };
+  
+  title?: TranslatedText; // Override topic title with consultant context
+  description?: TranslatedText; // Override with consultant-specific description
   
   // Scheduling
   datetime: Date;
@@ -1228,15 +1624,32 @@ class WebinarLoadTests:
 
 ## Success Metrics & KPIs
 
-### Business Metrics
-- **Registration Conversion Rate**: Views to registrations
-- **Attendance Rate**: Registrations to actual attendance
-- **Engagement Score**: Questions, chat, poll participation
-- **Lead Generation Rate**: Attendees converted to leads
-- **Revenue per Session**: For paid webinars
-- **Speaker Satisfaction**: Feedback from presenters
-- **Attendee Satisfaction**: Post-session ratings and feedback
-- **Repeat Attendance**: Users attending multiple sessions
+### Enhanced Business Metrics with Consultant Focus
+**Core Conversion Metrics:**
+- **Registration Conversion Rate**: Views to registrations (with consultant influence tracking)
+- **Attendance Rate**: Registrations to actual attendance (consultant-specific rates)
+- **Engagement Score**: Questions, chat, poll participation (consultant interaction quality)
+- **Lead Generation Rate**: Attendees converted to qualified leads (consultant attribution)
+
+**Consultant-Specific Business Metrics:**
+- **Consultant ROI**: Revenue generated per consultant hour invested
+- **Consultant Lead Quality Score**: Average qualification score of consultant-generated leads
+- **Consultation Conversion Rate**: Webinar attendees to consultation bookings
+- **Consultant Revenue Share Efficiency**: Platform vs. consultant revenue optimization
+- **Expert Authority Impact**: Registration lift due to consultant credentials
+- **Cross-Selling Success Rate**: Upsells to consultant services and content
+
+**Quality & Satisfaction Metrics:**
+- **Consultant Performance Rating**: Multi-dimensional consultant evaluation
+- **Attendee Satisfaction**: Post-session ratings with consultant-specific feedback
+- **Consultant Satisfaction**: Consultant experience and platform feedback
+- **Client Success Attribution**: Long-term client success traced to consultant sessions
+
+**Growth & Retention Metrics:**
+- **Repeat Attendance**: Users attending multiple consultant sessions
+- **Consultant Network Growth**: LinkedIn connections and professional network expansion
+- **Content Engagement**: Downloads and engagement with consultant materials
+- **Consultant Loyalty**: Consultant retention and exclusive session agreements
 
 ### Technical Metrics
 - **System Uptime**: 99.9% availability during sessions
@@ -1245,11 +1658,26 @@ class WebinarLoadTests:
 - **Integration Reliability**: <1% failed sync operations
 - **Data Accuracy**: 100% accurate attendance tracking
 
-### Growth Metrics
-- **Session Frequency**: Number of sessions per month
-- **Audience Growth**: Month-over-month registration growth
-- **Topic Expansion**: New categories and expertise areas
-- **Geographic Reach**: Countries and time zones covered
-- **Partnership Opportunities**: External speakers and collaborations
+### Enhanced Growth Metrics with Consultant Ecosystem Expansion
+**Program Scaling Metrics:**
+- **Session Frequency**: Number of consultant-led sessions per month
+- **Consultant Network Growth**: New expert acquisitions and partnership expansion
+- **Audience Growth**: Month-over-month registration growth (consultant-attributed)
+- **Topic Expansion**: New expertise areas and consultant specializations
+- **Geographic Reach**: Countries and time zones with consultant coverage
+
+**Consultant Ecosystem Growth:**
+- **Expert Network Expansion**: Internal consultant development and external partnerships
+- **Consultant Specialization Depth**: Expertise areas and industry vertical coverage
+- **Consultant Quality Evolution**: Average consultant rating and capability improvements
+- **Revenue Stream Diversification**: Multiple consultant service offerings integration
+- **Market Penetration**: Industry sectors and company sizes reached through consultants
+
+**Strategic Partnership & Network Effects:**
+- **Consultant Cross-Referrals**: Consultant-to-consultant business generation
+- **Client Network Leverage**: Consultant client networks driving webinar attendance
+- **Industry Thought Leadership**: Consultant-driven industry influence and recognition
+- **Content Multiplier Effect**: Consultant-generated content driving ongoing lead generation
+- **Ecosystem Value Creation**: Total value created through consultant network effects
 
 This comprehensive webinar specification provides a complete framework for implementing a world-class webinar system that integrates seamlessly with the broader Magnetiq ecosystem while delivering exceptional value to both administrators and attendees.

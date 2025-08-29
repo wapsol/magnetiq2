@@ -123,7 +123,11 @@ Content Management
 └── SEO Settings
 
 Business Management
-├── Consultants
+├── Consultants Management
+│   ├── Consultant Profiles
+│   ├── Scraping Jobs
+│   ├── Payments & Payouts
+│   └── Performance Analytics
 ├── Webinars
 ├── Whitepapers
 └── Bookings
@@ -428,17 +432,33 @@ interface ContentValidator {
 
 ### 1. Consultants Management (`/admin/consultants`)
 
-#### Features
-- **CRUD Operations**: Create, read, update, delete consultants
-- **Profile Management**: Photos, bios, expertise areas
-- **Availability Settings**: Working hours, time zones, holidays
-- **Performance Analytics**: Booking rates, client feedback
-- **Online/Offline Status**: Manual toggle for availability
+→ **Cross-references**: [Consultant API](../backend/api.md#consultant-endpoints), [Database Schema](../backend/database.md#consultant-tables), [Payment Integration](../integrations/payment-processing.md)
+← **Used by**: [Booking System](../features/booking-system.md), [Webinar Management](#2-webinars-management-adminwebinars), [Whitepaper Management](#whitepaper-management)
 
-#### Consultant Profile Structure
+#### Main Dashboard Features
+- **Consultant Overview**: Total active consultants, performance metrics, revenue tracking
+- **Quick Actions**: Add new consultant, bulk operations, export reports
+- **Status Monitoring**: Online/offline status, availability tracking, payment status
+- **Performance Metrics**: Booking conversion rates, average ratings, revenue per consultant
+
+#### Tab Structure
+1. **Consultant Profiles** (`/admin/consultants/profiles`)
+2. **LinkedIn Scraping** (`/admin/consultants/scraping`)
+3. **Payments & KYC** (`/admin/consultants/payments`)
+4. **Performance Analytics** (`/admin/consultants/analytics`)
+5. **Onboarding Workflow** (`/admin/consultants/onboarding`)
+
+### 1.1 Consultant Profiles Tab (`/admin/consultants/profiles`)
+
+→ **API Integration**: [Consultant Profile API](../backend/api.md#consultant-profile-endpoints)
+⚡ **Dependencies**: [User Authentication](../security.md#authentication), [File Upload Service](../integrations/file-storage.md)
+
+#### Enhanced Consultant Profile Structure
 ```tsx
-interface Consultant {
+interface ConsultantProfile {
   id: string;
+  
+  // Personal Information
   personalInfo: {
     firstName: string;
     lastName: string;
@@ -446,37 +466,869 @@ interface Consultant {
     email: string;
     phone?: string;
     photo: string;
+    location: {
+      country: string;
+      city: string;
+      timezone: string;
+    };
   };
+  
+  // Professional Information
   professionalInfo: {
     biography: PortableTextContent; // Rich biography with PortableText
+    shortBio: string; // 150 character summary for listings
     expertise: string[];
+    specializations: PortableTextContent; // Detailed specialization descriptions
     linkedin?: string;
+    twitter?: string;
+    website?: string;
     certifications: Certification[];
     languages: ('en' | 'de')[];
-    specializations: PortableTextContent; // Detailed specialization descriptions
+    yearsExperience: number;
+    industryFocus: string[];
+    consultingAreas: ConsultingArea[];
   };
+  
+  // LinkedIn Integration Data
+  linkedinData: {
+    profileUrl?: string;
+    scrapingJobId?: string;
+    lastScraped?: Date;
+    profileData?: LinkedInProfileData;
+    verificationStatus: 'pending' | 'verified' | 'failed' | 'manual';
+    scraperNotes?: string;
+  };
+  
+  // Availability & Booking
   availability: {
     timezone: string;
     workingHours: WeeklySchedule;
     holidays: DateRange[];
     isOnline: boolean;
+    bookingSettings: {
+      hourlyRate?: number;
+      currency: string;
+      minimumBookingDuration: number;
+      maxAdvanceBookingDays: number;
+      cancellationPolicy: string;
+    };
   };
+  
+  // Payment & KYC Information
+  paymentInfo: {
+    kycStatus: 'not_started' | 'pending' | 'approved' | 'rejected';
+    paymentMethodId?: string;
+    taxId?: string;
+    businessType: 'individual' | 'company';
+    invoiceSettings: {
+      companyName?: string;
+      address: Address;
+      vatNumber?: string;
+    };
+    kycDocuments: KYCDocument[];
+  };
+  
+  // Content Associations
+  contentAssociations: {
+    authoredWhitepapers: string[]; // Whitepaper IDs
+    webinarSessions: string[]; // Webinar session IDs
+    blogPosts: string[]; // Blog post IDs
+    caseStudies: string[]; // Case study IDs
+  };
+  
+  // Performance Analytics
   analytics: {
     totalBookings: number;
+    completedBookings: number;
     averageRating: number;
-    responseTime: number;
+    totalRatings: number;
+    responseTime: number; // Average response time in minutes
+    totalEarnings: number;
+    currentMonthEarnings: number;
+    conversionRate: number; // Inquiry to booking conversion
+    repeatClientRate: number;
+    cancellationRate: number;
+  };
+  
+  // System Metadata
+  metadata: {
+    createdAt: Date;
+    createdBy: string;
+    lastModified: Date;
+    lastModifiedBy: string;
+    status: 'draft' | 'active' | 'inactive' | 'suspended';
+    verificationLevel: 'unverified' | 'email_verified' | 'profile_verified' | 'fully_verified';
+    aiGeneratedContent: boolean; // Flag for AI-generated profiles
+    manualReviewRequired: boolean;
+    internalNotes: PortableTextContent;
+  };
+}
+
+// Supporting interfaces
+interface ConsultingArea {
+  name: string;
+  level: 'beginner' | 'intermediate' | 'expert';
+  yearsExperience: number;
+  description?: string;
+}
+
+interface KYCDocument {
+  id: string;
+  type: 'passport' | 'id_card' | 'business_license' | 'tax_document' | 'bank_statement';
+  fileName: string;
+  uploadDate: Date;
+  verificationStatus: 'pending' | 'verified' | 'rejected';
+  notes?: string;
+}
+
+interface LinkedInProfileData {
+  headline: string;
+  summary: string;
+  experience: WorkExperience[];
+  education: Education[];
+  skills: string[];
+  connections: number;
+  profileImageUrl?: string;
+  lastScrapedData: any; // Raw scraper response
+}
+```
+
+#### Consultant Profile Management Interface
+
+**List View Features**:
+- **Advanced Table Component**: Sortable, filterable consultant directory
+- **Status Indicators**: Visual status badges (online/offline, KYC status, verification level)
+- **Quick Actions**: Edit profile, view details, toggle status, initiate scraping
+- **Bulk Operations**: Mass status updates, export selected, bulk email
+- **Smart Filtering**: By status, expertise, availability, earnings, verification level
+- **Search**: Full-text search across name, expertise, bio, and skills
+
+**Card View Features**:
+- **Profile Cards**: Photo, name, title, rating, and key metrics
+- **Hover Actions**: Quick preview, edit, message, view analytics
+- **Status Overlays**: Online status, booking availability, new inquiry indicators
+- **Performance Metrics**: Revenue, booking count, rating display
+
+**Profile Detail View**:
+- **Tabbed Interface**: Personal Info, Professional Info, LinkedIn Data, Payment Info, Analytics
+- **Live LinkedIn Preview**: Side-by-side comparison with scraped data
+- **Content Association Manager**: Link/unlink whitepapers, webinars, blog posts
+- **Analytics Dashboard**: Performance charts, booking history, revenue trends
+- **Communication Log**: Message history, booking inquiries, admin notes
+
+### 1.2 LinkedIn Scraping Tab (`/admin/consultants/scraping`)
+
+→ **API Integration**: [Scoopp Integration API](../integrations/scoopp-linkedin.md)
+⚡ **Dependencies**: [Job Queue System](../backend/api.md#job-queue), [Webhook Processing](../integrations/webhooks.md)
+
+#### Scoopp-Powered LinkedIn Scraping Wizard
+
+**Scraping Job Creation Interface**:
+```tsx
+interface ScrapingJobConfig {
+  jobId: string;
+  jobName: string;
+  targetProfiles: {
+    linkedinUrls: string[];
+    searchCriteria?: {
+      keywords: string[];
+      location?: string;
+      industry?: string[];
+      experienceLevel?: 'entry' | 'mid' | 'senior' | 'executive';
+      connectionLevel?: '1st' | '2nd' | '3rd';
+    };
+  };
+  scrapingOptions: {
+    includeExperience: boolean;
+    includeEducation: boolean;
+    includeSkills: boolean;
+    includeConnections: boolean;
+    includeRecommendations: boolean;
+    fullProfileData: boolean;
+  };
+  processingOptions: {
+    autoCreateProfiles: boolean;
+    requireManualReview: boolean;
+    aiEnhancement: boolean;
+    duplicateDetection: boolean;
+    qualityThreshold: number; // 1-10 scale
+  };
+  scheduling: {
+    executeNow: boolean;
+    scheduledFor?: Date;
+    repeatInterval?: 'none' | 'weekly' | 'monthly';
   };
 }
 ```
 
-#### Consultant List Interface
-- **Table View**: Sortable columns with filtering
-- **Card View**: Visual grid with profile photos
-- **Quick Actions**: Edit, view profile, toggle status
-- **Bulk Operations**: Mass status updates
-- **Export Options**: CSV, PDF reports
+**Scraping Job Monitoring Dashboard**:
+- **Active Jobs List**: Real-time status of running scraping jobs
+- **Job Status Indicators**: Queued, running, completed, failed, paused
+- **Progress Tracking**: Profiles scraped vs. total, success rate, errors
+- **Real-time Log Viewer**: Live updates from Scoopp scraping process
+- **Job Controls**: Pause, resume, cancel, restart failed jobs
+- **Results Preview**: Quick preview of scraped data quality
 
-### 2. Webinars Management (`/admin/webinars`)
+**Scraping Results Management**:
+```tsx
+interface ScrapingResult {
+  jobId: string;
+  profileUrl: string;
+  status: 'success' | 'failed' | 'partial' | 'requires_review';
+  scrapedAt: Date;
+  dataQuality: {
+    score: number; // 1-10 quality score
+    completeness: number; // Percentage of fields populated
+    confidence: number; // AI confidence in data accuracy
+    issues: string[]; // Detected data quality issues
+  };
+  extractedData: LinkedInProfileData;
+  processingNotes: string[];
+  reviewStatus: 'pending' | 'approved' | 'rejected' | 'needs_revision';
+  assignedReviewer?: string;
+  consultantProfileId?: string; // If auto-created or linked
+}
+```
+
+**Manual Review Workflow Interface**:
+- **Review Queue**: Scraped profiles requiring manual review
+- **Side-by-Side Comparison**: Original LinkedIn vs. extracted data
+- **Data Correction Tools**: Edit extracted fields, add missing information
+- **Approval Actions**: Approve, reject, request revision, escalate
+- **Bulk Review Tools**: Batch approval for high-quality results
+- **Reviewer Assignment**: Assign specific profiles to team members
+
+### 1.3 AI-Powered Profile Generation
+
+→ **Integration**: [OpenAI API](../integrations/openai-api.md)
+⚡ **Dependencies**: [Content Validation](../security.md#content-validation)
+
+#### AI Profile Enhancement Features
+
+**AI Profile Generator Interface**:
+```tsx
+interface AIProfileGenerator {
+  inputData: {
+    rawText?: string; // Unstructured resume/bio text
+    linkedinData?: LinkedInProfileData;
+    existingProfile?: Partial<ConsultantProfile>;
+    additionalContext?: string;
+  };
+  generationOptions: {
+    outputLanguage: 'en' | 'de' | 'both';
+    biographyLength: 'short' | 'medium' | 'long';
+    toneOfVoice: 'professional' | 'friendly' | 'authoritative' | 'approachable';
+    focusAreas: string[]; // Emphasize specific expertise
+    includePersonality: boolean;
+    generateSpecializations: boolean;
+  };
+  qualityControls: {
+    factChecking: boolean;
+    grammarCheck: boolean;
+    consistencyValidation: boolean;
+    brandAlignment: boolean;
+  };
+}
+```
+
+**AI Generation Workflow**:
+1. **Data Input**: Upload resume, paste bio text, or use scraped LinkedIn data
+2. **Content Analysis**: AI analyzes and structures unstructured information
+3. **Profile Generation**: Creates structured consultant profile with PortableText content
+4. **Quality Review**: Automated checks for accuracy, consistency, and completeness
+5. **Human Review**: Manual review and editing before profile activation
+6. **A/B Testing**: Optional testing of different bio versions for performance
+
+**Generated Content Quality Indicators**:
+- **Accuracy Score**: AI confidence in factual accuracy
+- **Completeness Meter**: Percentage of profile fields populated
+- **Uniqueness Check**: Originality compared to existing profiles
+- **Brand Alignment**: Consistency with company voice and values
+- **SEO Optimization**: Keyword density and search optimization score
+
+### 1.4 Payments & KYC Tab (`/admin/consultants/payments`)
+
+→ **Payment Integration**: [Stripe API](../integrations/stripe-payments.md), [Banking APIs](../integrations/banking.md)
+← **Compliance**: [Privacy Policy](../privacy-compliance.md#financial-data), [KYC Regulations](../security.md#kyc-compliance)
+
+#### KYC (Know Your Customer) Management
+
+**KYC Workflow Interface**:
+```tsx
+interface KYCWorkflow {
+  consultantId: string;
+  kycLevel: 'basic' | 'enhanced' | 'premium';
+  currentStage: {
+    stage: 'identity' | 'address' | 'business' | 'financial' | 'review' | 'approved';
+    status: 'pending' | 'in_progress' | 'completed' | 'rejected';
+    completedAt?: Date;
+    rejectionReason?: string;
+    nextAction: string;
+  };
+  requiredDocuments: KYCRequirement[];
+  submittedDocuments: KYCDocument[];
+  verificationResults: {
+    identityVerification: VerificationResult;
+    addressVerification: VerificationResult;
+    businessVerification?: VerificationResult;
+    financialVerification?: VerificationResult;
+  };
+  complianceFlags: {
+    sanctionsList: boolean;
+    pepCheck: boolean; // Politically Exposed Person
+    adverseMedia: boolean;
+    riskLevel: 'low' | 'medium' | 'high';
+  };
+}
+
+interface KYCRequirement {
+  documentType: string;
+  required: boolean;
+  description: string;
+  acceptedFormats: string[];
+  maxFileSize: number;
+  exampleUrl?: string;
+}
+
+interface VerificationResult {
+  status: 'pending' | 'verified' | 'failed' | 'manual_review';
+  verifiedAt?: Date;
+  verificationMethod: 'automated' | 'manual' | 'third_party';
+  confidence: number;
+  details: any;
+  reviewNotes?: string;
+}
+```
+
+**KYC Management Features**:
+- **Document Collection Wizard**: Step-by-step KYC document upload
+- **Verification Status Dashboard**: Real-time KYC progress tracking
+- **Document Review Interface**: Side-by-side document verification
+- **Risk Assessment Tools**: Automated risk scoring and manual overrides
+- **Compliance Reporting**: KYC status reports and audit trails
+- **Integration Monitors**: Third-party KYC service status and results
+
+#### Payment Setup & Management
+
+**Payment Method Configuration**:
+```tsx
+interface PaymentSetup {
+  consultantId: string;
+  paymentMethods: PaymentMethod[];
+  defaultMethodId: string;
+  payoutSchedule: {
+    frequency: 'weekly' | 'bi_weekly' | 'monthly';
+    dayOfWeek?: number; // For weekly
+    dayOfMonth?: number; // For monthly
+    minimumAmount: number;
+  };
+  taxInformation: {
+    taxId: string;
+    taxForm?: string; // W-9, W-8BEN, etc.
+    taxClassification: string;
+    backupWithholding: boolean;
+    exemptPayee: boolean;
+  };
+  invoiceSettings: {
+    automaticInvoicing: boolean;
+    invoiceTemplate: string;
+    includeDetails: boolean;
+    brandingEnabled: boolean;
+  };
+}
+
+interface PaymentMethod {
+  id: string;
+  type: 'bank_account' | 'paypal' | 'wise' | 'crypto';
+  details: {
+    accountName: string;
+    routingNumber?: string;
+    accountNumber?: string;
+    iban?: string;
+    swiftCode?: string;
+    paypalEmail?: string;
+    cryptoAddress?: string;
+    cryptoCurrency?: string;
+  };
+  status: 'pending' | 'verified' | 'failed';
+  isDefault: boolean;
+  verifiedAt?: Date;
+}
+```
+
+**Payment Management Dashboard**:
+- **Payout Calendar**: Visual calendar of scheduled payouts
+- **Payment Method Manager**: Add, edit, verify payment methods
+- **Transaction History**: Complete payment and payout history
+- **Tax Document Generator**: Automatic 1099/tax form generation
+- **Dispute Management**: Handle payment disputes and chargebacks
+- **Payment Analytics**: Revenue trends, payout patterns, method performance
+
+#### Payout Scheduling & Management
+
+**Payout Management Interface**:
+```tsx
+interface PayoutManagement {
+  scheduledPayouts: ScheduledPayout[];
+  processedPayouts: ProcessedPayout[];
+  failedPayouts: FailedPayout[];
+  payoutRules: {
+    minimumAmount: number;
+    holdingPeriod: number; // Days to hold before payout
+    disputeReserve: number; // Percentage held for disputes
+    processingFee: number;
+  };
+  bulkOperations: {
+    generatePayouts: () => void;
+    processPayouts: () => void;
+    cancelPayouts: (ids: string[]) => void;
+    exportPayouts: (dateRange: DateRange) => void;
+  };
+}
+
+interface ScheduledPayout {
+  id: string;
+  consultantId: string;
+  amount: number;
+  currency: string;
+  scheduledDate: Date;
+  paymentMethodId: string;
+  includedBookings: string[];
+  fees: {
+    platformFee: number;
+    processingFee: number;
+    netAmount: number;
+  };
+  status: 'scheduled' | 'processing' | 'completed' | 'failed';
+  notes?: string;
+}
+```
+
+**Payout Features**:
+- **Automated Payout Generation**: Rule-based payout calculation
+- **Batch Processing**: Process multiple payouts simultaneously
+- **Payout Validation**: Verify amounts, methods, and consultant status
+- **Hold Management**: Manage payment holds and reserves
+- **Reconciliation Tools**: Match payouts with bookings and fees
+- **Export & Reporting**: Detailed payout reports for accounting
+
+### 1.5 Performance Analytics Tab (`/admin/consultants/analytics`)
+
+→ **Analytics Integration**: [Analytics Dashboard](../features/analytics.md#consultant-metrics)
+⚡ **Data Sources**: [Booking System](../backend/database.md#booking-tables), [Payment Data](../integrations/stripe-payments.md#analytics)
+
+#### Consultant Performance Dashboard
+
+**Key Performance Indicators**:
+```tsx
+interface ConsultantAnalytics {
+  performanceMetrics: {
+    totalRevenue: MoneyAmount;
+    revenueGrowth: PercentageChange;
+    bookingsCount: number;
+    bookingsGrowth: PercentageChange;
+    averageBookingValue: MoneyAmount;
+    conversionRate: number;
+    clientSatisfaction: {
+      averageRating: number;
+      totalReviews: number;
+      npsScore: number;
+    };
+  };
+  
+  financialMetrics: {
+    monthlyRecurringRevenue: MoneyAmount;
+    averageDealSize: MoneyAmount;
+    lifetimeValue: MoneyAmount;
+    payoutHistory: PayoutSummary[];
+    outstandingEarnings: MoneyAmount;
+    feeBreakdown: {
+      platformFees: MoneyAmount;
+      processingFees: MoneyAmount;
+      netEarnings: MoneyAmount;
+    };
+  };
+  
+  engagementMetrics: {
+    responseTime: {
+      average: number; // minutes
+      median: number;
+      percentile90: number;
+    };
+    availabilityRate: number; // Percentage of time available
+    utilizationRate: number; // Booked time vs. available time
+    repeatClientRate: number;
+    cancellationRate: number;
+  };
+  
+  contentMetrics: {
+    whitepaperViews: number;
+    webinarAttendance: number;
+    blogPostEngagement: number;
+    linkedinConnections: number;
+    profileViews: number;
+    inquiryToBookingConversion: number;
+  };
+}
+```
+
+**Analytics Dashboard Components**:
+- **Revenue Chart**: Monthly/quarterly revenue trends with projections
+- **Booking Analytics**: Booking patterns, peak times, seasonal trends
+- **Client Satisfaction Matrix**: Rating distribution, review analysis, NPS trends
+- **Performance Comparison**: Consultant rankings and peer comparisons
+- **Geographic Analysis**: Client distribution, regional performance
+- **Content Performance**: Associated content engagement and conversion impact
+
+**Advanced Analytics Features**:
+- **Predictive Analytics**: Revenue forecasting, booking predictions
+- **Cohort Analysis**: Client retention and lifetime value analysis
+- **Attribution Modeling**: Track which content/activities drive bookings
+- **A/B Testing Results**: Profile optimization experiment results
+- **Benchmarking**: Industry and internal performance comparisons
+- **Custom Reports**: Configurable analytics dashboards per consultant
+
+### 1.6 Enhanced Admin Interfaces for Consultant Integration
+
+#### Consultant-Whitepaper Association Management
+
+→ **Content Integration**: [Whitepaper Management](../features/whitepaper-system.md)
+⚡ **Cross-linking**: [Content Marketing](../features/content-marketing.md)
+
+**Whitepaper Authorship Interface**:
+```tsx
+interface WhitepaperConsultantLink {
+  whitepaperInfo: {
+    id: string;
+    title: Record<string, string>;
+    status: 'draft' | 'published' | 'archived';
+    publishedDate?: Date;
+    downloadCount: number;
+    averageRating: number;
+  };
+  consultantRole: {
+    type: 'primary_author' | 'co_author' | 'contributor' | 'reviewer';
+    contribution: string; // Description of contribution
+    creditLine: string; // How to credit the consultant
+    royaltyPercentage?: number; // If applicable
+  };
+  performanceMetrics: {
+    attributedDownloads: number;
+    generatedInquiries: number;
+    bookingConversions: number;
+    revenueAttribution: MoneyAmount;
+  };
+}
+```
+
+**Association Management Features**:
+- **Drag-and-Drop Assignment**: Visual consultant-whitepaper linking
+- **Contribution Tracking**: Track individual consultant contributions
+- **Performance Attribution**: Measure whitepaper impact on consultant bookings
+- **Royalty Management**: Calculate and track content-based earnings
+- **Content Calendar Integration**: Align consultant expertise with content planning
+
+#### Consultant-Webinar Integration
+
+→ **Webinar System**: [Webinar Management](#2-webinars-management-adminwebinars)
+
+**Enhanced Webinar Session Interface**:
+```tsx
+interface EnhancedWebinarSession extends WebinarSession {
+  consultantAssignment: {
+    primarySpeaker: ConsultantReference;
+    coSpeakers: ConsultantReference[];
+    moderator?: ConsultantReference;
+    technicalSupport?: ConsultantReference;
+  };
+  consultantCompensation: {
+    type: 'fixed_fee' | 'revenue_share' | 'per_attendee' | 'hybrid';
+    baseAmount?: MoneyAmount;
+    revenueSharePercentage?: number;
+    perAttendeeRate?: MoneyAmount;
+    bonusThresholds?: CompensationTier[];
+  };
+  consultantRequirements: {
+    preparationTime: number; // Hours needed for prep
+    equipmentNeeds: string[];
+    supportRequirements: string[];
+    marketingParticipation: boolean;
+  };
+}
+
+interface ConsultantReference {
+  consultantId: string;
+  name: string;
+  role: string;
+  confirmed: boolean;
+  confirmationDate?: Date;
+  requirements?: string[];
+}
+```
+
+#### Enhanced Booking System with Consultant Selection
+
+→ **Booking Integration**: [Booking System](../features/booking-system.md)
+
+**Advanced Booking Interface**:
+```tsx
+interface EnhancedBookingSystem {
+  consultantSelection: {
+    availableConsultants: ConsultantAvailability[];
+    matchingAlgorithm: {
+      expertiseMatch: number;
+      availabilityMatch: number;
+      priceMatch: number;
+      clientPreferenceMatch: number;
+      overallScore: number;
+    };
+    filterOptions: {
+      expertise: string[];
+      priceRange: [number, number];
+      availability: DateRange;
+      rating: number;
+      languages: string[];
+      timezone: string[];
+    };
+  };
+  
+  bookingWorkflow: {
+    consultantRecommendation: boolean;
+    multipleConsultantOption: boolean;
+    instantBooking: boolean;
+    approvalRequired: boolean;
+    paymentTiming: 'upfront' | 'after' | 'split';
+  };
+  
+  dynamicPricing: {
+    baseRate: MoneyAmount;
+    demandMultiplier: number;
+    consultantPremium: number;
+    discountApplied: MoneyAmount;
+    finalPrice: MoneyAmount;
+  };
+}
+
+interface ConsultantAvailability {
+  consultantId: string;
+  availableSlots: TimeSlot[];
+  rate: MoneyAmount;
+  minimumDuration: number;
+  maximumDuration: number;
+  bufferTime: number;
+  specialRequirements?: string[];
+  cancellationPolicy: CancellationPolicy;
+}
+```
+
+#### Payment Processing Integration Throughout Interfaces
+
+→ **Payment Processing**: [Payment Integration](../integrations/stripe-payments.md)
+
+**Integrated Payment Features**:
+- **Real-time Payment Processing**: Instant payment confirmation for bookings
+- **Multi-currency Support**: Handle payments in consultant's preferred currency
+- **Automatic Fee Calculation**: Platform fees, payment processing fees, consultant earnings
+- **Escrow Management**: Hold payments until service completion
+- **Refund Processing**: Automated refund workflows for cancellations
+- **Invoice Generation**: Automatic invoice creation and delivery
+- **Tax Compliance**: Automatic tax calculation and reporting
+- **Payment Analytics**: Revenue tracking, payment method performance
+
+### 1.7 Interface Components for Consultant Management
+
+#### Advanced Table Components for Consultant Listings
+
+```tsx
+interface ConsultantTableComponent {
+  columns: {
+    consultant: {
+      photo: boolean;
+      name: boolean;
+      title: boolean;
+      rating: boolean;
+      status: boolean;
+    };
+    performance: {
+      totalBookings: boolean;
+      revenue: boolean;
+      conversionRate: boolean;
+      responseTime: boolean;
+    };
+    availability: {
+      currentStatus: boolean;
+      nextAvailable: boolean;
+      timezone: boolean;
+    };
+    administrative: {
+      kycStatus: boolean;
+      paymentSetup: boolean;
+      lastActivity: boolean;
+      createdDate: boolean;
+    };
+  };
+  features: {
+    multiSort: boolean;
+    columnFilters: boolean;
+    globalSearch: boolean;
+    rowSelection: boolean;
+    bulkActions: boolean;
+    exportOptions: boolean;
+    columnVisibility: boolean;
+    responsiveDesign: boolean;
+  };
+  actions: {
+    quickEdit: boolean;
+    viewProfile: boolean;
+    viewAnalytics: boolean;
+    messageConsultant: boolean;
+    toggleStatus: boolean;
+    initiateKYC: boolean;
+    scheduleInterview: boolean;
+  };
+}
+```
+
+#### Form Components for Consultant Profile Editing
+
+```tsx
+interface ConsultantFormComponents {
+  personalInfoForm: {
+    basicDetails: FormSection;
+    contactInformation: FormSection;
+    locationSettings: FormSection;
+    profilePhoto: FileUploadComponent;
+  };
+  professionalInfoForm: {
+    biographyEditor: PortableTextEditor;
+    expertiseSelector: MultiSelectComponent;
+    certificationUploader: FileUploadComponent;
+    experienceEditor: DynamicFormComponent;
+  };
+  availabilityForm: {
+    scheduleBuilder: ScheduleEditorComponent;
+    timezoneSelector: TimezoneComponent;
+    holidayManager: DateRangeComponent;
+    bookingSettings: BookingRulesComponent;
+  };
+  paymentForm: {
+    kycWizard: StepperComponent;
+    paymentMethodManager: PaymentMethodComponent;
+    taxInformationForm: TaxFormComponent;
+    payoutSettings: PayoutConfigComponent;
+  };
+}
+```
+
+#### Analytics Dashboards with Charts and Metrics
+
+```tsx
+interface ConsultantAnalyticsDashboard {
+  performanceCharts: {
+    revenueChart: {
+      type: 'line' | 'bar' | 'area';
+      timeRange: 'week' | 'month' | 'quarter' | 'year';
+      comparison: boolean;
+      forecast: boolean;
+    };
+    bookingChart: {
+      type: 'line' | 'bar' | 'heatmap';
+      granularity: 'day' | 'week' | 'month';
+      showCancellations: boolean;
+    };
+    satisfactionChart: {
+      type: 'gauge' | 'bar' | 'trend';
+      includeNPS: boolean;
+      reviewBreakdown: boolean;
+    };
+  };
+  
+  metricCards: {
+    revenueCard: MetricCardComponent;
+    bookingCard: MetricCardComponent;
+    ratingCard: MetricCardComponent;
+    responseTimeCard: MetricCardComponent;
+    conversionCard: MetricCardComponent;
+    utilizationCard: MetricCardComponent;
+  };
+  
+  comparisonTools: {
+    peerComparison: boolean;
+    industryBenchmarks: boolean;
+    historicalComparison: boolean;
+    goalTracking: boolean;
+  };
+}
+```
+
+#### LinkedIn Profile Preview and Validation Components
+
+```tsx
+interface LinkedInIntegrationComponents {
+  profilePreview: {
+    linkedinProfile: LinkedInProfileRenderer;
+    extractedData: DataExtractionRenderer;
+    comparisonView: SideBySideComparator;
+    validationIndicators: ValidationStatusComponent;
+  };
+  
+  scrapingInterface: {
+    jobCreator: ScrapingJobWizard;
+    jobMonitor: JobStatusTracker;
+    resultReviewer: ScrapingResultReviewer;
+    qualityAssessment: DataQualityAnalyzer;
+  };
+  
+  dataValidation: {
+    experienceValidator: ExperienceVerifier;
+    skillsValidator: SkillsVerifier;
+    educationValidator: EducationVerifier;
+    connectionsValidator: ConnectionsVerifier;
+  };
+}
+```
+
+### 1.8 Cross-Reference Integration Summary
+
+**API Integration Cross-References**:
+→ [Consultant Profile API](../backend/api.md#consultant-profile-endpoints)
+→ [LinkedIn Scraping API](../backend/api.md#scraping-endpoints)
+→ [Payment Processing API](../backend/api.md#payment-endpoints)
+→ [KYC Management API](../backend/api.md#kyc-endpoints)
+→ [Analytics API](../backend/api.md#analytics-endpoints)
+
+**Database Schema Cross-References**:
+→ [Consultant Tables](../backend/database.md#consultant-tables)
+→ [Payment Tables](../backend/database.md#payment-tables)
+→ [Scraping Job Tables](../backend/database.md#scraping-tables)
+→ [KYC Document Tables](../backend/database.md#kyc-tables)
+→ [Analytics Tables](../backend/database.md#analytics-tables)
+
+**Integration Dependencies**:
+→ [Scoopp LinkedIn Integration](../integrations/scoopp-linkedin.md)
+→ [Stripe Payment Processing](../integrations/stripe-payments.md)
+→ [OpenAI API](../integrations/openai-api.md)
+→ [File Storage Service](../integrations/file-storage.md)
+→ [Email Service](../integrations/smtp-brevo.md)
+
+**Security and Compliance Cross-References**:
+← [KYC Compliance Requirements](../security.md#kyc-compliance)
+← [Financial Data Protection](../privacy-compliance.md#financial-data)
+← [Payment Security](../security.md#payment-security)
+← [Data Retention Policies](../privacy-compliance.md#data-retention)
+
+**Feature Integration Cross-References**:
+↔️ [Booking System Integration](../features/booking-system.md#consultant-selection)
+↔️ [Webinar Management Integration](../features/webinar-system.md#consultant-assignment)
+↔️ [Whitepaper System Integration](../features/whitepaper-system.md#author-management)
+↔️ [Content Marketing Integration](../features/content-marketing.md#consultant-content)
+
+**User Experience Cross-References**:
+← [User Personas](../users/) - All consultant management interfaces designed for [Site Admin](../users/site-admin.md) and [Content Editor](../users/content-editor.md) personas
+→ [Design System](../frontend/design-system.md) - All components follow established design patterns
+⚡ [Responsive Design](../frontend/public.md#responsive-design) - Mobile-friendly admin interfaces
+
+### 2. Webinars Management (`/admin/webinars`) - Enhanced with Consultant Integration
 
 #### Tab Structure
 - **Sessions**: Individual webinar instances
@@ -486,20 +1338,49 @@ interface Consultant {
 - **Analytics**: Performance metrics
 - **Settings**: Program configuration
 
-#### Session Management with PortableText
+#### Enhanced Session Management with Consultant Integration
 ```tsx
 interface WebinarSession {
   id: string;
   title: Record<string, string>; // Multilingual titles
   description: PortableTextContent; // Rich PortableText descriptions
-  speaker: Speaker;
+  
+  // Enhanced consultant integration
+  consultantAssignment: {
+    primarySpeaker: {
+      consultantId: string;
+      role: 'speaker' | 'presenter' | 'facilitator';
+      confirmed: boolean;
+      confirmationDate?: Date;
+      preparationNotes?: PortableTextContent;
+    };
+    coSpeakers: ConsultantAssignment[];
+    moderator?: ConsultantAssignment;
+    panelists: ConsultantAssignment[];
+  };
+  
+  // Consultant compensation tracking
+  consultantCompensation: {
+    paymentStructure: {
+      type: 'fixed_fee' | 'revenue_share' | 'per_attendee' | 'performance_based';
+      amounts: Record<string, MoneyAmount>; // Per consultant
+      bonuses: CompensationBonus[];
+      paymentSchedule: 'upfront' | 'after_event' | 'split';
+    };
+    performanceMetrics: {
+      attendanceThreshold: number;
+      satisfactionThreshold: number;
+      engagementThreshold: number;
+    };
+  };
+  
   datetime: Date;
   duration: number;
   timezone: string;
   capacity?: number;
   price?: number;
   status: 'draft' | 'published' | 'live' | 'completed' | 'cancelled';
-  registrations: Registration[];
+  registrations: EnhancedRegistration[];
   recordingUrl?: string;
   materials: Material[];
   content: {
@@ -507,9 +1388,65 @@ interface WebinarSession {
     objectives: PortableTextContent;
     prerequisites?: PortableTextContent;
     targetAudience: PortableTextContent;
+    consultantBios: Record<string, PortableTextContent>; // Bio per consultant
+  };
+  
+  // Enhanced analytics
+  consultantPerformance: {
+    speakerRatings: Record<string, number>;
+    audienceEngagement: Record<string, EngagementMetrics>;
+    followUpBookings: Record<string, number>;
+    contentEffectiveness: Record<string, number>;
   };
 }
+
+interface ConsultantAssignment {
+  consultantId: string;
+  name: string;
+  role: string;
+  confirmed: boolean;
+  confirmationDate?: Date;
+  specialRequirements?: string[];
+  preparationTime?: number;
+  compensation?: MoneyAmount;
+}
+
+interface EnhancedRegistration extends Registration {
+  consultantPreference?: string; // Preferred consultant ID
+  followUpInterest: boolean;
+  bookingIntention: 'none' | 'interested' | 'likely' | 'committed';
+  specialRequests?: string;
+}
 ```
+
+#### Consultant Assignment Interface for Webinars
+
+→ **Integration**: [Consultant Management](#1-consultants-management-adminconsultants)
+⚡ **Dependencies**: [Consultant Availability API](../backend/api.md#consultant-availability)
+
+**Consultant Selection for Webinars**:
+- **Smart Matching**: AI-powered consultant recommendation based on webinar topic
+- **Availability Integration**: Real-time consultant availability checking
+- **Expertise Alignment**: Match consultant skills with webinar topics
+- **Performance History**: Show past webinar performance metrics
+- **Compensation Calculator**: Dynamic pricing based on consultant tier and webinar scope
+- **Multi-consultant Management**: Handle webinars with multiple speakers/panelists
+
+**Webinar-Consultant Workflow**:
+1. **Topic Planning**: Define webinar topic and required expertise
+2. **Consultant Matching**: AI suggests best-fit consultants
+3. **Availability Check**: Verify consultant availability for proposed dates
+4. **Assignment & Confirmation**: Send invitations and track confirmations
+5. **Preparation Management**: Track preparation progress and requirements
+6. **Performance Tracking**: Monitor engagement and satisfaction metrics
+7. **Follow-up Coordination**: Manage post-webinar consultant bookings
+
+**Enhanced Webinar Analytics with Consultant Metrics**:
+- **Consultant Performance Tracking**: Individual speaker effectiveness
+- **Booking Attribution**: Track webinar-to-booking conversion by consultant
+- **Audience Engagement by Speaker**: Analyze engagement during different speakers
+- **Revenue Attribution**: Calculate revenue generated per consultant
+- **Long-term Impact**: Track client relationships formed through webinars
 
 #### Registration Management
 - **Attendee List**: With contact information
@@ -526,7 +1463,95 @@ interface WebinarSession {
 - **Revenue Analysis**: For paid webinars
 - **Feedback Compilation**: Post-event surveys
 
-### 3. Users Management (`/admin/users`)
+### 3. Whitepaper Management - Enhanced with Consultant Authorship
+
+→ **Content Integration**: [Whitepaper System](../features/whitepaper-system.md)
+← **Consultant Integration**: [Consultant Management](#1-consultants-management-adminconsultants)
+
+#### Enhanced Whitepaper Interface with Consultant Features
+
+```tsx
+interface EnhancedWhitepaper {
+  id: string;
+  title: Record<string, string>;
+  description: PortableTextContent;
+  content: PortableTextContent;
+  
+  // Consultant authorship management
+  authorship: {
+    primaryAuthor: {
+      consultantId: string;
+      contributionLevel: 'primary' | 'lead' | 'senior';
+      royaltyPercentage: number;
+      creditLine: string;
+      authorBio: PortableTextContent;
+    };
+    coAuthors: WhitepaperAuthor[];
+    contributors: WhitepaperContributor[];
+    reviewers: WhitepaperReviewer[];
+  };
+  
+  // Content collaboration tracking
+  collaborationTracking: {
+    contributionLog: ContributionEntry[];
+    reviewCycles: ReviewCycle[];
+    approvalWorkflow: ApprovalStage[];
+    versionHistory: ContentVersion[];
+  };
+  
+  // Performance attribution
+  consultantAttribution: {
+    downloadsByAuthor: Record<string, number>;
+    inquiriesGenerated: Record<string, number>;
+    bookingConversions: Record<string, BookingConversion[]>;
+    revenueAttribution: Record<string, MoneyAmount>;
+  };
+  
+  // Marketing integration with consultants
+  marketingIntegration: {
+    authorPromotionPlan: PromotionPlan[];
+    socialMediaStrategy: SocialMediaPlan;
+    consultantNetworking: NetworkingPlan;
+    speakingOpportunities: SpeakingOpportunity[];
+  };
+}
+
+interface WhitepaperAuthor {
+  consultantId: string;
+  contributionType: 'research' | 'writing' | 'editing' | 'methodology';
+  sections: string[]; // Which sections they authored
+  timeInvested: number; // Hours
+  royaltyPercentage: number;
+  acknowledgment: string;
+}
+
+interface ContributionEntry {
+  contributorId: string;
+  contributionType: 'content' | 'review' | 'research' | 'editing';
+  timestamp: Date;
+  description: string;
+  sectionsAffected: string[];
+  timeSpent: number;
+}
+```
+
+#### Consultant-Whitepaper Association Dashboard
+
+**Author Management Features**:
+- **Consultant Author Search**: Find and assign consultants as whitepaper authors
+- **Contribution Tracking**: Monitor individual consultant contributions
+- **Royalty Calculator**: Automatic royalty distribution calculation
+- **Performance Attribution**: Track downloads and conversions per author
+- **Collaboration Workflow**: Manage multi-author whitepaper creation
+- **Content Quality Control**: Author-based content review and approval
+
+**Whitepaper Performance by Consultant**:
+- **Author Performance Dashboard**: Downloads, engagement, and conversion metrics
+- **Content Impact Analysis**: Which authors drive the most valuable leads
+- **Cross-Content Performance**: Compare performance across different whitepapers
+- **Revenue Attribution Modeling**: Calculate consultant ROI from content creation
+
+### 4. Users Management (`/admin/users`)
 
 #### Admin User Management
 ```tsx

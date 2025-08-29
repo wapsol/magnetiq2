@@ -13,7 +13,7 @@
   }
   
   body {
-    @apply text-gray-900 bg-white dark:text-white dark:bg-gray-900 antialiased transition-colors duration-300;
+    @apply text-gray-900 bg-white dark:text-white dark:bg-violet-900 antialiased transition-colors duration-300;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -54,7 +54,7 @@
   
   /* Focus styles for accessibility */
   *:focus-visible {
-    @apply outline-none ring-2 ring-primary-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900;
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2 ring-offset-white dark:ring-offset-violet-900;
   }
 }
 
@@ -112,7 +112,7 @@
   }
   
   .form-input {
-    @apply flex h-12 w-full rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm ring-offset-white dark:ring-offset-gray-900 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 dark:placeholder:text-gray-400 text-gray-900 dark:text-white focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-gray-700 transition-all duration-200 hover:border-gray-300 dark:hover:border-gray-600;
+    @apply flex h-12 w-full rounded-xl border-2 border-gray-200 dark:border-violet-700 bg-white dark:bg-violet-850 px-4 py-3 text-sm ring-offset-white dark:ring-offset-violet-900 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 dark:placeholder:text-gray-400 text-gray-900 dark:text-white focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-violet-800 transition-all duration-200 hover:border-gray-300 dark:hover:border-violet-600;
   }
   
   .form-input.error {
@@ -124,7 +124,7 @@
   }
   
   .form-textarea {
-    @apply flex min-h-[80px] w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white ring-offset-white dark:ring-offset-gray-900 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-gray-700 resize-y transition-colors duration-200;
+    @apply flex min-h-[80px] w-full rounded-lg border border-gray-300 dark:border-violet-700 bg-white dark:bg-violet-850 px-3 py-2 text-sm text-gray-900 dark:text-white ring-offset-white dark:ring-offset-violet-900 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-violet-800 resize-y transition-colors duration-200;
   }
   
   .form-textarea.error {
@@ -145,11 +145,11 @@
   
   /* Card Components - voltAIc Style */
   .card {
-    @apply bg-white dark:bg-gray-950 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-primary-500/10 transition-all duration-300;
+    @apply bg-white dark:bg-violet-800 rounded-2xl shadow-lg border border-gray-100 dark:border-violet-700 overflow-hidden hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-primary-500/20 transition-all duration-300;
   }
   
   .card-header {
-    @apply px-8 py-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50;
+    @apply px-8 py-6 border-b border-gray-100 dark:border-violet-700 bg-gray-50/50 dark:bg-violet-850/50;
   }
   
   .card-body {
@@ -157,7 +157,7 @@
   }
   
   .card-footer {
-    @apply px-8 py-6 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50;
+    @apply px-8 py-6 border-t border-gray-100 dark:border-violet-700 bg-gray-50/50 dark:bg-violet-850/50;
   }
   
   .card-elevated {

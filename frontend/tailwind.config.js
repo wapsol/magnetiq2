@@ -97,16 +97,33 @@ export default {
           900: '#0f0f23', // voltAIc dark background
           950: '#0a0a1a', // Even darker for cards/sections
         },
-        // Dark theme specific colors
+        // Dark violet theme colors inspired by voltAIc
+        violet: {
+          50: '#f5f3ff',
+          100: '#ede9fe',
+          200: '#ddd6fe',
+          300: '#c4b5fd',
+          400: '#a78bfa',
+          500: '#8b5cf6',
+          600: '#7c3aed',
+          700: '#6d28d9',
+          800: '#251a40', // Dark violet for elevated surfaces
+          850: '#1f1535', // Medium dark violet
+          900: '#1a1230', // Main dark violet background
+          925: '#151025', // Deeper violet
+          950: '#0f0a1a', // Deepest violet background
+        },
+        // Dark theme specific colors (violet-based)
         dark: {
-          bg: '#0f0f23', // Main dark background from voltAIc
-          surface: '#1a1b3d', // Card/surface color 
-          'surface-light': '#252761', // Lighter surface
-          border: '#2d2f5f', // Border color
+          bg: '#1a1230', // Main dark violet background
+          surface: '#251a40', // Card/surface color 
+          'surface-light': '#332050', // Lighter surface
+          border: '#422660', // Border color
+          'border-light': '#532c70', // Lighter border
           text: {
-            primary: '#ffffff',
-            secondary: '#cbd5e1',
-            muted: '#94a3b8',
+            primary: '#f8fafc',
+            secondary: '#e2e8f0',
+            muted: '#cbd5e1',
           }
         },
       },

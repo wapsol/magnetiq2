@@ -304,6 +304,796 @@ interface PortableTextComponents {
 - **Performance optimization** with React.memo and useMemo
 - **Accessibility features** built into block components
 
+## Consultant Profile System
+
+### 1. Consultant Profile Pages (`/consultants/{slug}`)
+
+#### Profile Overview
+Each consultant maintains a comprehensive professional profile showcasing their expertise, credentials, and service offerings.
+
+```tsx
+interface ConsultantProfile {
+  id: string;
+  slug: string;
+  personalInfo: {
+    firstName: string;
+    lastName: string;
+    title: string;
+    bio: PortableTextContent; // Rich biography content
+    profileImage: string;
+    galleryImages?: string[]; // Professional photo gallery
+  };
+  professionalData: {
+    linkedinProfile?: LinkedInProfile; // → [LinkedIn Integration](../../integrations/linkedin.md#profile-sync)
+    expertiseAreas: ExpertiseArea[];
+    certifications: Certification[];
+    specializations: string[];
+    yearsExperience: number;
+    languages: string[];
+    location: {
+      city: string;
+      country: string;
+      timezone: string;
+    };
+  };
+  statistics: {
+    whitepapersPublished: number; // ← [Content Statistics](../../../backend/api.md#consultant-stats)
+    webinarsConducted: number;
+    totalAttendees: number;
+    averageRating: number;
+    totalConsultations: number;
+  };
+  socialProof: {
+    testimonials: Testimonial[]; // → [Testimonial System](./features/testimonials.md)
+    clientRating: number;
+    endorsements: Endorsement[];
+    caseStudies: string[]; // Links to case study content
+  };
+  contentPortfolio: {
+    authoredWhitepapers: string[]; // → [Whitepaper System](./features/whitepapers.md)
+    conductedWebinars: string[]; // → [Webinar System](./features/webinars.md)
+    blogPosts: string[];
+    speakingEngagements: string[];
+  };
+  availability: {
+    isActive: boolean;
+    consultationTypes: ConsultationType[]; // → [30-for-30 Service](./features/consultation-booking.md)
+    timeSlots: AvailabilitySlot[];
+    bookingSettings: BookingConfiguration;
+  };
+}
+
+interface LinkedInProfile {
+  profileUrl: string;
+  headline: string;
+  summary: string;
+  currentPosition: string;
+  company: string;
+  skills: string[];
+  recommendations: number;
+  connections: number;
+  lastSyncDate: Date;
+} // ← Synced via [LinkedIn API](../../integrations/linkedin.md#profile-data)
+
+interface ExpertiseArea {
+  name: string;
+  category: 'AI' | 'Digital Transformation' | 'Automation' | 'Strategy';
+  proficiencyLevel: 'Beginner' | 'Intermediate' | 'Expert' | 'Thought Leader';
+  yearsExperience: number;
+  certifications?: string[];
+}
+
+interface Certification {
+  name: string;
+  issuer: string;
+  dateEarned: Date;
+  expiryDate?: Date;
+  credentialId?: string;
+  verificationUrl?: string;
+}
+
+interface Testimonial {
+  id: string;
+  clientName: string;
+  clientTitle: string;
+  clientCompany: string;
+  rating: number; // 1-5 stars
+  content: PortableTextContent;
+  dateProvided: Date;
+  consultationType: string;
+  isVerified: boolean;
+} // → Managed via [Admin Panel](../adminpanel/admin.md#testimonial-management)
+```
+
+#### Profile Page Layout
+**Hero Section:**
+- Professional headshot with photo gallery trigger
+- Name, title, and current position
+- Key expertise areas and certifications
+- Average rating and consultation count
+- Primary CTA: "Book 30-for-30 Consultation" → [Booking Flow](./features/consultation-booking.md#30-for-30-flow)
+
+**Professional Overview (PortableText):**
+- Rich biography with embedded media
+- Career highlights and achievements
+- Professional philosophy and approach
+- Video introduction (optional)
+
+**Statistics Dashboard:**
+```tsx
+interface StatsDisplay {
+  whitepapersPublished: {
+    count: number;
+    links: string[]; // → Direct links to [Authored Content](./features/whitepapers.md#author-filter)
+  };
+  webinarsConducted: {
+    count: number;
+    upcomingSessions: WebinarPreview[];
+    pastSessions: WebinarPreview[];
+  };
+  consultationMetrics: {
+    totalConsultations: number;
+    averageRating: number;
+    satisfactionRate: number;
+  };
+  engagementData: {
+    totalAttendees: number;
+    contentDownloads: number;
+    followerCount: number;
+  };
+}
+```
+
+**LinkedIn Integration Panel:**
+- Synced professional data display
+- Current position and company
+- Key skills and endorsements
+- Professional network size
+- Link to full LinkedIn profile → [LinkedIn Integration](../../integrations/linkedin.md#profile-display)
+
+**Expertise & Certifications:**
+- Visual expertise matrix
+- Industry certifications with verification
+- Skill proficiency indicators
+- Specialization tags
+
+**Client Testimonials:**
+- Rotating testimonial carousel
+- Star ratings with detailed feedback
+- Client verification badges
+- Filter by consultation type
+
+**Content Portfolio:**
+- Authored whitepapers with direct download
+- Conducted webinars with registration links
+- Blog posts and thought leadership content
+- Speaking engagement history
+
+**Booking Integration:**
+- Real-time availability display
+- 30-for-30 service highlighting (€30 consultation)
+- Instant booking widget
+- Service comparison table
+
+### 2. Consultant Discovery & Search (`/consultants`)
+
+#### Search & Filter Interface
+```tsx
+interface ConsultantSearchFilters {
+  expertiseAreas: string[]; // Multi-select expertise filtering
+  industries: string[]; // Industry specialization
+  location: {
+    city?: string;
+    country?: string;
+    timezone?: string;
+    remoteOnly?: boolean;
+  };
+  availability: {
+    nextAvailable?: 'today' | 'this-week' | 'this-month';
+    consultationType?: ConsultationType[];
+    timePreference?: 'morning' | 'afternoon' | 'evening';
+  };
+  experience: {
+    minYears?: number;
+    certificationRequired?: boolean;
+  };
+  ratings: {
+    minRating?: number;
+    minReviews?: number;
+  };
+  pricing: {
+    maxHourlyRate?: number;
+    offers30for30?: boolean; // Filter for 30-for-30 service
+  };
+  languages: string[];
+}
+
+interface ConsultantSearchResult {
+  consultant: ConsultantProfile;
+  matchScore: number; // Algorithm-generated relevance score
+  nextAvailableSlot?: Date;
+  specialtyMatch: string[]; // Matched expertise areas
+  distanceKm?: number; // For location-based searches
+} // → Search handled by [Backend Search API](../../backend/api.md#consultant-search)
+```
+
+**Search Interface Components:**
+- **Advanced Search Bar** with autocomplete for expertise areas
+- **Filter Sidebar** with collapsible sections
+- **Map View Toggle** for location-based discovery
+- **Sort Options**: Relevance, Rating, Availability, Experience, Price
+- **Quick Filters**: Available Today, 30-for-30 Service, Top Rated
+
+**Search Results Display:**
+- **Card Layout** with consultant previews
+- **List View** for detailed comparison
+- **Availability Indicators** with next available slot
+- **Match Scoring** with expertise alignment
+- **Quick Actions**: View Profile, Book Consultation, Save Favorite
+
+#### Featured Consultant Showcases
+```tsx
+interface FeaturedConsultantSection {
+  sectionType: 'trending' | 'top-rated' | 'new-experts' | 'specialist-spotlight';
+  consultants: ConsultantProfile[];
+  criteria: string; // What makes them featured
+  rotationSchedule: 'daily' | 'weekly' | 'monthly';
+} // → Managed via [Admin Panel](../adminpanel/admin.md#consultant-promotion)
+```
+
+**Showcase Sections:**
+- **Trending Consultants**: Most booked this month
+- **Top Rated Experts**: Highest client satisfaction
+- **New Talent**: Recently joined consultants
+- **Specialist Spotlight**: Domain expertise focus
+
+#### Consultant Matching Algorithm
+```tsx
+interface MatchingCriteria {
+  userRequirements: {
+    projectType: string;
+    industryContext: string;
+    timeframe: string;
+    budgetRange: string;
+    preferredLanguage: string;
+  };
+  consultantCapabilities: {
+    expertiseAlignment: number; // 0-1 relevance score
+    availabilityMatch: number;
+    experienceLevel: number;
+    clientSatisfaction: number;
+    pricingFit: number;
+  };
+  algorithmWeights: {
+    expertise: 0.3;
+    availability: 0.25;
+    rating: 0.2;
+    experience: 0.15;
+    pricing: 0.1;
+  };
+} // → Algorithm implemented in [Backend Matching Service](../../backend/api.md#consultant-matching)
+```
+
+### 3. 30-for-30 Service Integration
+
+#### Dedicated Service Landing (`/30-for-30`)
+**Service Overview:**
+- Value proposition for €30 consultation
+- Service benefits and guarantees
+- Success stories and testimonials
+- Consultant availability overview
+
+**Booking Interface:**
+```tsx
+interface ThirtyForThirtyBooking {
+  serviceDetails: {
+    price: 30; // Fixed €30 price
+    currency: 'EUR';
+    duration: 30; // 30 minutes
+    deliveryMethod: 'video' | 'phone' | 'in-person';
+    included: string[]; // What's included in consultation
+    followUpOptions: string[];
+  };
+  consultantSelection: {
+    availableConsultants: ConsultantProfile[];
+    selectionCriteria: {
+      expertise: string[];
+      nextAvailable: Date;
+      rating: number;
+    };
+    autoMatching: boolean; // Algorithm-based selection
+  };
+  timeSlotBooking: {
+    availableSlots: TimeSlot[];
+    timezonHandling: boolean;
+    bufferTime: number; // Minutes between bookings
+    cancellationPolicy: string;
+  };
+  paymentProcessing: {
+    acceptedMethods: PaymentMethod[];
+    processingFee: number;
+    refundPolicy: string;
+    invoiceGeneration: boolean;
+  };
+} // → Integrates with [Payment Processing](../../integrations/payment.md#stripe-integration)
+```
+
+#### Real-time Availability System
+```tsx
+interface AvailabilityChecker {
+  consultantSchedule: {
+    workingHours: WorkingHours;
+    blockedTimes: TimeBlock[];
+    bookedSlots: BookedSlot[];
+    bufferTimes: BufferTime[];
+  };
+  realTimeUpdates: {
+    websocketConnection: boolean;
+    autoRefresh: number; // Seconds
+    conflictResolution: ConflictHandler;
+  };
+  slotGeneration: {
+    slotDuration: 30; // Minutes
+    advanceBooking: {
+      minHours: 2;
+      maxDays: 60;
+    };
+    holidayCalendar: HolidayConfig[];
+  };
+} // → Backend integration: [Calendar Service](../../backend/api.md#availability-management)
+```
+
+#### Payment Flow Integration
+**Booking Steps:**
+1. **Consultant Selection** or Algorithm Matching
+2. **Time Slot Selection** with real-time availability
+3. **Contact Information Collection** for lead capture → [CRM Integration](../../integrations/crm.md#lead-capture)
+4. **Payment Processing** via Stripe → [Payment Gateway](../../integrations/payment.md#stripe-checkout)
+5. **Booking Confirmation** with calendar invites
+6. **Lead Nurturing** email sequence → [Email Automation](../../integrations/smtp-brevo.md#booking-confirmation)
+
+```tsx
+interface PaymentFlowData {
+  bookingDetails: {
+    consultantId: string;
+    timeSlot: TimeSlot;
+    serviceType: '30-for-30';
+    price: number;
+  };
+  customerInformation: {
+    personalDetails: ContactForm;
+    companyInformation: CompanyForm;
+    consultationGoals: string[];
+    communicationPreferences: PreferenceSettings;
+  };
+  paymentData: {
+    stripeSessionId: string;
+    paymentIntentId: string;
+    invoiceNumber: string;
+    taxInformation: TaxData;
+  };
+  confirmationData: {
+    bookingReference: string;
+    calendarInvites: CalendarInvite[];
+    confirmationEmail: EmailTemplate;
+    reminderSchedule: ReminderConfig[];
+  };
+} // → Payment handled by [Stripe Integration](../../integrations/payment.md#consultation-payments)
+```
+
+#### Terms of Service & Booking Confirmation
+**Legal Integration:**
+- Terms acceptance with version tracking
+- Cancellation policy acknowledgment
+- Data processing consent → [Privacy Compliance](../../privacy-compliance.md#consultation-data)
+- Service level agreement display
+
+**Confirmation System:**
+- Instant booking confirmation page
+- Email confirmation with details
+- Calendar invite generation (Google/Outlook)
+- SMS reminder option
+- Booking management portal access
+
+### 4. Content Integration with Consultant Profiles
+
+#### Whitepaper-Consultant Integration
+```tsx
+interface ConsultantContentIntegration {
+  authoredContent: {
+    whitepapers: {
+      consultantId: string;
+      authorProfile: ConsultantProfile;
+      downloadTrigger: 'profile-view' | 'direct-download';
+      leadCapture: boolean;
+    }; // → Links to [Whitepaper System](./features/whitepapers.md#author-integration)
+  };
+  webinarIntegration: {
+    conductedSessions: WebinarSession[];
+    upcomingSchedule: WebinarPreview[];
+    registrationFlow: 'direct' | 'profile-based';
+    attendeeFollowUp: boolean;
+  }; // → Connects to [Webinar System](./features/webinars.md#consultant-integration)
+  contentRecommendations: {
+    algorithmType: 'collaborative' | 'content-based' | 'hybrid';
+    recommendationSources: RecommendationSource[];
+    personalizationLevel: 'basic' | 'advanced';
+  }; // → Powered by [Recommendation Engine](../../backend/api.md#content-recommendations)
+}
+```
+
+#### Direct Content Access
+**From Consultant Profiles:**
+- **One-click whitepaper downloads** with optional lead capture
+- **Direct webinar registration** with pre-filled consultant preference
+- **Content series subscriptions** for consultant-specific content
+- **Exclusive content access** for consultation clients
+
+**Content Attribution:**
+- **Author bylines** linking back to consultant profiles
+- **Consultant expertise tagging** on all content
+- **Cross-promotion opportunities** between content and consultants
+- **Content performance metrics** for consultants → [Analytics Dashboard](../adminpanel/admin.md#consultant-analytics)
+
+#### Related Content Recommendations
+```tsx
+interface ContentRecommendationEngine {
+  userBehavior: {
+    viewedProfiles: string[];
+    downloadedContent: string[];
+    webinarAttendance: string[];
+    searchHistory: SearchQuery[];
+  };
+  consultantConnections: {
+    similarExpertise: ConsultantMatch[];
+    collaborativeContent: string[];
+    topicOverlap: TopicMatch[];
+  };
+  recommendationTypes: {
+    'similar-experts': ConsultantProfile[];
+    'related-whitepapers': Whitepaper[];
+    'upcoming-webinars': Webinar[];
+    'consultant-authored': Content[];
+  };
+} // → Algorithm in [Backend Recommendation Service](../../backend/api.md#recommendation-algorithm)
+```
+
+### 5. Lead Capture & Communication Integration
+
+#### Multi-touchpoint Lead Capture System
+```tsx
+interface LeadCaptureStrategy {
+  consultantProfileViews: {
+    exitIntentModal: boolean;
+    scrollPercentageTrigger: 75;
+    timeOnPageTrigger: 120; // seconds
+    ctaVariations: CTAVariant[];
+  };
+  contentDownloads: {
+    whitepaperGating: 'first-download' | 'all-downloads' | 'premium-only';
+    consultantAttribution: boolean;
+    followUpSequence: EmailSequence;
+  };
+  webinarRegistrations: {
+    preRegistrationData: ContactForm;
+    postWebinarFollowUp: boolean;
+    consultantConnectionOffers: boolean;
+  };
+  thirtyForThirtyBookings: {
+    extendedLeadCapture: boolean;
+    consultationPrep: PrepForm;
+    postConsultationSurvey: boolean;
+  };
+} // → Lead processing via [Marketing Automation](../../integrations/smtp-brevo.md#lead-workflows)
+```
+
+#### Newsletter & Communication Preferences
+```tsx
+interface CommunicationPreferences {
+  subscriptionTypes: {
+    weeklyNewsletter: {
+      content: ['new-whitepapers', 'upcoming-webinars', 'consultant-insights'];
+      frequency: 'weekly';
+      dayOfWeek: 'tuesday';
+    };
+    consultantUpdates: {
+      content: ['new-consultants', 'consultant-content', 'availability-alerts'];
+      frequency: 'bi-weekly';
+      personalization: true;
+    };
+    industryInsights: {
+      content: ['market-analysis', 'trend-reports', 'case-studies'];
+      frequency: 'monthly';
+      segmentation: 'industry-based';
+    };
+  };
+  deliveryPreferences: {
+    emailFormat: 'html' | 'text' | 'both';
+    frequency: 'daily' | 'weekly' | 'monthly';
+    timePreference: 'morning' | 'afternoon' | 'evening';
+    languagePreference: 'en' | 'de' | 'both';
+  };
+  consentManagement: {
+    gdprCompliance: boolean;
+    consentTracking: ConsentRecord[];
+    unsubscribeOptions: UnsubscribeConfig;
+    preferenceCenter: boolean;
+  };
+} // → Managed via [Email Marketing Platform](../../integrations/smtp-brevo.md#subscription-management)
+```
+
+#### CRM Integration for Lead Management
+```tsx
+interface CRMLeadIntegration {
+  leadSources: {
+    'consultant-profile-view': LeadSourceConfig;
+    'whitepaper-download': LeadSourceConfig;
+    'webinar-registration': LeadSourceConfig;
+    '30-for-30-booking': LeadSourceConfig;
+    'contact-form-submission': LeadSourceConfig;
+  };
+  leadScoring: {
+    profileViews: 5;
+    contentDownloads: 15;
+    webinarAttendance: 25;
+    consultationBooking: 50;
+    repeatEngagement: 10;
+  };
+  automationTriggers: {
+    leadNurturing: NurturingSequence[];
+    salesHandoff: HandoffCriteria;
+    consultantMatching: MatchingConfig;
+    followUpScheduling: FollowUpConfig;
+  };
+  dataSync: {
+    bidirectionalSync: boolean;
+    syncFrequency: 'real-time' | 'hourly' | 'daily';
+    fieldMapping: FieldMappingConfig;
+    duplicateHandling: DeduplicationConfig;
+  };
+} // → CRM platform: [HubSpot/Salesforce Integration](../../integrations/crm.md#lead-management)
+```
+
+### 6. User Experience Features
+
+#### Responsive Design Excellence
+```tsx
+interface ResponsiveDesignSystem {
+  breakpoints: {
+    mobile: '320px-767px';
+    tablet: '768px-1023px';
+    desktop: '1024px-1439px';
+    largeDesktop: '1440px+';
+  };
+  consultantProfiles: {
+    mobileLayout: 'single-column' | 'card-stack';
+    tabletLayout: 'two-column' | 'sidebar-main';
+    desktopLayout: 'three-column' | 'hero-sidebar';
+  };
+  bookingInterface: {
+    mobileFirst: boolean;
+    touchOptimized: boolean;
+    calendarAdaptation: 'modal' | 'inline' | 'drawer';
+  };
+  performanceOptimization: {
+    imageOptimization: boolean;
+    lazyLoading: boolean;
+    progressiveEnhancement: boolean;
+  };
+} // → Design system: [UI Component Library](./design-system.md)
+```
+
+#### Professional Photo Gallery System
+```tsx
+interface PhotoGalleryFeatures {
+  consultantPhotos: {
+    profileImage: ImageSpec;
+    galleryImages: ImageSpec[];
+    professionalHeadshots: ImageSpec[];
+    actionShots: ImageSpec[]; // Speaking, consulting, etc.
+  };
+  imageSpecifications: {
+    formats: ['webp', 'jpg', 'png'];
+    sizes: {
+      thumbnail: '150x150';
+      medium: '400x400';
+      large: '800x800';
+      hero: '1200x600';
+    };
+    optimization: {
+      compression: 'intelligent';
+      srcsetGeneration: boolean;
+      lazyLoading: boolean;
+    };
+  };
+  galleryInterface: {
+    lightboxModal: boolean;
+    imageCarousel: boolean;
+    thumbnailNavigation: boolean;
+    fullscreenMode: boolean;
+  };
+} // → Image processing: [Media Management API](../../backend/api.md#media-processing)
+```
+
+#### Interactive Availability Calendars
+```tsx
+interface InteractiveCalendarFeatures {
+  calendarViews: {
+    monthView: boolean;
+    weekView: boolean;
+    dayView: boolean;
+    agendaView: boolean;
+  };
+  interactionFeatures: {
+    clickToBook: boolean;
+    dragToSelect: boolean;
+    multiSlotSelection: boolean;
+    recurringBookings: boolean;
+  };
+  visualIndicators: {
+    availableSlots: {
+      color: '#10b981';
+      pattern: 'solid';
+    };
+    bookedSlots: {
+      color: '#ef4444';
+      pattern: 'diagonal-lines';
+    };
+    bufferTime: {
+      color: '#f59e0b';
+      pattern: 'dots';
+    };
+  };
+  realTimeUpdates: {
+    websocketConnection: boolean;
+    pollingFallback: boolean;
+    conflictPrevention: boolean;
+  };
+} // → Calendar backend: [Scheduling Service](../../backend/api.md#calendar-api)
+```
+
+#### Social Proof & Credential Verification
+```tsx
+interface SocialProofSystem {
+  credentialVerification: {
+    linkedinVerification: boolean;
+    certificationValidation: boolean;
+    educationVerification: boolean;
+    experienceValidation: boolean;
+  };
+  trustIndicators: {
+    verifiedBadges: BadgeConfig[];
+    clientTestimonials: TestimonialDisplay;
+    ratingSystem: RatingConfig;
+    portfolioEvidence: PortfolioItem[];
+  };
+  socialValidation: {
+    linkedinConnections: number;
+    professionalEndorsements: EndorsementData[];
+    speakingEngagements: EngagementRecord[];
+    mediaAppearances: MediaRecord[];
+  };
+} // → Verification via [Identity Verification Service](../../integrations/verification.md)
+```
+
+#### Loading States & Error Handling
+```tsx
+interface UXStateManagement {
+  loadingStates: {
+    skeletonLoaders: {
+      consultantCards: SkeletonConfig;
+      profilePages: SkeletonConfig;
+      calendarView: SkeletonConfig;
+      bookingForm: SkeletonConfig;
+    };
+    progressIndicators: {
+      bookingSteps: ProgressConfig;
+      paymentProcess: ProgressConfig;
+      profileCompletion: ProgressConfig;
+    };
+  };
+  errorHandling: {
+    networkErrors: ErrorConfig;
+    validationErrors: ValidationConfig;
+    paymentErrors: PaymentErrorConfig;
+    bookingConflicts: ConflictConfig;
+  };
+  successStates: {
+    bookingConfirmation: SuccessConfig;
+    paymentCompletion: SuccessConfig;
+    profileUpdates: SuccessConfig;
+  };
+} // → Error handling: [Frontend Error Management](./error-handling.md)
+```
+
+### 7. Integration Points
+
+#### Comprehensive Backend Integration
+```tsx
+interface BackendIntegrationPoints {
+  consultantAPI: {
+    profileManagement: '/api/v1/consultants';
+    availabilityChecking: '/api/v1/availability';
+    bookingManagement: '/api/v1/bookings';
+    statisticsTracking: '/api/v1/consultant-stats';
+  }; // → Full API: [Backend Consultant Service](../../backend/api.md#consultant-endpoints)
+  
+  paymentProcessing: {
+    stripeIntegration: '/api/v1/payments/stripe';
+    invoiceGeneration: '/api/v1/invoices';
+    refundProcessing: '/api/v1/refunds';
+    subscriptionManagement: '/api/v1/subscriptions';
+  }; // → Payment gateway: [Stripe Integration](../../integrations/payment.md#stripe-api)
+  
+  bookingSystem: {
+    calendarSync: '/api/v1/calendar';
+    conflictResolution: '/api/v1/booking-conflicts';
+    reminderManagement: '/api/v1/reminders';
+    meetingSetup: '/api/v1/meetings';
+  }; // → Booking logic: [Scheduling Service](../../backend/api.md#scheduling-endpoints)
+  
+  contentManagement: {
+    whitepaperLinking: '/api/v1/content/whitepapers';
+    webinarIntegration: '/api/v1/content/webinars';
+    authorshipTracking: '/api/v1/content/authors';
+    recommendationEngine: '/api/v1/recommendations';
+  }; // → Content system: [CMS Integration](../../backend/api.md#content-endpoints)
+}
+```
+
+#### External Service Integrations
+```tsx
+interface ExternalServiceIntegration {
+  linkedinAPI: {
+    profileSync: LinkedInSyncConfig;
+    contentSharing: ContentSharingConfig;
+    networkAnalysis: NetworkAnalysisConfig;
+  }; // → LinkedIn: [Professional Network Integration](../../integrations/linkedin.md)
+  
+  emailMarketing: {
+    brevoIntegration: BrevoConfig;
+    campaignManagement: CampaignConfig;
+    automationTriggers: AutomationConfig;
+  }; // → Email platform: [Brevo SMTP Integration](../../integrations/smtp-brevo.md)
+  
+  analytics: {
+    googleAnalytics: AnalyticsConfig;
+    consultantTracking: ConsultantAnalytics;
+    conversionTracking: ConversionConfig;
+  }; // → Analytics: [Tracking Integration](../../integrations/analytics.md)
+  
+  communicationPlatforms: {
+    telegramBot: TelegramConfig;
+    twitterAPI: TwitterConfig;
+    webhookManagement: WebhookConfig;
+  }; // → Social platforms: [Communication Integrations](../../integrations/)
+}
+```
+
+#### Analytics & Tracking Integration
+```tsx
+interface AnalyticsTrackingSystem {
+  consultantMetrics: {
+    profileViews: ProfileViewTracking;
+    bookingConversions: ConversionTracking;
+    contentEngagement: EngagementTracking;
+    clientSatisfaction: SatisfactionTracking;
+  };
+  userJourneyAnalytics: {
+    discoveryToBooking: JourneyConfig;
+    contentToConsultation: JourneyConfig;
+    referralTracking: ReferralConfig;
+    attributionModeling: AttributionConfig;
+  };
+  businessIntelligence: {
+    revenueTracking: RevenueConfig;
+    consultantPerformance: PerformanceConfig;
+    marketingROI: ROIConfig;
+    predictiveAnalytics: PredictionConfig;
+  };
+} // → BI platform: [Analytics Dashboard](../adminpanel/admin.md#consultant-analytics)
+```
+
 ## Resource Pages
 
 ### 1. Webinars Section (`/webinars`)
@@ -420,32 +1210,164 @@ interface WhitepaperCard {
 - One-click download option
 - Session timeout: 90 days
 
-### 3. Consultation Booking (`/book-consultation`)
+### 3. Enhanced Consultation Booking (`/book-consultation`)
 
-#### Booking Flow
-1. **Consultant Selection**
-   - Available consultants with photos
-   - Expertise areas and bio
-   - Availability indicator
-   - Rating/testimonials
+#### Multi-Service Booking Flow
+```tsx
+interface BookingServiceOptions {
+  thirtyForThirty: {
+    price: 30;
+    currency: 'EUR';
+    duration: 30;
+    description: 'Quick consultation for immediate guidance';
+    leadCaptureLevel: 'basic';
+  };
+  standardConsultation: {
+    priceRange: [100, 300];
+    currency: 'EUR';
+    duration: [60, 120];
+    description: 'Comprehensive consultation with follow-up';
+    leadCaptureLevel: 'detailed';
+  };
+  projectConsultation: {
+    pricing: 'custom';
+    duration: 'flexible';
+    description: 'Multi-session project consultation';
+    leadCaptureLevel: 'enterprise';
+  };
+} // → Service definitions in [Booking API](../../backend/api.md#consultation-services)
+```
 
-2. **Date & Time Selection**
-   - Calendar widget with availability
-   - Timezone handling
-   - Duration selection (30/60/90 minutes)
-   - Meeting type (phone/video/in-person)
+#### Enhanced Consultant Selection
+1. **Smart Consultant Matching**
+   - AI-powered consultant recommendations → [Consultant Matching](./consultant-profiles.md#matching-algorithm)
+   - Expertise-project alignment scoring
+   - Availability-optimized suggestions
+   - Previous client satisfaction data
+   - Integration with consultant profiles → [Consultant Discovery](./consultant-profiles.md#discovery-search)
 
-3. **Contact Information**
-   - Personal details form
-   - Company information
-   - Meeting preferences
-   - Special requirements
+2. **Consultant Profile Integration**
+   - Full consultant profile previews
+   - Direct access to authored content
+   - Client testimonial highlights
+   - LinkedIn profile integration → [LinkedIn Sync](../../integrations/linkedin.md#profile-display)
+   - Real-time availability display
 
-4. **Confirmation**
-   - Booking summary
-   - Calendar invites (Google/Outlook)
-   - Confirmation email
-   - Booking reference number
+3. **Service-Specific Information**
+   - Service tier explanations
+   - What's included breakdowns
+   - Expected outcomes descriptions
+   - Follow-up service options
+   - Pricing transparency
+
+#### Advanced Date & Time Selection
+```tsx
+interface AdvancedScheduling {
+  calendarIntegration: {
+    googleCalendar: boolean;
+    outlookCalendar: boolean;
+    appleCalendar: boolean;
+    icalSupport: boolean;
+  };
+  timezoneHandling: {
+    autoDetection: boolean;
+    consultantTimezone: string;
+    clientTimezone: string;
+    meetingTimezone: 'consultant' | 'client' | 'utc';
+  };
+  availabilityDisplay: {
+    realTimeUpdates: boolean;
+    bufferTimeRespect: boolean;
+    holidayAwareness: boolean;
+    workingHoursOnly: boolean;
+  };
+  bookingWindow: {
+    minAdvanceHours: 2;
+    maxAdvanceDays: 60;
+    sameDay: boolean;
+    weekendsAvailable: boolean;
+  };
+} // → Calendar logic in [Backend Scheduling](../../backend/api.md#calendar-management)
+```
+
+#### Comprehensive Contact Information & Lead Capture
+```tsx
+interface EnhancedLeadCapture {
+  personalInformation: {
+    firstName: string; // Required
+    lastName: string; // Required
+    email: string; // Required, validated
+    phone: string; // Required for consultations
+    linkedinProfile?: string;
+    preferredLanguage: 'en' | 'de';
+  };
+  companyInformation: {
+    companyName: string; // Required
+    website: string; // Required, validated
+    industry: string;
+    companySize: CompanySize;
+    jobTitle: string;
+    department: string;
+  };
+  consultationContext: {
+    projectDescription: string;
+    primaryGoals: string[];
+    timeframe: string;
+    budget: BudgetRange;
+    urgencyLevel: 'low' | 'medium' | 'high' | 'urgent';
+  };
+  communicationPreferences: {
+    newsletterSubscription: boolean;
+    marketingEmails: boolean;
+    followUpConsent: boolean;
+    preferredContactMethod: 'email' | 'phone' | 'linkedin';
+  };
+  additionalInformation: {
+    hearAboutUs: string;
+    specificConsultant: boolean;
+    specialRequirements?: string;
+    previousConsultations: boolean;
+  };
+} // → Data flows to [CRM Integration](../../integrations/crm.md#consultation-leads)
+```
+
+#### Smart Confirmation & Follow-up
+**Enhanced Confirmation Process:**
+- **Multi-channel confirmation**: Email + SMS + Calendar invite
+- **Booking reference system** with QR codes
+- **Pre-consultation materials** delivery
+- **Reminder sequence automation** → [Email Automation](../../integrations/smtp-brevo.md#consultation-reminders)
+- **Preparation checklist** for clients
+- **Consultant preparation data** sharing
+
+**Lead Nurturing Integration:**
+```tsx
+interface PostBookingNurturing {
+  immediateActions: {
+    confirmationEmail: EmailTemplate;
+    calendarInvites: CalendarData[];
+    preparationMaterials: Resource[];
+    consultantIntroduction: ConsultantIntro;
+  };
+  reminderSequence: {
+    dayBefore: ReminderConfig;
+    hourBefore: ReminderConfig;
+    followUpSequence: FollowUpConfig[];
+  };
+  crmIntegration: {
+    leadScoring: number;
+    pipelineStage: string;
+    assignedSalesperson?: string;
+    nurturingCampaign: string;
+  };
+  analyticsTracking: {
+    bookingSource: string;
+    consultantAttribution: string;
+    conversionFunnel: FunnelStep[];
+    valueTracking: number;
+  };
+} // → Automation via [CRM Workflows](../../integrations/crm.md#lead-automation)
+```
 
 ## Footer Design
 
@@ -1008,18 +1930,89 @@ VITE_GOOGLE_TAG_MANAGER_ID=GTM-XXXXX
 - **Real-time features** with WebSockets
 - **Advanced caching** strategies
 
+## Cross-References & Integration Documentation
+
+### Frontend Integration Points
+← **Referenced by**: [Admin Panel](../adminpanel/admin.md#consultant-management), [Backend API](../../backend/api.md#consultant-endpoints), [Database Schema](../../backend/database.md#consultant-tables)
+→ **Integrates with**: [Payment Processing](../../integrations/payment.md#consultation-payments), [Email Marketing](../../integrations/smtp-brevo.md#consultant-campaigns), [CRM System](../../integrations/crm.md#consultant-leads)
+↔️ **Related Systems**: [LinkedIn Integration](../../integrations/linkedin.md#profile-sync), [Calendar Services](../../integrations/calendar.md), [Analytics Tracking](../../integrations/analytics.md#consultant-metrics)
+
+### Feature Dependencies
+🔗 **Core Dependencies**:
+- [Authentication System](../../security.md#authentication) for consultant profile access
+- [Database Models](../../backend/database.md#consultant-schema) for profile data storage
+- [File Storage](../../integrations/storage.md) for consultant photos and documents
+- [Email Service](../../integrations/smtp-brevo.md) for booking confirmations and follow-ups
+
+⚡ **Service Dependencies**:
+- [Stripe Payment Gateway](../../integrations/payment.md#stripe-integration) for 30-for-30 payments
+- [Calendar API](../../backend/api.md#calendar-management) for availability management
+- [Search Service](../../backend/api.md#search-endpoints) for consultant discovery
+- [Recommendation Engine](../../backend/api.md#recommendation-algorithm) for consultant matching
+
+📋 **Content Dependencies**:
+- [Whitepaper System](./features/whitepapers.md) for consultant-authored content linking
+- [Webinar Platform](./features/webinars.md) for consultant-led session integration
+- [Testimonial Management](./features/testimonials.md) for social proof display
+- [Media Management](../../backend/api.md#media-processing) for photo gallery functionality
+
+### Data Flow Integration
+```mermaid
+graph LR
+    A[Consultant Profile View] --> B[LinkedIn Profile Sync]
+    A --> C[Content Recommendations]
+    A --> D[30-for-30 Booking]
+    D --> E[Payment Processing]
+    E --> F[Lead Capture]
+    F --> G[CRM Integration]
+    G --> H[Email Automation]
+    B --> I[Professional Data Display]
+    C --> J[Related Content Display]
+```
+
+### Security & Privacy Integration
+← **Security Requirements**: [Authentication Policies](../../security.md#consultant-access), [Data Protection](../../security.md#personal-data)
+→ **Privacy Compliance**: [GDPR Requirements](../../privacy-compliance.md#consultant-data), [Consent Management](../../privacy-compliance.md#booking-consent)
+⚡ **Data Handling**: [Personal Information](../../privacy-compliance.md#personal-data-processing), [Payment Security](../../security.md#payment-protection)
+
+### Testing Integration
+🔗 **Testing Coverage**: [Component Tests](../../testing_strategy.md#frontend-testing), [Integration Tests](../../testing_strategy.md#booking-flow-tests), [E2E Tests](../../testing_strategy.md#consultant-journey-tests)
+→ **Performance Tests**: [Profile Load Tests](../../testing_strategy.md#profile-performance), [Booking Flow Tests](../../testing_strategy.md#booking-performance)
+📋 **Security Tests**: [Payment Flow Security](../../testing_strategy.md#payment-security-tests), [Data Privacy Tests](../../testing_strategy.md#privacy-compliance-tests)
+
 ## Success Metrics
 
-### User Experience
+### User Experience Metrics
 - **Bounce rate** < 40%
 - **Session duration** > 3 minutes
 - **Page load speed** score > 90
 - **Mobile usability** score > 95
 - **Accessibility** score > 95
 
-### Business Impact
-- **Lead generation** through downloads
-- **Webinar registrations** conversion rate
-- **Consultation bookings** completion rate
-- **Content engagement** metrics
-- **Multi-language adoption** rate
+### Consultant Profile Metrics
+- **Profile view to consultation conversion** > 8%
+- **30-for-30 booking completion rate** > 15%
+- **Consultant profile engagement time** > 2 minutes
+- **Content download from profiles** > 25%
+- **LinkedIn profile integration adoption** > 80%
+
+### Business Impact Metrics
+- **Lead generation** through consultant interactions
+- **30-for-30 service revenue** tracking
+- **Consultant content attribution** metrics
+- **Cross-selling to full consultations** rate
+- **Customer lifetime value** from consultant leads
+
+### Content Integration Success
+- **Whitepaper downloads via profiles** conversion rate
+- **Webinar registrations from consultant pages** rate
+- **Content-to-consultation pipeline** effectiveness
+- **Consultant content engagement** metrics
+- **Multi-touchpoint lead nurturing** success rate
+
+### Technical Performance
+- **Real-time availability accuracy** > 99%
+- **Payment processing success rate** > 98%
+- **Calendar synchronization reliability** > 99.5%
+- **Profile data sync latency** < 500ms
+- **Search result relevance score** > 85%

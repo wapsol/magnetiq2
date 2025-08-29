@@ -4,7 +4,6 @@ import { Bars3Icon, XMarkIcon, BoltIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 
 const navigation = [
-  { name: 'Home', href: '/' },
   { name: 'Software', href: '/webinars' },
   { name: 'Services', href: '/whitepapers' },
   { name: 'Über uns', href: '/templates' },
@@ -28,11 +27,11 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
   const getHeaderClasses = () => {
     switch (variant) {
       case 'transparent':
-        return 'bg-white/10 dark:bg-gray-900/10 backdrop-blur-md border-b border-white/20 dark:border-gray-700/20 sticky top-0 z-50 h-18'
+        return 'bg-white/10 dark:bg-violet-900/10 backdrop-blur-md border-b border-white/20 dark:border-violet-700/20 sticky top-0 z-50 h-18'
       case 'minimal':
-        return 'bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 sticky top-0 z-50 h-18'
+        return 'bg-white dark:bg-violet-900 border-b border-gray-100 dark:border-violet-700 sticky top-0 z-50 h-18'
       default:
-        return 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-lg border-b border-gray-100 dark:border-gray-700 sticky top-0 z-50 h-18'
+        return 'bg-white/95 dark:bg-violet-900/95 backdrop-blur-xl shadow-lg border-b border-gray-100 dark:border-violet-700 sticky top-0 z-50 h-18'
     }
   }
   
@@ -80,22 +79,23 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
                   </Link>
                 </div>
                 
-                {/* Desktop Navigation */}
-                <div className="hidden lg:ml-8 lg:flex lg:space-x-1">
-                  {navigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className={getNavLinkClasses(isActiveLink(item.href))}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
+              </div>
+              
+              {/* Desktop Navigation - Centered */}
+              <div className="hidden lg:flex lg:space-x-1 lg:absolute lg:left-1/2 lg:transform lg:-translate-x-1/2">
+                {navigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={getNavLinkClasses(isActiveLink(item.href))}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
               </div>
               
               {/* Desktop Actions */}
-              <div className="hidden lg:flex lg:items-center lg:space-x-4">
+              <div className="hidden lg:flex lg:items-center">
                 <Link
                   to="/book-consultation"
                   className="btn-primary btn-sm"
@@ -106,7 +106,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
               
               {/* Mobile menu button */}
               <div className="flex items-center lg:hidden">
-                <Disclosure.Button className="inline-flex items-center justify-center rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 transition-colors duration-200">
+                <Disclosure.Button className="inline-flex items-center justify-center rounded-lg p-2 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-violet-800 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 transition-colors duration-200">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -119,8 +119,8 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
           </div>
 
           {/* Mobile Navigation Panel */}
-          <Disclosure.Panel className="lg:hidden border-t border-gray-100">
-            <div className="bg-white/95 backdrop-blur-md">
+          <Disclosure.Panel className="lg:hidden border-t border-gray-100 dark:border-violet-700">
+            <div className="bg-white/95 dark:bg-violet-900/95 backdrop-blur-md">
               <div className="px-4 py-3 space-y-1">
                 {navigation.map((item) => (
                   <Link
@@ -129,18 +129,18 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
                     className={clsx(
                       'block px-4 py-3 rounded-lg text-base font-medium transition-colors duration-200',
                       isActiveLink(item.href)
-                        ? 'bg-primary-100 text-primary-700 border-l-4 border-primary-600'
-                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                        ? 'bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 border-l-4 border-primary-600'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-violet-800 hover:text-gray-900 dark:hover:text-white'
                     )}
                   >
                     {item.name}
                   </Link>
                 ))}
                 
-                <div className="pt-4 border-t border-gray-200">
+                <div className="pt-4 border-t border-gray-200 dark:border-violet-700">
                   <Link
                     to="/auth/login"
-                    className="block px-4 py-3 text-base font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors duration-200"
+                    className="block px-4 py-3 text-base font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors duration-200"
                   >
                     Admin Login
                   </Link>

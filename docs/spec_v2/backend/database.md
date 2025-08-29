@@ -415,40 +415,234 @@ CREATE INDEX idx_whitepapers_status ON whitepapers(status);
 CREATE INDEX idx_whitepapers_published ON whitepapers(published_at);
 ```
 
-#### `whitepaper_downloads`
-Track whitepaper downloads and lead capture.
+#### `whitepaper_leads`
+Comprehensive lead capture and tracking for whitepaper downloads.
+
+→ **Cross-References**: [Lead Management API](api.md#lead-management-api), [Odoo CRM Integration](../integrations/odoo-crm.md)
+← **Supports**: [Lead Scoring](../features/lead-scoring.md), [CRM Integration](../features/crm-integration.md)
 
 ```sql
-CREATE TABLE whitepaper_downloads (
+CREATE TABLE whitepaper_leads (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     whitepaper_id INTEGER NOT NULL,
     
-    -- Contact Information
-    first_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
+    -- Basic Contact Information
+    name TEXT NOT NULL,
     email TEXT NOT NULL,
     company TEXT,
-    job_title TEXT,
+    website TEXT,
     phone TEXT,
     
-    -- Download Details
-    download_ip TEXT,
-    user_agent TEXT,
-    download_source TEXT, -- website, api, email
+    -- Professional Information
+    job_title TEXT,
+    department TEXT,
+    industry TEXT,
+    company_size TEXT CHECK (company_size IN ('startup', 'small', 'medium', 'large', 'enterprise')),
+    
+    -- Context Information
+    download_source TEXT NOT NULL, -- 'direct', 'social', 'email', 'referral'
+    referrer_url TEXT,
     utm_source TEXT,
     utm_medium TEXT,
     utm_campaign TEXT,
+    utm_term TEXT,
+    utm_content TEXT,
     
-    -- Timestamps
-    downloaded_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    -- Technical Data
+    ip_address TEXT,
+    user_agent TEXT,
+    location_country TEXT,
+    location_region TEXT,
+    location_city TEXT,
+    
+    -- Consent Management
+    marketing_consent BOOLEAN DEFAULT 0,
+    privacy_consent BOOLEAN DEFAULT 1,
+    terms_accepted BOOLEAN DEFAULT 1,
+    consent_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Download Session
+    download_token TEXT UNIQUE, -- 48-hour validity token
+    download_url TEXT, -- Pre-signed download URL
+    download_expires_at DATETIME,
+    
+    -- CRM Integration
+    exported_to_odoo BOOLEAN DEFAULT 0,
+    odoo_lead_id INTEGER,
+    exported_at DATETIME,
+    export_status TEXT DEFAULT 'pending' CHECK (export_status IN ('pending', 'success', 'failed')),
+    export_error TEXT,
+    
+    -- Lead Scoring
+    lead_score INTEGER DEFAULT 0,
+    qualification_status TEXT DEFAULT 'unqualified' CHECK (qualification_status IN ('unqualified', 'marketing-qualified', 'sales-qualified')),
+    
+    -- Audit
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    downloaded_at DATETIME, -- When they actually downloaded
     
     FOREIGN KEY (whitepaper_id) REFERENCES whitepapers(id) ON DELETE CASCADE
 );
 
--- Indexes for whitepaper_downloads
-CREATE INDEX idx_whitepaper_downloads_whitepaper ON whitepaper_downloads(whitepaper_id);
-CREATE INDEX idx_whitepaper_downloads_email ON whitepaper_downloads(email);
-CREATE INDEX idx_whitepaper_downloads_downloaded ON whitepaper_downloads(downloaded_at);
+-- Indexes for whitepaper_leads
+CREATE INDEX idx_whitepaper_leads_whitepaper ON whitepaper_leads(whitepaper_id);
+CREATE INDEX idx_whitepaper_leads_email ON whitepaper_leads(email);
+CREATE INDEX idx_whitepaper_leads_score ON whitepaper_leads(lead_score);
+CREATE INDEX idx_whitepaper_leads_qualification ON whitepaper_leads(qualification_status);
+CREATE INDEX idx_whitepaper_leads_export_status ON whitepaper_leads(export_status);
+CREATE INDEX idx_whitepaper_leads_download_token ON whitepaper_leads(download_token);
+CREATE INDEX idx_whitepaper_leads_created ON whitepaper_leads(created_at);
+CREATE INDEX idx_whitepaper_leads_downloaded ON whitepaper_leads(downloaded_at);
+```
+
+#### `download_sessions`
+Manage user download sessions for frictionless repeat downloads.
+
+→ **Cross-References**: [Session Management](../features/session-management.md), [User Experience](../frontend/public/features/whitepapers.md#session-management)
+← **Enables**: [Frictionless Downloads](../features/frictionless-downloads.md), [User Tracking](../features/user-tracking.md)
+
+```sql
+CREATE TABLE download_sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    
+    -- Session Identification
+    session_token TEXT UNIQUE NOT NULL,
+    email TEXT NOT NULL, -- Primary session identifier
+    
+    -- Cached User Data
+    name TEXT,
+    company TEXT,
+    phone TEXT,
+    job_title TEXT,
+    industry TEXT,
+    
+    -- Session Management
+    downloaded_whitepapers TEXT DEFAULT '[]', -- JSON array of whitepaper IDs
+    session_data TEXT DEFAULT '{}', -- JSON object with additional session data
+    
+    -- Lifecycle
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME NOT NULL, -- 90 days from creation
+    last_accessed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_active BOOLEAN DEFAULT 1
+);
+
+-- Indexes for download_sessions
+CREATE INDEX idx_download_sessions_email ON download_sessions(email);
+CREATE INDEX idx_download_sessions_token ON download_sessions(session_token);
+CREATE INDEX idx_download_sessions_active ON download_sessions(is_active);
+CREATE INDEX idx_download_sessions_expires ON download_sessions(expires_at);
+```
+
+#### `email_submissions`
+Track and process email submissions from authors.
+
+→ **Cross-References**: [Email Processing API](api.md#email-submission-processing), [Author Workflow](../features/author-workflow.md)
+← **Supports**: [Automated Publishing](../features/automated-publishing.md), [LLM Processing](../features/llm-processing.md)
+
+```sql
+CREATE TABLE email_submissions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    
+    -- Email Details
+    from_email TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    received_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Content Extraction
+    extracted_title TEXT,
+    extracted_body TEXT,
+    attachments TEXT DEFAULT '[]', -- JSON array of attachment metadata
+    
+    -- LLM Processing
+    llm_processing_status TEXT DEFAULT 'pending' CHECK (llm_processing_status IN ('pending', 'processing', 'completed', 'failed')),
+    processed_title TEXT,
+    processed_description TEXT,
+    processed_abstract TEXT,
+    suggested_category TEXT,
+    suggested_tags TEXT, -- JSON array
+    quality_score REAL,
+    
+    -- Publication Workflow
+    auto_approved BOOLEAN DEFAULT 0,
+    published_whitepaper_id INTEGER,
+    
+    -- Author Notification
+    confirmation_sent BOOLEAN DEFAULT 0,
+    confirmation_sent_at DATETIME,
+    publication_notification_sent BOOLEAN DEFAULT 0,
+    
+    -- Processing
+    processed_at DATETIME,
+    processing_error TEXT,
+    
+    FOREIGN KEY (published_whitepaper_id) REFERENCES whitepapers(id)
+);
+
+-- Indexes for email_submissions
+CREATE INDEX idx_email_submissions_from_email ON email_submissions(from_email);
+CREATE INDEX idx_email_submissions_status ON email_submissions(llm_processing_status);
+CREATE INDEX idx_email_submissions_received ON email_submissions(received_at);
+CREATE INDEX idx_email_submissions_auto_approved ON email_submissions(auto_approved);
+```
+
+#### `whitepaper_analytics`
+Detailed analytics and performance metrics for whitepapers.
+
+→ **Cross-References**: [Analytics API](api.md#analytics-endpoints), [Performance Tracking](../features/performance-tracking.md)
+← **Supports**: [Content Optimization](../features/content-optimization.md), [Marketing Analytics](../features/marketing-analytics.md)
+
+```sql
+CREATE TABLE whitepaper_analytics (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    whitepaper_id INTEGER NOT NULL,
+    
+    -- Date Dimension
+    date DATE NOT NULL,
+    
+    -- Traffic Metrics
+    page_views INTEGER DEFAULT 0,
+    unique_visitors INTEGER DEFAULT 0,
+    bounce_rate REAL DEFAULT 0.0,
+    avg_time_on_page INTEGER DEFAULT 0, -- seconds
+    
+    -- Conversion Metrics
+    form_starts INTEGER DEFAULT 0,
+    form_completions INTEGER DEFAULT 0,
+    downloads INTEGER DEFAULT 0,
+    leads_generated INTEGER DEFAULT 0,
+    conversion_rate REAL DEFAULT 0.0,
+    
+    -- Source Attribution
+    organic_traffic INTEGER DEFAULT 0,
+    direct_traffic INTEGER DEFAULT 0,
+    referral_traffic INTEGER DEFAULT 0,
+    social_traffic INTEGER DEFAULT 0,
+    email_traffic INTEGER DEFAULT 0,
+    
+    -- Geographic Distribution
+    top_countries TEXT DEFAULT '{}', -- JSON object with country->count
+    top_regions TEXT DEFAULT '{}', -- JSON object with region->count
+    
+    -- Industry Distribution
+    top_industries TEXT DEFAULT '{}', -- JSON object with industry->count
+    
+    -- Lead Quality
+    avg_lead_score REAL DEFAULT 0.0,
+    qualified_leads INTEGER DEFAULT 0,
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (whitepaper_id) REFERENCES whitepapers(id) ON DELETE CASCADE,
+    UNIQUE(whitepaper_id, date)
+);
+
+-- Indexes for whitepaper_analytics
+CREATE INDEX idx_whitepaper_analytics_whitepaper ON whitepaper_analytics(whitepaper_id);
+CREATE INDEX idx_whitepaper_analytics_date ON whitepaper_analytics(date);
+CREATE INDEX idx_whitepaper_analytics_whitepaper_date ON whitepaper_analytics(whitepaper_id, date);
 ```
 
 #### `bookings`
@@ -1586,9 +1780,1072 @@ def export_data_for_v3():
 - **Timestamps**: ISO format timestamps for easy conversion
 - **Foreign Keys**: Relationship structure maintained
 
+## Consultants & Expert Network
+
+### Core Consultant Tables
+
+#### `consultants`
+Core consultant profiles with comprehensive professional information and payment details.
+→ **Related to**: [Consultant Personas](../users/knowhow-bearer.md) and [B2B Buyer Personas](../users/)
+← **Used by**: [Booking System](../frontend/public/features/booking.md), [Admin Panel](../frontend/adminpanel/admin.md)
+
+```sql
+CREATE TABLE consultants (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    
+    -- Personal Information (with multilingual support)
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    display_name TEXT, -- Public-facing name if different
+    bio TEXT CHECK (bio IS NULL OR json_extract(bio, '$.en') IS NOT NULL), -- PortableText JSON: {"en": [...blocks], "de": [...blocks]}
+    profile_image_id INTEGER,
+    
+    -- Professional Information
+    job_title TEXT CHECK (job_title IS NULL OR json_extract(job_title, '$.en') IS NOT NULL), -- JSON: {"en": "Title", "de": "Titel"}
+    company TEXT,
+    industry TEXT, -- JSON array of industries
+    expertise_areas TEXT NOT NULL, -- JSON array of expertise areas
+    years_experience INTEGER,
+    
+    -- Location & Languages
+    country TEXT, -- ISO country code
+    timezone TEXT DEFAULT 'UTC',
+    languages_spoken TEXT, -- JSON array: ["en", "de", "fr"]
+    
+    -- Contact Information
+    email TEXT UNIQUE NOT NULL,
+    phone TEXT,
+    
+    -- Professional Links
+    linkedin_url TEXT,
+    twitter_url TEXT,
+    website_url TEXT,
+    github_url TEXT,
+    
+    -- Platform Status
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'suspended', 'inactive')),
+    onboarded_at DATETIME,
+    last_active_at DATETIME,
+    
+    -- Pricing & Availability
+    hourly_rate_usd DECIMAL(10,2), -- Base hourly rate in USD
+    minimum_booking_hours INTEGER DEFAULT 1,
+    max_weekly_hours INTEGER,
+    availability_calendar_url TEXT, -- Integration with external calendars
+    
+    -- Rating & Performance
+    average_rating DECIMAL(3,2) DEFAULT 0.0,
+    total_sessions INTEGER DEFAULT 0,
+    total_revenue_usd DECIMAL(10,2) DEFAULT 0.0,
+    
+    -- Platform Configuration
+    profile_visibility TEXT DEFAULT 'public' CHECK (profile_visibility IN ('public', 'private', 'platform_only')),
+    auto_accept_bookings BOOLEAN DEFAULT 0,
+    lead_generation_enabled BOOLEAN DEFAULT 1,
+    
+    -- KYC & Verification
+    identity_verified BOOLEAN DEFAULT 0,
+    tax_id TEXT, -- Encrypted tax identification
+    kyc_status TEXT DEFAULT 'not_started' CHECK (kyc_status IN ('not_started', 'pending', 'approved', 'rejected')),
+    kyc_verified_at DATETIME,
+    
+    -- Platform Management
+    created_by INTEGER, -- Admin who approved/added
+    notes TEXT, -- Internal admin notes
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    deleted_at DATETIME,
+    
+    FOREIGN KEY (profile_image_id) REFERENCES media_files(id),
+    FOREIGN KEY (created_by) REFERENCES admin_users(id)
+);
+
+-- Indexes for consultants
+CREATE INDEX idx_consultants_email ON consultants(email);
+CREATE INDEX idx_consultants_status ON consultants(status);
+CREATE INDEX idx_consultants_industry ON consultants(industry);
+CREATE INDEX idx_consultants_rating ON consultants(average_rating);
+CREATE INDEX idx_consultants_created ON consultants(created_at);
+CREATE INDEX idx_consultants_visibility ON consultants(profile_visibility);
+
+-- Full-text search for consultant expertise and bio
+CREATE VIRTUAL TABLE consultants_fts_en USING fts5(
+    first_name, last_name, display_name, bio, expertise_areas,
+    tokenize='porter'
+);
+
+CREATE VIRTUAL TABLE consultants_fts_de USING fts5(
+    first_name, last_name, display_name, bio, expertise_areas,
+    tokenize='porter'
+);
+
+-- FTS synchronization triggers for consultants
+CREATE TRIGGER consultants_fts_en_ai AFTER INSERT ON consultants BEGIN
+  INSERT INTO consultants_fts_en(rowid, first_name, last_name, display_name, bio, expertise_areas) 
+  VALUES (
+    new.id, 
+    new.first_name,
+    new.last_name,
+    new.display_name,
+    portable_text_to_plain_text(json_extract(new.bio, '$.en')),
+    json_extract(new.expertise_areas, '$')
+  );
+END;
+
+CREATE TRIGGER consultants_fts_de_ai AFTER INSERT ON consultants 
+WHEN json_extract(new.bio, '$.de') IS NOT NULL BEGIN
+  INSERT INTO consultants_fts_de(rowid, first_name, last_name, display_name, bio, expertise_areas) 
+  VALUES (
+    new.id, 
+    new.first_name,
+    new.last_name,
+    new.display_name,
+    portable_text_to_plain_text(json_extract(new.bio, '$.de')),
+    json_extract(new.expertise_areas, '$')
+  );
+END;
+
+CREATE TRIGGER consultants_fts_en_ad AFTER DELETE ON consultants BEGIN
+  DELETE FROM consultants_fts_en WHERE rowid = old.id;
+END;
+
+CREATE TRIGGER consultants_fts_de_ad AFTER DELETE ON consultants BEGIN
+  DELETE FROM consultants_fts_de WHERE rowid = old.id;
+END;
+
+CREATE TRIGGER consultants_fts_en_au AFTER UPDATE ON consultants BEGIN
+  UPDATE consultants_fts_en SET 
+    first_name = new.first_name,
+    last_name = new.last_name,
+    display_name = new.display_name,
+    bio = portable_text_to_plain_text(json_extract(new.bio, '$.en')),
+    expertise_areas = json_extract(new.expertise_areas, '$')
+  WHERE rowid = new.id;
+END;
+
+CREATE TRIGGER consultants_fts_de_au AFTER UPDATE ON consultants 
+WHEN json_extract(new.bio, '$.de') IS NOT NULL BEGIN
+  UPDATE consultants_fts_de SET 
+    first_name = new.first_name,
+    last_name = new.last_name,
+    display_name = new.display_name,
+    bio = portable_text_to_plain_text(json_extract(new.bio, '$.de')),
+    expertise_areas = json_extract(new.expertise_areas, '$')
+  WHERE rowid = new.id;
+END;
+```
+
+#### `consultant_whitepapers`
+Many-to-many relationship between consultants and whitepapers they've authored or contributed to.
+→ **Links**: [Whitepapers Table](#whitepapers) ↔ [Consultants Table](#consultants)
+← **Enables**: [Expert Content Attribution](../features/content-attribution.md), [Consultant Portfolio](../features/consultant-portfolio.md)
+
+```sql
+CREATE TABLE consultant_whitepapers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    consultant_id INTEGER NOT NULL,
+    whitepaper_id INTEGER NOT NULL,
+    
+    -- Contribution Details
+    role TEXT NOT NULL DEFAULT 'author' CHECK (role IN ('author', 'co-author', 'reviewer', 'contributor')),
+    contribution_description TEXT CHECK (contribution_description IS NULL OR json_extract(contribution_description, '$.en') IS NOT NULL), -- PortableText JSON
+    order_index INTEGER DEFAULT 0, -- For multiple authors ordering
+    
+    -- Attribution Settings
+    display_on_profile BOOLEAN DEFAULT 1,
+    featured_on_profile BOOLEAN DEFAULT 0,
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (consultant_id) REFERENCES consultants(id) ON DELETE CASCADE,
+    FOREIGN KEY (whitepaper_id) REFERENCES whitepapers(id) ON DELETE CASCADE,
+    UNIQUE(consultant_id, whitepaper_id, role)
+);
+
+-- Indexes for consultant_whitepapers
+CREATE INDEX idx_consultant_whitepapers_consultant ON consultant_whitepapers(consultant_id);
+CREATE INDEX idx_consultant_whitepapers_whitepaper ON consultant_whitepapers(whitepaper_id);
+CREATE INDEX idx_consultant_whitepapers_role ON consultant_whitepapers(role);
+CREATE INDEX idx_consultant_whitepapers_featured ON consultant_whitepapers(featured_on_profile);
+```
+
+#### `consultant_webinars`
+Many-to-many relationship between consultants and webinars they present or participate in.
+→ **Links**: [Webinars Table](#webinars) ↔ [Consultants Table](#consultants)
+← **Supports**: [Expert Speaking Engagements](../features/speaking-engagements.md), [Webinar Attribution](../features/webinar-attribution.md)
+
+```sql
+CREATE TABLE consultant_webinars (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    consultant_id INTEGER NOT NULL,
+    webinar_id INTEGER NOT NULL,
+    
+    -- Participation Details
+    role TEXT NOT NULL DEFAULT 'presenter' CHECK (role IN ('presenter', 'co-presenter', 'moderator', 'panelist', 'guest')),
+    presentation_title TEXT CHECK (presentation_title IS NULL OR json_extract(presentation_title, '$.en') IS NOT NULL), -- JSON multilingual
+    presentation_order INTEGER DEFAULT 0,
+    
+    -- Compensation
+    fee_usd DECIMAL(10,2), -- Speaking fee in USD
+    fee_paid BOOLEAN DEFAULT 0,
+    payment_notes TEXT,
+    
+    -- Attribution Settings
+    display_on_profile BOOLEAN DEFAULT 1,
+    featured_on_profile BOOLEAN DEFAULT 0,
+    
+    -- Performance Tracking
+    audience_feedback_score DECIMAL(3,2), -- Average feedback score for this presenter
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (consultant_id) REFERENCES consultants(id) ON DELETE CASCADE,
+    FOREIGN KEY (webinar_id) REFERENCES webinars(id) ON DELETE CASCADE,
+    UNIQUE(consultant_id, webinar_id, role)
+);
+
+-- Indexes for consultant_webinars
+CREATE INDEX idx_consultant_webinars_consultant ON consultant_webinars(consultant_id);
+CREATE INDEX idx_consultant_webinars_webinar ON consultant_webinars(webinar_id);
+CREATE INDEX idx_consultant_webinars_role ON consultant_webinars(role);
+CREATE INDEX idx_consultant_webinars_featured ON consultant_webinars(featured_on_profile);
+CREATE INDEX idx_consultant_webinars_fee_paid ON consultant_webinars(fee_paid);
+```
+
+#### `consultant_bookings`
+Enhanced booking system specifically for consultant sessions with payment tracking.
+→ **Extends**: [Base Bookings Table](#bookings)
+← **Integrates**: [Payment System](../integrations/payment-processing.md), [Calendar Integration](../integrations/calendar.md)
+
+```sql
+CREATE TABLE consultant_bookings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    consultant_id INTEGER NOT NULL,
+    
+    -- Client Information
+    client_first_name TEXT NOT NULL,
+    client_last_name TEXT NOT NULL,
+    client_email TEXT NOT NULL,
+    client_company TEXT,
+    client_job_title TEXT,
+    client_phone TEXT,
+    client_linkedin_url TEXT,
+    
+    -- Session Details
+    session_type TEXT NOT NULL DEFAULT 'consultation' CHECK (session_type IN ('consultation', 'advisory', 'workshop', 'interview', 'review')),
+    session_title TEXT CHECK (session_title IS NULL OR json_extract(session_title, '$.en') IS NOT NULL), -- JSON multilingual
+    session_description TEXT CHECK (session_description IS NULL OR json_extract(session_description, '$.en') IS NOT NULL), -- PortableText JSON
+    
+    -- Scheduling
+    scheduled_start DATETIME NOT NULL,
+    scheduled_end DATETIME NOT NULL,
+    actual_start DATETIME,
+    actual_end DATETIME,
+    timezone TEXT DEFAULT 'UTC',
+    meeting_platform TEXT DEFAULT 'zoom' CHECK (meeting_platform IN ('zoom', 'teams', 'meet', 'phone', 'in_person')),
+    meeting_url TEXT,
+    meeting_id TEXT,
+    meeting_password TEXT,
+    
+    -- Pricing & Payment
+    hourly_rate_usd DECIMAL(10,2) NOT NULL,
+    total_hours DECIMAL(4,2) NOT NULL,
+    subtotal_usd DECIMAL(10,2) NOT NULL, -- hours * rate
+    platform_fee_usd DECIMAL(10,2) NOT NULL, -- 15% platform fee
+    consultant_payout_usd DECIMAL(10,2) NOT NULL, -- 85% to consultant
+    total_amount_usd DECIMAL(10,2) NOT NULL, -- Amount charged to client
+    currency_used TEXT DEFAULT 'USD',
+    
+    -- Payment Processing
+    payment_status TEXT NOT NULL DEFAULT 'pending' CHECK (payment_status IN ('pending', 'processing', 'completed', 'failed', 'refunded', 'disputed')),
+    payment_intent_id TEXT, -- Stripe/payment processor ID
+    payment_method TEXT, -- card, bank_transfer, etc.
+    payment_completed_at DATETIME,
+    refund_amount_usd DECIMAL(10,2) DEFAULT 0.0,
+    refund_reason TEXT,
+    
+    -- Session Status
+    booking_status TEXT NOT NULL DEFAULT 'pending' CHECK (booking_status IN ('pending', 'confirmed', 'in_progress', 'completed', 'cancelled', 'no_show_client', 'no_show_consultant')),
+    confirmation_sent_at DATETIME,
+    reminder_sent_at DATETIME,
+    
+    -- Session Outcomes
+    session_summary TEXT CHECK (session_summary IS NULL OR json_extract(session_summary, '$.en') IS NOT NULL), -- PortableText JSON
+    action_items TEXT, -- JSON array of action items
+    follow_up_required BOOLEAN DEFAULT 0,
+    follow_up_completed_at DATETIME,
+    
+    -- Ratings & Feedback
+    client_rating INTEGER CHECK (client_rating IS NULL OR (client_rating >= 1 AND client_rating <= 5)),
+    client_feedback TEXT CHECK (client_feedback IS NULL OR json_extract(client_feedback, '$.en') IS NOT NULL), -- PortableText JSON
+    consultant_rating INTEGER CHECK (consultant_rating IS NULL OR (consultant_rating >= 1 AND consultant_rating <= 5)),
+    consultant_feedback TEXT CHECK (consultant_feedback IS NULL OR json_extract(consultant_feedback, '$.en') IS NOT NULL), -- PortableText JSON
+    
+    -- Business Intelligence
+    lead_source TEXT, -- website, referral, campaign, linkedin
+    utm_source TEXT,
+    utm_medium TEXT,
+    utm_campaign TEXT,
+    client_company_size TEXT, -- startup, sme, enterprise
+    project_budget_range TEXT,
+    urgency_level TEXT CHECK (urgency_level IN ('low', 'medium', 'high', 'urgent')),
+    
+    -- Internal Management
+    internal_notes TEXT, -- Admin notes not visible to client/consultant
+    assigned_success_manager INTEGER, -- Admin user managing this booking
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    cancelled_at DATETIME,
+    deleted_at DATETIME,
+    
+    FOREIGN KEY (consultant_id) REFERENCES consultants(id),
+    FOREIGN KEY (assigned_success_manager) REFERENCES admin_users(id)
+);
+
+-- Indexes for consultant_bookings
+CREATE INDEX idx_consultant_bookings_consultant ON consultant_bookings(consultant_id);
+CREATE INDEX idx_consultant_bookings_client_email ON consultant_bookings(client_email);
+CREATE INDEX idx_consultant_bookings_status ON consultant_bookings(booking_status);
+CREATE INDEX idx_consultant_bookings_payment_status ON consultant_bookings(payment_status);
+CREATE INDEX idx_consultant_bookings_scheduled_start ON consultant_bookings(scheduled_start);
+CREATE INDEX idx_consultant_bookings_lead_source ON consultant_bookings(lead_source);
+CREATE INDEX idx_consultant_bookings_created ON consultant_bookings(created_at);
+```
+
+#### `consultant_offerings`
+Standardized service offerings like "30-for-30" with predefined pricing and descriptions.
+→ **Supports**: [Service Packages](../features/service-packages.md), [Pricing Strategy](../features/pricing-strategy.md)
+← **Referenced by**: [Booking Flow](../frontend/public/features/booking.md), [Consultant Profiles](../features/consultant-profiles.md)
+
+```sql
+CREATE TABLE consultant_offerings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    consultant_id INTEGER NOT NULL,
+    
+    -- Offering Details (multilingual)
+    name TEXT NOT NULL CHECK (json_extract(name, '$.en') IS NOT NULL), -- JSON: {"en": "30-for-30 Strategy Session", "de": "30-für-30 Strategie-Sitzung"}
+    short_description TEXT CHECK (short_description IS NULL OR json_extract(short_description, '$.en') IS NOT NULL), -- JSON multilingual
+    description TEXT NOT NULL CHECK (json_extract(description, '$.en') IS NOT NULL), -- PortableText JSON: {"en": [...blocks], "de": [...blocks]}
+    
+    -- Service Configuration
+    offering_type TEXT NOT NULL DEFAULT 'session' CHECK (offering_type IN ('session', 'package', 'retainer', 'workshop', 'course')),
+    duration_minutes INTEGER NOT NULL,
+    max_participants INTEGER DEFAULT 1,
+    
+    -- Pricing
+    price_usd DECIMAL(10,2) NOT NULL,
+    original_price_usd DECIMAL(10,2), -- If discounted
+    currency TEXT DEFAULT 'USD',
+    pricing_model TEXT DEFAULT 'fixed' CHECK (pricing_model IN ('fixed', 'hourly', 'per_participant')),
+    
+    -- Availability
+    is_active BOOLEAN DEFAULT 1,
+    available_slots_per_week INTEGER DEFAULT 5,
+    advance_booking_days INTEGER DEFAULT 1, -- Minimum days in advance
+    max_advance_booking_days INTEGER DEFAULT 60, -- Maximum days in advance
+    
+    -- Booking Rules
+    requires_approval BOOLEAN DEFAULT 0,
+    auto_confirm BOOLEAN DEFAULT 1,
+    cancellation_hours INTEGER DEFAULT 24, -- Hours before session for free cancellation
+    reschedule_hours INTEGER DEFAULT 12, -- Hours before session for free reschedule
+    
+    -- Content & Materials
+    includes_materials BOOLEAN DEFAULT 0,
+    materials_description TEXT CHECK (materials_description IS NULL OR json_extract(materials_description, '$.en') IS NOT NULL), -- PortableText JSON
+    preparation_required BOOLEAN DEFAULT 0,
+    preparation_instructions TEXT CHECK (preparation_instructions IS NULL OR json_extract(preparation_instructions, '$.en') IS NOT NULL), -- PortableText JSON
+    
+    -- Performance Metrics
+    total_bookings INTEGER DEFAULT 0,
+    completed_sessions INTEGER DEFAULT 0,
+    average_rating DECIMAL(3,2) DEFAULT 0.0,
+    total_revenue_usd DECIMAL(10,2) DEFAULT 0.0,
+    
+    -- SEO & Marketing
+    slug TEXT UNIQUE, -- URL-friendly identifier
+    featured BOOLEAN DEFAULT 0,
+    sort_order INTEGER DEFAULT 0,
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    deleted_at DATETIME,
+    
+    FOREIGN KEY (consultant_id) REFERENCES consultants(id) ON DELETE CASCADE
+);
+
+-- Indexes for consultant_offerings
+CREATE INDEX idx_consultant_offerings_consultant ON consultant_offerings(consultant_id);
+CREATE INDEX idx_consultant_offerings_type ON consultant_offerings(offering_type);
+CREATE INDEX idx_consultant_offerings_active ON consultant_offerings(is_active);
+CREATE INDEX idx_consultant_offerings_featured ON consultant_offerings(featured);
+CREATE INDEX idx_consultant_offerings_slug ON consultant_offerings(slug);
+CREATE INDEX idx_consultant_offerings_price ON consultant_offerings(price_usd);
+```
+
+#### `consultant_payment_accounts`
+Bank account and KYC information for consultant payments.
+→ **Integrates**: [Payment Processing](../integrations/payment-processing.md), [KYC Compliance](../privacy-compliance.md#kyc)
+⚡ **Security**: Encrypted sensitive financial data, [Security Policies](../security.md#financial-data)
+
+```sql
+CREATE TABLE consultant_payment_accounts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    consultant_id INTEGER NOT NULL,
+    
+    -- Account Type
+    account_type TEXT NOT NULL DEFAULT 'bank' CHECK (account_type IN ('bank', 'paypal', 'wise', 'crypto')),
+    account_name TEXT NOT NULL, -- Account holder name
+    is_primary BOOLEAN DEFAULT 0, -- Primary payment account
+    
+    -- Bank Account Details (encrypted)
+    bank_name TEXT,
+    account_number_encrypted TEXT, -- Encrypted account number
+    routing_number_encrypted TEXT, -- Encrypted routing/sort code
+    iban_encrypted TEXT, -- Encrypted IBAN for international accounts
+    swift_code TEXT,
+    
+    -- Alternative Payment Methods
+    paypal_email_encrypted TEXT, -- Encrypted PayPal email
+    wise_account_id_encrypted TEXT, -- Encrypted Wise account ID
+    crypto_wallet_address_encrypted TEXT, -- Encrypted crypto wallet
+    crypto_currency TEXT, -- BTC, ETH, USDC, etc.
+    
+    -- Account Location
+    account_country TEXT NOT NULL, -- ISO country code
+    account_currency TEXT NOT NULL DEFAULT 'USD',
+    
+    -- KYC & Verification
+    verification_status TEXT DEFAULT 'pending' CHECK (verification_status IN ('pending', 'in_progress', 'verified', 'rejected')),
+    verification_documents TEXT, -- JSON array of uploaded document IDs
+    verification_notes TEXT, -- Internal verification notes
+    verified_at DATETIME,
+    verified_by INTEGER, -- Admin user who verified
+    
+    -- Compliance
+    tax_form_submitted BOOLEAN DEFAULT 0,
+    tax_form_type TEXT, -- W9, W8-BEN, etc.
+    tax_form_file_id INTEGER, -- Reference to media_files
+    sanctions_check_status TEXT DEFAULT 'pending' CHECK (sanctions_check_status IN ('pending', 'clear', 'flagged')),
+    sanctions_checked_at DATETIME,
+    
+    -- Account Status
+    is_active BOOLEAN DEFAULT 1,
+    is_verified BOOLEAN DEFAULT 0,
+    last_payment_date DATETIME,
+    total_payments_usd DECIMAL(12,2) DEFAULT 0.0,
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    deleted_at DATETIME,
+    
+    FOREIGN KEY (consultant_id) REFERENCES consultants(id) ON DELETE CASCADE,
+    FOREIGN KEY (tax_form_file_id) REFERENCES media_files(id),
+    FOREIGN KEY (verified_by) REFERENCES admin_users(id),
+    UNIQUE(consultant_id, account_type, is_primary) DEFERRABLE INITIALLY DEFERRED
+);
+
+-- Indexes for consultant_payment_accounts
+CREATE INDEX idx_consultant_payment_accounts_consultant ON consultant_payment_accounts(consultant_id);
+CREATE INDEX idx_consultant_payment_accounts_type ON consultant_payment_accounts(account_type);
+CREATE INDEX idx_consultant_payment_accounts_verification ON consultant_payment_accounts(verification_status);
+CREATE INDEX idx_consultant_payment_accounts_active ON consultant_payment_accounts(is_active);
+CREATE INDEX idx_consultant_payment_accounts_primary ON consultant_payment_accounts(is_primary);
+```
+
+#### `consultant_payouts`
+Platform fee distribution tracking (15% platform, 85% consultant).
+→ **Connects**: [Financial Reconciliation](../features/financial-reconciliation.md), [Revenue Analytics](../features/revenue-analytics.md)
+← **Depends**: [Payment Transactions](#payment_transactions), [Consultant Bookings](#consultant_bookings)
+
+```sql
+CREATE TABLE consultant_payouts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    consultant_id INTEGER NOT NULL,
+    payment_account_id INTEGER NOT NULL,
+    
+    -- Payout Period
+    payout_period_start DATE NOT NULL,
+    payout_period_end DATE NOT NULL,
+    
+    -- Financial Breakdown
+    total_earnings_usd DECIMAL(12,2) NOT NULL, -- Total consultant earnings for period
+    platform_fees_usd DECIMAL(12,2) NOT NULL, -- Total platform fees (15%)
+    gross_revenue_usd DECIMAL(12,2) NOT NULL, -- Total revenue before fees (earnings + fees)
+    
+    -- Deductions
+    processing_fees_usd DECIMAL(10,2) DEFAULT 0.0, -- Payment processing costs
+    tax_withholding_usd DECIMAL(10,2) DEFAULT 0.0, -- Tax withholdings if applicable
+    adjustments_usd DECIMAL(10,2) DEFAULT 0.0, -- Refunds, chargebacks, bonuses
+    net_payout_usd DECIMAL(12,2) NOT NULL, -- Final amount paid to consultant
+    
+    -- Currency & Exchange
+    payout_currency TEXT DEFAULT 'USD',
+    exchange_rate DECIMAL(10,6) DEFAULT 1.0, -- If paying in non-USD currency
+    local_payout_amount DECIMAL(12,2), -- Amount in consultant's local currency
+    
+    -- Payment Processing
+    payout_status TEXT NOT NULL DEFAULT 'pending' CHECK (payout_status IN ('pending', 'processing', 'completed', 'failed', 'cancelled')),
+    payout_method TEXT NOT NULL, -- bank_transfer, paypal, wise, crypto
+    transaction_reference TEXT, -- External payment system reference
+    
+    -- Timing
+    payout_scheduled_date DATE,
+    payout_processed_date DATE,
+    payout_completed_date DATE,
+    
+    -- Session Details
+    total_sessions INTEGER NOT NULL, -- Number of sessions in this payout
+    session_ids TEXT, -- JSON array of consultant_booking IDs included
+    
+    -- Documentation
+    invoice_number TEXT UNIQUE, -- Generated invoice number
+    invoice_file_id INTEGER, -- PDF invoice reference
+    receipt_file_id INTEGER, -- Payment receipt reference
+    
+    -- Tax Reporting
+    tax_year INTEGER,
+    tax_quarter INTEGER,
+    tax_document_sent BOOLEAN DEFAULT 0,
+    tax_document_file_id INTEGER,
+    
+    -- Internal Management
+    processed_by INTEGER, -- Admin user who processed payout
+    notes TEXT, -- Internal processing notes
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (consultant_id) REFERENCES consultants(id),
+    FOREIGN KEY (payment_account_id) REFERENCES consultant_payment_accounts(id),
+    FOREIGN KEY (invoice_file_id) REFERENCES media_files(id),
+    FOREIGN KEY (receipt_file_id) REFERENCES media_files(id),
+    FOREIGN KEY (tax_document_file_id) REFERENCES media_files(id),
+    FOREIGN KEY (processed_by) REFERENCES admin_users(id)
+);
+
+-- Indexes for consultant_payouts
+CREATE INDEX idx_consultant_payouts_consultant ON consultant_payouts(consultant_id);
+CREATE INDEX idx_consultant_payouts_account ON consultant_payouts(payment_account_id);
+CREATE INDEX idx_consultant_payouts_status ON consultant_payouts(payout_status);
+CREATE INDEX idx_consultant_payouts_period ON consultant_payouts(payout_period_start, payout_period_end);
+CREATE INDEX idx_consultant_payouts_scheduled ON consultant_payouts(payout_scheduled_date);
+CREATE INDEX idx_consultant_payouts_tax_year ON consultant_payouts(tax_year, tax_quarter);
+CREATE INDEX idx_consultant_payouts_invoice ON consultant_payouts(invoice_number);
+```
+
+### LinkedIn Integration & Data Scraping
+
+#### `consultant_linkedin_profiles`
+Scraped LinkedIn data via Scoopp integration for enhanced consultant profiles.
+→ **Integration**: [LinkedIn API](../integrations/linkedin.md), [Scoopp Service](../integrations/scoopp.md)
+← **Enhances**: [Consultant Profiles](../features/consultant-profiles.md), [Expert Discovery](../features/expert-discovery.md)
+
+```sql
+CREATE TABLE consultant_linkedin_profiles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    consultant_id INTEGER NOT NULL,
+    
+    -- LinkedIn Profile Data
+    linkedin_url TEXT NOT NULL,
+    linkedin_public_id TEXT, -- LinkedIn public profile identifier
+    full_name TEXT,
+    headline TEXT CHECK (headline IS NULL OR json_extract(headline, '$.en') IS NOT NULL), -- JSON multilingual
+    summary TEXT CHECK (summary IS NULL OR json_extract(summary, '$.en') IS NOT NULL), -- PortableText JSON from LinkedIn about section
+    
+    -- Professional Information
+    current_position TEXT CHECK (current_position IS NULL OR json_extract(current_position, '$.en') IS NOT NULL), -- JSON multilingual
+    current_company TEXT,
+    location TEXT,
+    industry TEXT,
+    
+    -- Experience & Education (JSON Arrays)
+    experience_history TEXT, -- JSON array of experience objects
+    education_history TEXT, -- JSON array of education objects
+    skills TEXT, -- JSON array of skills with endorsement counts
+    certifications TEXT, -- JSON array of certifications
+    
+    -- Network & Engagement
+    connections_count INTEGER,
+    followers_count INTEGER,
+    recent_activity TEXT, -- JSON array of recent posts/activities
+    
+    -- Profile Analytics
+    profile_views INTEGER, -- LinkedIn profile views (if available)
+    profile_quality_score DECIMAL(3,2), -- Our calculated profile completeness score
+    
+    -- Media & Content
+    profile_image_url TEXT,
+    banner_image_url TEXT,
+    featured_content TEXT, -- JSON array of featured posts/media
+    
+    -- Scraping Metadata
+    scraped_via TEXT DEFAULT 'scoopp', -- scoopp, manual, api
+    scraping_job_id INTEGER, -- Reference to scraping_jobs table
+    data_freshness_score DECIMAL(3,2) DEFAULT 1.0, -- How fresh is this data (1.0 = just scraped)
+    last_scraped_at DATETIME,
+    scraping_errors TEXT, -- JSON array of any scraping issues
+    
+    -- Data Quality & Validation
+    data_accuracy_verified BOOLEAN DEFAULT 0,
+    verified_by INTEGER, -- Admin who verified accuracy
+    verification_notes TEXT,
+    
+    -- Privacy & Compliance
+    data_usage_consent BOOLEAN DEFAULT 0, -- Consultant consented to LinkedIn data usage
+    data_retention_expires_at DATETIME, -- When to delete scraped data
+    
+    -- Status
+    is_active BOOLEAN DEFAULT 1,
+    sync_enabled BOOLEAN DEFAULT 1, -- Whether to keep syncing this profile
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    deleted_at DATETIME,
+    
+    FOREIGN KEY (consultant_id) REFERENCES consultants(id) ON DELETE CASCADE,
+    FOREIGN KEY (scraping_job_id) REFERENCES scraping_jobs(id),
+    FOREIGN KEY (verified_by) REFERENCES admin_users(id),
+    UNIQUE(consultant_id) -- One LinkedIn profile per consultant
+);
+
+-- Indexes for consultant_linkedin_profiles
+CREATE INDEX idx_consultant_linkedin_profiles_consultant ON consultant_linkedin_profiles(consultant_id);
+CREATE INDEX idx_consultant_linkedin_profiles_url ON consultant_linkedin_profiles(linkedin_url);
+CREATE INDEX idx_consultant_linkedin_profiles_scraped ON consultant_linkedin_profiles(last_scraped_at);
+CREATE INDEX idx_consultant_linkedin_profiles_quality ON consultant_linkedin_profiles(profile_quality_score);
+CREATE INDEX idx_consultant_linkedin_profiles_active ON consultant_linkedin_profiles(is_active);
+
+-- Full-text search for LinkedIn profile data
+CREATE VIRTUAL TABLE linkedin_profiles_fts_en USING fts5(
+    full_name, headline, summary, current_position, skills,
+    tokenize='porter'
+);
+
+-- FTS triggers for LinkedIn profiles
+CREATE TRIGGER linkedin_profiles_fts_en_ai AFTER INSERT ON consultant_linkedin_profiles BEGIN
+  INSERT INTO linkedin_profiles_fts_en(rowid, full_name, headline, summary, current_position, skills) 
+  VALUES (
+    new.id,
+    new.full_name,
+    json_extract(new.headline, '$.en'),
+    portable_text_to_plain_text(json_extract(new.summary, '$.en')),
+    json_extract(new.current_position, '$.en'),
+    json_extract(new.skills, '$')
+  );
+END;
+
+CREATE TRIGGER linkedin_profiles_fts_en_au AFTER UPDATE ON consultant_linkedin_profiles BEGIN
+  UPDATE linkedin_profiles_fts_en SET 
+    full_name = new.full_name,
+    headline = json_extract(new.headline, '$.en'),
+    summary = portable_text_to_plain_text(json_extract(new.summary, '$.en')),
+    current_position = json_extract(new.current_position, '$.en'),
+    skills = json_extract(new.skills, '$')
+  WHERE rowid = new.id;
+END;
+
+CREATE TRIGGER linkedin_profiles_fts_en_ad AFTER DELETE ON consultant_linkedin_profiles BEGIN
+  DELETE FROM linkedin_profiles_fts_en WHERE rowid = old.id;
+END;
+```
+
+#### `scraping_jobs`
+Track Scoopp crawling tasks and results for data collection management.
+→ **Manages**: [Data Collection Workflows](../features/data-collection.md), [Scraping Compliance](../privacy-compliance.md#scraping)
+← **Powers**: [LinkedIn Profiles](#consultant_linkedin_profiles), [Profile Enhancement](../features/profile-enhancement.md)
+
+```sql
+CREATE TABLE scraping_jobs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    
+    -- Job Configuration
+    job_type TEXT NOT NULL CHECK (job_type IN ('linkedin_profile', 'linkedin_company', 'linkedin_post', 'twitter_profile', 'website_scrape')),
+    target_url TEXT NOT NULL,
+    source_platform TEXT NOT NULL CHECK (source_platform IN ('linkedin', 'twitter', 'website', 'github')),
+    
+    -- Job Parameters
+    scraping_parameters TEXT, -- JSON: scraping configuration
+    -- Example: {"depth": 1, "include_posts": true, "max_connections": 500, "include_experience": true}
+    
+    -- Scheduling
+    priority INTEGER DEFAULT 5 CHECK (priority >= 1 AND priority <= 10), -- 1 = highest, 10 = lowest
+    scheduled_at DATETIME,
+    started_at DATETIME,
+    completed_at DATETIME,
+    
+    -- Status Tracking
+    status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued', 'running', 'completed', 'failed', 'cancelled', 'rate_limited')),
+    progress_percentage INTEGER DEFAULT 0 CHECK (progress_percentage >= 0 AND progress_percentage <= 100),
+    
+    -- Results
+    items_scraped INTEGER DEFAULT 0,
+    items_failed INTEGER DEFAULT 0,
+    data_collected_mb DECIMAL(8,2) DEFAULT 0.0, -- Size of collected data
+    
+    -- Error Handling
+    error_message TEXT,
+    error_details TEXT, -- JSON: detailed error information
+    retry_count INTEGER DEFAULT 0,
+    max_retries INTEGER DEFAULT 3,
+    next_retry_at DATETIME,
+    
+    -- Rate Limiting & Compliance
+    rate_limit_hit BOOLEAN DEFAULT 0,
+    rate_limit_reset_at DATETIME,
+    robots_txt_compliant BOOLEAN DEFAULT 1,
+    user_agent TEXT DEFAULT 'voltAIc-scraper/1.0',
+    
+    -- Data Storage
+    output_format TEXT DEFAULT 'json' CHECK (output_format IN ('json', 'csv', 'xml')),
+    output_file_id INTEGER, -- Reference to stored scraping results
+    checksum TEXT, -- SHA-256 of scraped data for integrity
+    
+    -- Association
+    consultant_id INTEGER, -- If scraping for specific consultant
+    admin_user_id INTEGER, -- User who initiated the job
+    
+    -- Resource Usage
+    execution_time_seconds INTEGER,
+    memory_used_mb INTEGER,
+    network_requests INTEGER,
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (consultant_id) REFERENCES consultants(id),
+    FOREIGN KEY (admin_user_id) REFERENCES admin_users(id),
+    FOREIGN KEY (output_file_id) REFERENCES media_files(id)
+);
+
+-- Indexes for scraping_jobs
+CREATE INDEX idx_scraping_jobs_type ON scraping_jobs(job_type);
+CREATE INDEX idx_scraping_jobs_status ON scraping_jobs(status);
+CREATE INDEX idx_scraping_jobs_platform ON scraping_jobs(source_platform);
+CREATE INDEX idx_scraping_jobs_consultant ON scraping_jobs(consultant_id);
+CREATE INDEX idx_scraping_jobs_priority ON scraping_jobs(priority, scheduled_at);
+CREATE INDEX idx_scraping_jobs_url ON scraping_jobs(target_url);
+CREATE INDEX idx_scraping_jobs_scheduled ON scraping_jobs(scheduled_at);
+CREATE INDEX idx_scraping_jobs_rate_limit ON scraping_jobs(rate_limit_hit, rate_limit_reset_at);
+```
+
+### Payment Processing & Financial Management
+
+#### `payment_transactions`
+Comprehensive payment processing records with Odoo ERP integration.
+→ **Integrates**: [Odoo ERP](../integrations/odoo.md), [Payment Gateways](../integrations/payment-gateways.md)
+← **Tracks**: [Consultant Bookings](#consultant_bookings), [Revenue Analytics](../features/revenue-analytics.md)
+
+```sql
+CREATE TABLE payment_transactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    
+    -- Transaction Identification
+    transaction_reference TEXT UNIQUE NOT NULL, -- Our internal reference
+    external_transaction_id TEXT, -- Payment processor transaction ID
+    odoo_transaction_id TEXT, -- Corresponding Odoo transaction ID
+    
+    -- Transaction Type
+    transaction_type TEXT NOT NULL CHECK (transaction_type IN ('booking_payment', 'refund', 'payout', 'platform_fee', 'adjustment')),
+    payment_method TEXT NOT NULL CHECK (payment_method IN ('credit_card', 'debit_card', 'bank_transfer', 'paypal', 'stripe', 'wise', 'crypto')),
+    
+    -- Related Records
+    consultant_booking_id INTEGER, -- If related to a booking
+    consultant_payout_id INTEGER, -- If related to a payout
+    consultant_id INTEGER, -- Consultant involved in transaction
+    
+    -- Financial Details
+    gross_amount_usd DECIMAL(12,2) NOT NULL, -- Total transaction amount
+    platform_fee_usd DECIMAL(10,2) DEFAULT 0.0, -- Platform fee (15%)
+    processing_fee_usd DECIMAL(8,2) DEFAULT 0.0, -- Payment processor fee
+    tax_amount_usd DECIMAL(10,2) DEFAULT 0.0, -- Tax amount if applicable
+    net_amount_usd DECIMAL(12,2) NOT NULL, -- Net amount after all fees
+    
+    -- Currency & Exchange
+    transaction_currency TEXT NOT NULL DEFAULT 'USD',
+    original_amount DECIMAL(12,2), -- Amount in original currency if different
+    original_currency TEXT, -- Original currency if different from USD
+    exchange_rate DECIMAL(10,6) DEFAULT 1.0,
+    
+    -- Transaction Status
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'failed', 'cancelled', 'refunded', 'disputed')),
+    gateway_status TEXT, -- Raw status from payment gateway
+    failure_reason TEXT,
+    
+    -- Customer Information
+    customer_name TEXT,
+    customer_email TEXT,
+    customer_phone TEXT,
+    billing_address TEXT, -- JSON object with billing address
+    
+    -- Gateway Information
+    payment_gateway TEXT NOT NULL CHECK (payment_gateway IN ('stripe', 'paypal', 'wise', 'bank_transfer', 'crypto')),
+    gateway_fee_usd DECIMAL(8,2) DEFAULT 0.0,
+    gateway_response TEXT, -- JSON response from gateway
+    
+    -- Risk & Fraud Detection
+    risk_score INTEGER CHECK (risk_score IS NULL OR (risk_score >= 0 AND risk_score <= 100)),
+    fraud_flags TEXT, -- JSON array of fraud detection flags
+    requires_manual_review BOOLEAN DEFAULT 0,
+    reviewed_by INTEGER,
+    review_notes TEXT,
+    
+    -- Timing
+    initiated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    processed_at DATETIME,
+    completed_at DATETIME,
+    
+    -- Dispute & Chargeback Management
+    dispute_status TEXT CHECK (dispute_status IS NULL OR dispute_status IN ('none', 'inquiry', 'chargeback', 'pre_arbitration', 'arbitration')),
+    dispute_amount_usd DECIMAL(10,2) DEFAULT 0.0,
+    dispute_reason TEXT,
+    dispute_evidence_file_id INTEGER, -- Supporting documentation
+    
+    -- Reconciliation
+    reconciled BOOLEAN DEFAULT 0,
+    reconciled_at DATETIME,
+    reconciled_by INTEGER,
+    accounting_period TEXT, -- YYYY-MM format
+    
+    -- ERP Integration
+    odoo_synced BOOLEAN DEFAULT 0,
+    odoo_sync_error TEXT,
+    odoo_last_sync_at DATETIME,
+    
+    -- Metadata
+    user_agent TEXT,
+    ip_address TEXT,
+    source_platform TEXT, -- web, mobile, api
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (consultant_booking_id) REFERENCES consultant_bookings(id),
+    FOREIGN KEY (consultant_payout_id) REFERENCES consultant_payouts(id),
+    FOREIGN KEY (consultant_id) REFERENCES consultants(id),
+    FOREIGN KEY (reviewed_by) REFERENCES admin_users(id),
+    FOREIGN KEY (dispute_evidence_file_id) REFERENCES media_files(id),
+    FOREIGN KEY (reconciled_by) REFERENCES admin_users(id)
+);
+
+-- Indexes for payment_transactions
+CREATE INDEX idx_payment_transactions_reference ON payment_transactions(transaction_reference);
+CREATE INDEX idx_payment_transactions_external_id ON payment_transactions(external_transaction_id);
+CREATE INDEX idx_payment_transactions_type ON payment_transactions(transaction_type);
+CREATE INDEX idx_payment_transactions_status ON payment_transactions(status);
+CREATE INDEX idx_payment_transactions_consultant ON payment_transactions(consultant_id);
+CREATE INDEX idx_payment_transactions_booking ON payment_transactions(consultant_booking_id);
+CREATE INDEX idx_payment_transactions_payout ON payment_transactions(consultant_payout_id);
+CREATE INDEX idx_payment_transactions_gateway ON payment_transactions(payment_gateway);
+CREATE INDEX idx_payment_transactions_completed ON payment_transactions(completed_at);
+CREATE INDEX idx_payment_transactions_accounting ON payment_transactions(accounting_period);
+CREATE INDEX idx_payment_transactions_reconciled ON payment_transactions(reconciled);
+CREATE INDEX idx_payment_transactions_odoo_sync ON payment_transactions(odoo_synced);
+CREATE INDEX idx_payment_transactions_dispute ON payment_transactions(dispute_status);
+CREATE INDEX idx_payment_transactions_risk ON payment_transactions(risk_score);
+```
+
+## Enhanced Consultant Relationship Mappings
+
+### Entity Relationship Extensions
+```
+-- New Consultant System Relationships
+consultants (1) → (N) consultant_whitepapers → (1) whitepapers
+consultants (1) → (N) consultant_webinars → (1) webinars  
+consultants (1) → (N) consultant_bookings
+consultants (1) → (N) consultant_offerings
+consultants (1) → (N) consultant_payment_accounts
+consultants (1) → (N) consultant_payouts
+consultants (1) → (1) consultant_linkedin_profiles
+consultants (1) → (N) scraping_jobs
+
+consultant_bookings (1) → (N) payment_transactions
+consultant_payouts (1) → (N) payment_transactions
+scraping_jobs (1) → (1) consultant_linkedin_profiles
+
+-- Integration with existing system
+admin_users (1) → (N) consultants (created_by)
+admin_users (1) → (N) consultant_payouts (processed_by)
+admin_users (1) → (N) payment_transactions (reviewed_by)
+media_files (1) → (N) consultants (profile_image_id)
+media_files (1) → (N) consultant_payment_accounts (tax_form_file_id)
+```
+
+### Language-Specific Views for Consultant Content
+
+```sql
+-- Consultant profiles with multilingual support
+CREATE VIEW consultants_en AS
+SELECT 
+    id,
+    first_name,
+    last_name,
+    display_name,
+    json_extract(bio, '$.en') as bio,
+    json_extract(job_title, '$.en') as job_title,
+    expertise_areas,
+    company,
+    country,
+    languages_spoken,
+    hourly_rate_usd,
+    average_rating,
+    total_sessions,
+    status,
+    profile_visibility
+FROM consultants
+WHERE deleted_at IS NULL;
+
+CREATE VIEW consultants_de AS
+SELECT 
+    id,
+    first_name,
+    last_name,
+    display_name,
+    COALESCE(json_extract(bio, '$.de'), json_extract(bio, '$.en')) as bio,
+    COALESCE(json_extract(job_title, '$.de'), json_extract(job_title, '$.en')) as job_title,
+    expertise_areas,
+    company,
+    country,
+    languages_spoken,
+    hourly_rate_usd,
+    average_rating,
+    total_sessions,
+    status,
+    profile_visibility
+FROM consultants
+WHERE deleted_at IS NULL;
+
+-- Consultant offerings with multilingual content
+CREATE VIEW consultant_offerings_en AS
+SELECT 
+    id,
+    consultant_id,
+    json_extract(name, '$.en') as name,
+    json_extract(short_description, '$.en') as short_description,
+    json_extract(description, '$.en') as description,
+    offering_type,
+    duration_minutes,
+    price_usd,
+    is_active,
+    featured
+FROM consultant_offerings
+WHERE deleted_at IS NULL;
+
+CREATE VIEW consultant_offerings_de AS
+SELECT 
+    id,
+    consultant_id,
+    COALESCE(json_extract(name, '$.de'), json_extract(name, '$.en')) as name,
+    COALESCE(json_extract(short_description, '$.de'), json_extract(short_description, '$.en')) as short_description,
+    COALESCE(json_extract(description, '$.de'), json_extract(description, '$.en')) as description,
+    offering_type,
+    duration_minutes,
+    price_usd,
+    is_active,
+    featured
+FROM consultant_offerings
+WHERE deleted_at IS NULL;
+```
+
+### Consultant Analytics Views
+
+```sql
+-- Consultant performance analytics
+CREATE VIEW consultant_analytics AS
+SELECT 
+    c.id,
+    c.first_name,
+    c.last_name,
+    c.display_name,
+    c.status,
+    
+    -- Booking Statistics
+    COUNT(cb.id) as total_bookings,
+    COUNT(CASE WHEN cb.booking_status = 'completed' THEN 1 END) as completed_bookings,
+    COUNT(CASE WHEN cb.booking_status = 'cancelled' THEN 1 END) as cancelled_bookings,
+    COUNT(CASE WHEN cb.booking_status = 'no_show_client' THEN 1 END) as client_no_shows,
+    
+    -- Financial Performance
+    COALESCE(SUM(CASE WHEN cb.booking_status = 'completed' THEN cb.consultant_payout_usd END), 0) as total_earnings_usd,
+    COALESCE(SUM(CASE WHEN cb.booking_status = 'completed' THEN cb.platform_fee_usd END), 0) as platform_fees_generated_usd,
+    COALESCE(AVG(CASE WHEN cb.booking_status = 'completed' THEN cb.hourly_rate_usd END), 0) as average_hourly_rate,
+    
+    -- Ratings & Feedback
+    COALESCE(AVG(cb.client_rating), 0) as average_client_rating,
+    COUNT(CASE WHEN cb.client_rating IS NOT NULL THEN 1 END) as total_ratings,
+    COUNT(CASE WHEN cb.client_rating >= 4 THEN 1 END) as positive_ratings,
+    
+    -- Activity Metrics
+    MAX(cb.scheduled_start) as last_session_date,
+    MIN(cb.scheduled_start) as first_session_date,
+    
+    -- Response Time (future implementation)
+    -- AVG(response_time_hours) as avg_response_time_hours
+    
+FROM consultants c
+LEFT JOIN consultant_bookings cb ON c.id = cb.consultant_id
+WHERE c.deleted_at IS NULL
+GROUP BY c.id, c.first_name, c.last_name, c.display_name, c.status;
+
+-- Revenue analytics by consultant
+CREATE VIEW consultant_revenue_monthly AS
+SELECT 
+    c.id as consultant_id,
+    c.display_name,
+    strftime('%Y-%m', cb.completed_at) as month,
+    COUNT(cb.id) as sessions_completed,
+    SUM(cb.consultant_payout_usd) as earnings_usd,
+    SUM(cb.platform_fee_usd) as platform_fees_usd,
+    SUM(cb.total_amount_usd) as gross_revenue_usd,
+    AVG(cb.client_rating) as avg_rating
+FROM consultants c
+JOIN consultant_bookings cb ON c.id = cb.consultant_id
+WHERE cb.booking_status = 'completed'
+  AND cb.completed_at IS NOT NULL
+  AND c.deleted_at IS NULL
+GROUP BY c.id, c.display_name, strftime('%Y-%m', cb.completed_at)
+ORDER BY month DESC, earnings_usd DESC;
+
+-- Top performing consultants view
+CREATE VIEW top_consultants AS
+SELECT 
+    c.id,
+    c.display_name,
+    c.expertise_areas,
+    c.average_rating,
+    c.total_sessions,
+    COUNT(cb.id) as recent_bookings, -- Last 90 days
+    SUM(cb.consultant_payout_usd) as recent_earnings_usd,
+    AVG(cb.client_rating) as recent_avg_rating
+FROM consultants c
+LEFT JOIN consultant_bookings cb ON c.id = cb.consultant_id 
+    AND cb.created_at >= datetime('now', '-90 days')
+    AND cb.booking_status = 'completed'
+WHERE c.status = 'approved' 
+  AND c.profile_visibility = 'public'
+  AND c.deleted_at IS NULL
+GROUP BY c.id, c.display_name, c.expertise_areas, c.average_rating, c.total_sessions
+HAVING c.total_sessions > 0
+ORDER BY recent_earnings_usd DESC, c.average_rating DESC, c.total_sessions DESC;
+```
+
 ## Conclusion
 
-The Magnetiq v2 database schema provides a robust foundation using SQLite for all environments with comprehensive multilingual support. Key features include:
+The Magnetiq v2 database schema provides a robust foundation using SQLite for all environments with comprehensive multilingual support and advanced consultant management capabilities. Key features include:
 
 ### Multilingual Capabilities
 - **JSON-based content storage** for English and German with mandatory English content
@@ -1599,11 +2856,38 @@ The Magnetiq v2 database schema provides a robust foundation using SQLite for al
 - **Validation constraints** ensuring data integrity
 - **Coverage tracking** for monitoring translation completeness
 
+### Consultant Management System
+- **Comprehensive consultant profiles** with professional information, expertise tracking, and performance metrics
+- **Advanced booking system** with payment processing, session management, and client relationship tracking
+- **Flexible service offerings** including "30-for-30" packages with customizable pricing and descriptions
+- **Secure payment processing** with platform fee distribution (15% platform, 85% consultant)
+- **LinkedIn integration** via Scoopp for enhanced profile data and expert discovery
+- **KYC compliance** with encrypted financial data and verification workflows
+- **Multi-currency support** with exchange rate tracking and international payment capabilities
+
+### Financial & Business Intelligence
+- **Complete payment transaction tracking** with Odoo ERP integration
+- **Revenue analytics** and consultant performance metrics
+- **Automated payout processing** with tax documentation and compliance
+- **Fraud detection** and risk management capabilities
+- **Dispute and chargeback management** with evidence tracking
+
+### Data Integration & Automation
+- **Scraping job management** for automated data collection from LinkedIn and other platforms
+- **Cross-platform content attribution** linking consultants to whitepapers and webinars
+- **Comprehensive audit trails** with soft deletes and change tracking
+- **Performance optimization** through strategic indexing and materialized views
+
 ### Core Features
 - **Simple yet powerful schema** supporting all CMS and business automation features
 - **Performance optimization** through strategic indexing and views
 - **Data integrity** with foreign key constraints and validation triggers
 - **Audit trails** and soft deletes for data recovery
 - **Clear migration path** to PostgreSQL-based v3 for advanced integration needs
+- **Cross-referenced specifications** with comprehensive linking to related system components
 
-The schema successfully balances simplicity with functionality while providing enterprise-grade multilingual capabilities suitable for international deployment.
+The enhanced schema successfully balances simplicity with functionality while providing enterprise-grade multilingual capabilities and sophisticated consultant management features suitable for international B2B consulting platform deployment.
+
+→ **Cross-References**: [Consultant Features](../features/consultant-management.md), [Payment Processing](../integrations/payment-processing.md), [LinkedIn Integration](../integrations/linkedin.md)
+← **Supports**: [Expert Network](../features/expert-network.md), [Revenue Management](../features/revenue-management.md), [Platform Economics](../features/platform-economics.md)
+⚡ **Dependencies**: [Security Framework](../security.md), [Privacy Compliance](../privacy-compliance.md), [API Endpoints](api.md#consultant-endpoints)
