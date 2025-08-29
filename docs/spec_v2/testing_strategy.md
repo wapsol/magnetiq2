@@ -1554,7 +1554,7 @@ class TestKYCCompliance:
 
 Comprehensive security testing focused on consultant system vulnerabilities, payment security, and data protection.
 
-→ **Security Specifications**: [Security Architecture](security.md), [Payment Security](integrations/stripe.md#security)
+→ **Security Specifications**: [Security Architecture](security.md), [Payment Security](integrations/payment-processing.md#security)
 ← **Security Dependencies**: [Authentication System](backend/api.md#authentication), [Data Encryption](security.md#encryption)
 
 ### Payment Security Testing
@@ -2494,7 +2494,7 @@ test.describe('Content Management and Analytics', () => {
 Comprehensive compliance testing ensuring adherence to GDPR, PCI DSS, privacy regulations, and platform-specific guidelines.
 
 → **Compliance Requirements**: [Privacy Compliance](privacy-compliance.md), [Security Standards](security.md#compliance)
-← **Compliance Dependencies**: [Data Protection](backend/database.md#data-protection), [Payment Security](integrations/stripe.md#compliance)
+← **Compliance Dependencies**: [Data Protection](backend/database.md#data-protection), [Payment Security](integrations/payment-processing.md#compliance)
 
 ### GDPR Compliance Testing
 

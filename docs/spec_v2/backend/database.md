@@ -2057,9 +2057,16 @@ CREATE TABLE consultant_bookings (
     hourly_rate_usd DECIMAL(10,2) NOT NULL,
     total_hours DECIMAL(4,2) NOT NULL,
     subtotal_usd DECIMAL(10,2) NOT NULL, -- hours * rate
-    platform_fee_usd DECIMAL(10,2) NOT NULL, -- 15% platform fee
-    consultant_payout_usd DECIMAL(10,2) NOT NULL, -- 85% to consultant
-    total_amount_usd DECIMAL(10,2) NOT NULL, -- Amount charged to client
+    
+    -- Coupon Integration
+    coupon_id INTEGER, -- Applied coupon (if any)
+    original_total_usd DECIMAL(10,2), -- Price before coupon discount
+    coupon_discount_usd DECIMAL(10,2) DEFAULT 0.0, -- Amount discounted by coupon
+    coupon_code_used TEXT, -- Store the actual code used (for reporting)
+    
+    platform_fee_usd DECIMAL(10,2) NOT NULL, -- 15% platform fee (calculated after discount)
+    consultant_payout_usd DECIMAL(10,2) NOT NULL, -- 85% to consultant (calculated after discount)
+    total_amount_usd DECIMAL(10,2) NOT NULL, -- Final amount charged to client (after discount)
     currency_used TEXT DEFAULT 'USD',
     
     -- Payment Processing
@@ -2107,7 +2114,8 @@ CREATE TABLE consultant_bookings (
     deleted_at DATETIME,
     
     FOREIGN KEY (consultant_id) REFERENCES consultants(id),
-    FOREIGN KEY (assigned_success_manager) REFERENCES admin_users(id)
+    FOREIGN KEY (assigned_success_manager) REFERENCES admin_users(id),
+    FOREIGN KEY (coupon_id) REFERENCES coupons(id)
 );
 
 -- Indexes for consultant_bookings
@@ -2118,6 +2126,8 @@ CREATE INDEX idx_consultant_bookings_payment_status ON consultant_bookings(payme
 CREATE INDEX idx_consultant_bookings_scheduled_start ON consultant_bookings(scheduled_start);
 CREATE INDEX idx_consultant_bookings_lead_source ON consultant_bookings(lead_source);
 CREATE INDEX idx_consultant_bookings_created ON consultant_bookings(created_at);
+CREATE INDEX idx_consultant_bookings_coupon ON consultant_bookings(coupon_id);
+CREATE INDEX idx_consultant_bookings_coupon_code ON consultant_bookings(coupon_code_used);
 ```
 
 #### `consultant_offerings`
@@ -2542,6 +2552,135 @@ CREATE INDEX idx_scraping_jobs_scheduled ON scraping_jobs(scheduled_at);
 CREATE INDEX idx_scraping_jobs_rate_limit ON scraping_jobs(rate_limit_hit, rate_limit_reset_at);
 ```
 
+### Coupon & Discount Management
+
+#### `coupons`
+Coupon system for free consultations and discounted bookings.
+→ **Supports**: [Promotional Campaigns](../features/promotional-campaigns.md), [Marketing Strategy](../features/marketing-strategy.md)
+← **Used by**: [Book-a-Meeting](../frontend/public/features/booking.md), [30-for-30 Services](../features/consultant-offerings.md)
+
+```sql
+CREATE TABLE coupons (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    
+    -- Coupon Identification
+    code TEXT UNIQUE NOT NULL, -- Public coupon code (e.g., "FREECALL2024")
+    internal_name TEXT NOT NULL, -- Admin reference name
+    description TEXT CHECK (description IS NULL OR json_extract(description, '$.en') IS NOT NULL), -- PortableText JSON multilingual
+    
+    -- Discount Configuration
+    discount_type TEXT NOT NULL CHECK (discount_type IN ('percentage', 'fixed_amount', 'free_session')),
+    discount_value DECIMAL(10,2), -- Percentage (0-100) or fixed amount in USD
+    max_discount_amount DECIMAL(10,2), -- Cap for percentage discounts
+    minimum_order_value DECIMAL(10,2) DEFAULT 0.0, -- Minimum booking value to apply coupon
+    
+    -- Usage Restrictions
+    max_uses_total INTEGER, -- NULL = unlimited
+    max_uses_per_user INTEGER DEFAULT 1, -- Limit per email/user
+    current_usage_count INTEGER DEFAULT 0,
+    
+    -- Validity Period
+    valid_from DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    valid_until DATETIME, -- NULL = no expiration
+    is_active BOOLEAN DEFAULT 1,
+    
+    -- Applicable Services
+    applicable_to TEXT DEFAULT 'all' CHECK (applicable_to IN ('all', 'book_a_meeting', '30_for_30', 'specific_consultants', 'first_time_users')),
+    consultant_restrictions TEXT, -- JSON array of consultant IDs if applicable_to = 'specific_consultants'
+    service_type_restrictions TEXT, -- JSON array of session types
+    
+    -- Campaign Attribution
+    campaign_source TEXT, -- Marketing campaign identifier
+    utm_source TEXT,
+    utm_medium TEXT,
+    utm_campaign TEXT,
+    
+    -- Analytics & Tracking
+    generated_revenue_usd DECIMAL(12,2) DEFAULT 0.0, -- Total revenue from this coupon
+    conversion_rate DECIMAL(5,4) DEFAULT 0.0000, -- Usage rate vs. distribution
+    
+    -- Administrative
+    created_by INTEGER NOT NULL, -- Admin user who created the coupon
+    notes TEXT, -- Internal admin notes
+    
+    -- Timestamps
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    deactivated_at DATETIME,
+    
+    FOREIGN KEY (created_by) REFERENCES admin_users(id)
+);
+
+-- Indexes for coupons
+CREATE INDEX idx_coupons_code ON coupons(code);
+CREATE INDEX idx_coupons_active ON coupons(is_active);
+CREATE INDEX idx_coupons_validity ON coupons(valid_from, valid_until);
+CREATE INDEX idx_coupons_applicable_to ON coupons(applicable_to);
+CREATE INDEX idx_coupons_campaign ON coupons(campaign_source);
+CREATE INDEX idx_coupons_created_by ON coupons(created_by);
+```
+
+#### `coupon_usage`
+Tracking individual coupon redemptions and usage analytics.
+→ **Tracks**: [Coupon Performance](../features/coupon-analytics.md), [User Behavior](../features/user-analytics.md)
+← **Links**: [Consultant Bookings](#consultant_bookings), [Coupons](#coupons)
+
+```sql
+CREATE TABLE coupon_usage (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    
+    -- Coupon & User Information
+    coupon_id INTEGER NOT NULL,
+    consultant_booking_id INTEGER, -- NULL for failed attempts
+    
+    -- User Identification
+    user_email TEXT NOT NULL, -- Client email for tracking
+    user_ip_address TEXT, -- For fraud detection
+    user_session_id TEXT, -- Browser session tracking
+    
+    -- Usage Details
+    attempted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status TEXT NOT NULL CHECK (status IN ('pending', 'applied', 'failed', 'expired', 'invalid', 'limit_exceeded')),
+    
+    -- Financial Impact
+    original_amount_usd DECIMAL(10,2), -- Price before coupon
+    discount_applied_usd DECIMAL(10,2), -- Amount discounted
+    final_amount_usd DECIMAL(10,2), -- Price after coupon (can be 0 for free sessions)
+    
+    -- Validation Results
+    validation_errors TEXT, -- JSON array of validation failure reasons
+    is_first_time_user BOOLEAN DEFAULT 0,
+    user_previous_bookings_count INTEGER DEFAULT 0,
+    
+    -- Attribution
+    referrer_url TEXT,
+    utm_source TEXT,
+    utm_medium TEXT,
+    utm_campaign TEXT,
+    
+    -- Fraud Detection
+    risk_score DECIMAL(3,2) DEFAULT 0.0, -- 0.0 to 1.0, calculated risk score
+    fraud_flags TEXT, -- JSON array of fraud indicators
+    is_flagged_suspicious BOOLEAN DEFAULT 0,
+    
+    -- Success Metrics
+    booking_completed BOOLEAN DEFAULT 0, -- Whether the booking was completed
+    session_attended BOOLEAN DEFAULT 0, -- Whether client attended the session
+    
+    FOREIGN KEY (coupon_id) REFERENCES coupons(id),
+    FOREIGN KEY (consultant_booking_id) REFERENCES consultant_bookings(id)
+);
+
+-- Indexes for coupon_usage
+CREATE INDEX idx_coupon_usage_coupon ON coupon_usage(coupon_id);
+CREATE INDEX idx_coupon_usage_booking ON coupon_usage(consultant_booking_id);
+CREATE INDEX idx_coupon_usage_email ON coupon_usage(user_email);
+CREATE INDEX idx_coupon_usage_status ON coupon_usage(status);
+CREATE INDEX idx_coupon_usage_attempted ON coupon_usage(attempted_at);
+CREATE INDEX idx_coupon_usage_fraud_flags ON coupon_usage(is_flagged_suspicious);
+CREATE INDEX idx_coupon_usage_success ON coupon_usage(booking_completed, session_attended);
+```
+
 ### Payment Processing & Financial Management
 
 #### `payment_transactions`
@@ -2676,6 +2815,11 @@ consultants (1) → (N) scraping_jobs
 consultant_bookings (1) → (N) payment_transactions
 consultant_payouts (1) → (N) payment_transactions
 scraping_jobs (1) → (1) consultant_linkedin_profiles
+-- Coupon System Relationships
+coupons (1) → (N) consultant_bookings
+coupons (1) → (N) coupon_usage
+consultant_bookings (1) → (1) coupon_usage
+admin_users (1) → (N) coupons (created_by)
 
 -- Integration with existing system
 admin_users (1) → (N) consultants (created_by)
@@ -2841,6 +2985,80 @@ WHERE c.status = 'approved'
 GROUP BY c.id, c.display_name, c.expertise_areas, c.average_rating, c.total_sessions
 HAVING c.total_sessions > 0
 ORDER BY recent_earnings_usd DESC, c.average_rating DESC, c.total_sessions DESC;
+
+-- Coupon analytics view
+CREATE VIEW coupon_analytics AS
+SELECT 
+    c.id,
+    c.code,
+    c.internal_name,
+    c.discount_type,
+    c.discount_value,
+    c.current_usage_count,
+    c.max_uses_total,
+    
+    -- Usage Statistics
+    COUNT(cu.id) as total_attempts,
+    COUNT(CASE WHEN cu.status = 'applied' THEN 1 END) as successful_uses,
+    COUNT(CASE WHEN cu.status = 'failed' THEN 1 END) as failed_attempts,
+    
+    -- Conversion Metrics
+    ROUND(
+        CAST(COUNT(CASE WHEN cu.status = 'applied' THEN 1 END) AS FLOAT) / 
+        NULLIF(COUNT(cu.id), 0) * 100, 2
+    ) as success_rate_percent,
+    
+    -- Financial Impact
+    SUM(cu.discount_applied_usd) as total_discounts_given,
+    SUM(cu.final_amount_usd) as revenue_generated,
+    COUNT(CASE WHEN cu.booking_completed = 1 THEN 1 END) as completed_bookings,
+    COUNT(CASE WHEN cu.session_attended = 1 THEN 1 END) as attended_sessions,
+    
+    -- Time Analysis
+    c.created_at,
+    c.valid_from,
+    c.valid_until,
+    c.is_active
+    
+FROM coupons c
+LEFT JOIN coupon_usage cu ON c.id = cu.coupon_id
+WHERE c.deleted_at IS NULL
+GROUP BY c.id, c.code, c.internal_name, c.discount_type, c.discount_value, c.current_usage_count, c.max_uses_total, c.created_at, c.valid_from, c.valid_until, c.is_active
+ORDER BY total_discounts_given DESC, successful_uses DESC;
+
+-- Active coupons performance view
+CREATE VIEW active_coupons_performance AS
+SELECT 
+    c.code,
+    c.internal_name,
+    c.discount_type,
+    c.discount_value,
+    c.current_usage_count,
+    c.max_uses_total,
+    
+    -- Recent activity (last 30 days)
+    COUNT(CASE WHEN cu.attempted_at >= datetime('now', '-30 days') THEN 1 END) as recent_attempts,
+    COUNT(CASE WHEN cu.attempted_at >= datetime('now', '-30 days') AND cu.status = 'applied' THEN 1 END) as recent_successful_uses,
+    
+    -- Success metrics
+    ROUND(
+        AVG(CASE WHEN cu.session_attended = 1 THEN 1.0 ELSE 0.0 END) * 100, 1
+    ) as attendance_rate_percent,
+    
+    -- Expiration info
+    CASE 
+        WHEN c.valid_until IS NULL THEN 'No expiration'
+        WHEN c.valid_until > datetime('now') THEN 'Active'
+        ELSE 'Expired'
+    END as status,
+    
+    c.valid_until
+    
+FROM coupons c
+LEFT JOIN coupon_usage cu ON c.id = cu.coupon_id
+WHERE c.is_active = 1 AND c.deleted_at IS NULL
+GROUP BY c.id, c.code, c.internal_name, c.discount_type, c.discount_value, c.current_usage_count, c.max_uses_total, c.valid_until
+ORDER BY recent_attempts DESC, recent_successful_uses DESC;
 ```
 
 ## Conclusion

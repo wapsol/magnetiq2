@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Consultant Management Admin Panel provides comprehensive tools for managing the consultant network, including profile CRUD operations, LinkedIn scraping integration, KYC/payment workflows, performance analytics, and payout management. This specification focuses on the consultant-specific admin interfaces and workflows.
+The Consultant Management Admin Panel provides comprehensive tools for managing the consultant network, including profile CRUD operations, LinkedIn scraping integration, admin-managed KYC/payment workflows, performance analytics, and payout management. This specification focuses on the consultant-specific admin interfaces and workflows, particularly emphasizing the separation between consultant self-signup (LinkedIn-based only) and admin-managed profile completion.
 
 → **Implements**: [Consultant Network Strategy](../business/consultant-network.md) 
 ← **Supports**: [Admin Panel Architecture](./admin.md#consultant-management), [Business Automation](../features/business-automation.md)
@@ -39,9 +39,10 @@ graph LR
 ```
 ├── Consultant Profiles (/admin/consultants/profiles)
 ├── LinkedIn Scraping (/admin/consultants/scraping)
-├── Payments & KYC (/admin/consultants/payments)
+├── Admin-Managed KYC & Payments (/admin/consultants/kyc-payments)
 ├── Performance Analytics (/admin/consultants/analytics)
-└── Onboarding Workflow (/admin/consultants/onboarding)
+├── Profile Completion Workflow (/admin/consultants/completion)
+└── voltAIc Profile Generation (/admin/consultants/voltaic-profiles)
 ```
 
 ## 1. Consultant Profiles Tab (`/admin/consultants/profiles`)
@@ -99,19 +100,11 @@ interface ConsultantProfile {
     scraperNotes?: string;
   };
   
-  // Availability & Booking ↔ [Booking System](../public/features/book-a-meeting.md)
+  // Availability & Booking → [Booking Management](./business/booking-management.md#consultant-availability)
   availability: {
-    timezone: string;
-    workingHours: WeeklySchedule;
-    holidays: DateRange[];
-    isOnline: boolean;
-    bookingSettings: {
-      hourlyRate?: number;
-      currency: string;
-      minimumBookingDuration: number;
-      maxAdvanceBookingDays: number;
-      cancellationPolicy: string;
-    };
+    // Consultant availability configuration
+    // → Complete booking settings in [Booking Management](./business/booking-management.md#availability-management)
+    basicAvailability: ConsultantBasicAvailability;
   };
   
   // Payment & KYC Information ← [Payment Processing](../../integrations/payment-processing.md)
@@ -131,23 +124,20 @@ interface ConsultantProfile {
   // Content Associations ↔ [Content Management](../features/content-management.md)
   contentAssociations: {
     authoredWhitepapers: string[]; // → [Whitepaper System](../public/features/whitepapers.md)
-    webinarSessions: string[]; // → [Webinar Management](../public/features/webinars.md)
+    webinarSessions: string[]; // → [Webinar Management](./business/webinar-management.md)
     blogPosts: string[];
     caseStudies: string[];
   };
   
   // Performance Analytics ← [Analytics System](../../features/analytics.md)
   analytics: {
-    totalBookings: number;
-    completedBookings: number;
-    averageRating: number;
+    // Basic performance metrics
+    // → Complete booking analytics in [Booking Management](./business/booking-management.md#consultant-analytics)
+    performanceOverview: ConsultantPerformanceOverview;
     totalRatings: number;
     responseTime: number; // Average response time in minutes
     totalEarnings: number;
     currentMonthEarnings: number;
-    conversionRate: number; // Inquiry to booking conversion
-    repeatClientRate: number;
-    cancellationRate: number;
   };
   
   // System Metadata
@@ -204,21 +194,26 @@ interface LinkedInProfileData {
 - **Status Indicators**: Visual status badges (online/offline, KYC status, verification level)
 - **Quick Actions**: Edit profile, view details, toggle status, initiate scraping
 - **Bulk Operations**: Mass status updates, export selected, bulk email
-- **Smart Filtering**: By status, expertise, availability, earnings, verification level
+- **Smart Filtering**: By status, expertise, earnings, verification level
+  - → Availability filtering in [Booking Management](./business/booking-management.md#availability-filtering)
 - **Search**: Full-text search across name, expertise, bio, and skills
 
 **Card View Features**:
 - **Profile Cards**: Photo, name, title, rating, and key metrics
 - **Hover Actions**: Quick preview, edit, message, view analytics
-- **Status Overlays**: Online status, booking availability, new inquiry indicators
-- **Performance Metrics**: Revenue, booking count, rating display
+- **Status Overlays**: Online status, new inquiry indicators
+  - → Booking availability in [Booking Management](./business/booking-management.md#consultant-availability-status)
+- **Performance Metrics**: Revenue, rating display
+  - → Booking count metrics in [Booking Management](./business/booking-management.md#consultant-booking-metrics)
 
 **Profile Detail View**:
 - **Tabbed Interface**: Personal Info, Professional Info, LinkedIn Data, Payment Info, Analytics
 - **Live LinkedIn Preview**: Side-by-side comparison with scraped data
 - **Content Association Manager**: Link/unlink whitepapers, webinars, blog posts
-- **Analytics Dashboard**: Performance charts, booking history, revenue trends
-- **Communication Log**: Message history, booking inquiries, admin notes
+- **Analytics Dashboard**: Performance charts, revenue trends
+  - → Booking history and analytics in [Booking Management](./business/booking-management.md#booking-analytics)
+- **Communication Log**: Message history, admin notes
+  - → Booking inquiries and communication in [Booking Management](./business/booking-management.md#booking-communication)
 
 ## 2. LinkedIn Scraping Tab (`/admin/consultants/scraping`)
 
@@ -365,16 +360,20 @@ interface AIProfileGenerator {
 - **Brand Alignment**: Consistency with company voice and values
 - **SEO Optimization**: Keyword density and search optimization score
 
-## 4. Payments & KYC Tab (`/admin/consultants/payments`)
+## 4. Admin-Managed KYC & Payments Tab (`/admin/consultants/kyc-payments`)
 
 → **Payment Integration**: [Payment Processing API](../../integrations/payment-processing.md)
 ← **Compliance**: [Privacy Policy](../../privacy-compliance.md#financial-data), [KYC Regulations](../../security.md#kyc-compliance)
 
-### KYC (Know Your Customer) Management
+### Admin-Managed KYC (Know Your Customer) Process
 
-![KYC Workflow](../../../diagrams/spec_v2/features/kyc_workflow.png)
+![Admin KYC Workflow](../../../diagrams/spec_v2/features/admin_kyc_workflow.png)
 
-**KYC Workflow Interface**:
+**KYC Management Interface for Admins**:
+
+This interface allows site administrators to manually complete KYC processes for consultants who have signed up through the simplified LinkedIn-first signup process. Consultants do NOT complete KYC during signup.
+
+**Admin KYC Workflow Interface**:
 ```tsx
 interface KYCWorkflow {
   consultantId: string;
@@ -424,19 +423,25 @@ interface VerificationResult {
 }
 ```
 
-**KYC Management Features**:
-- **Document Collection Wizard**: Step-by-step KYC document upload
-- **Verification Status Dashboard**: Real-time KYC progress tracking
+**Admin KYC Management Features**:
+- **Consultant Selection Interface**: Choose consultants requiring KYC completion
+- **Document Collection on Behalf**: Admins initiate KYC document requests to consultants
+- **Verification Status Dashboard**: Real-time KYC progress tracking for all consultants
 - **Document Review Interface**: Side-by-side document verification
 - **Risk Assessment Tools**: Automated risk scoring and manual overrides
 - **Compliance Reporting**: KYC status reports and audit trails
 - **Integration Monitors**: Third-party KYC service status and results
+- **Bulk KYC Initiation**: Start KYC processes for multiple consultants simultaneously
 
-### Payment Setup & Management
+### Admin-Managed Payment Setup & Configuration
 
-![Payment Setup Flow](../../../diagrams/spec_v2/features/payment_setup_flow.png)
+![Admin Payment Setup Flow](../../../diagrams/spec_v2/features/admin_payment_setup_flow.png)
 
-**Payment Method Configuration**:
+**Admin-Initiated Payment Method Configuration**:
+
+Administrators manage payment setup for consultants who have completed the simplified signup process. Payment methods are NOT configured during consultant self-signup.
+
+**Payment Setup Management Interface**:
 ```tsx
 interface PaymentSetup {
   consultantId: string;
@@ -482,13 +487,16 @@ interface PaymentMethod {
 }
 ```
 
-**Payment Management Dashboard**:
-- **Payout Calendar**: Visual calendar of scheduled payouts
-- **Payment Method Manager**: Add, edit, verify payment methods
-- **Transaction History**: Complete payment and payout history
+**Admin Payment Management Dashboard**:
+- **Consultant Payment Status**: Overview of payment setup completion by consultant
+- **Payout Calendar**: Visual calendar of scheduled payouts for all consultants
+- **Payment Method Manager**: Add, edit, verify payment methods on behalf of consultants
+- **Transaction History**: Complete payment and payout history for all consultants
 - **Tax Document Generator**: Automatic 1099/tax form generation
 - **Dispute Management**: Handle payment disputes and chargebacks
 - **Payment Analytics**: Revenue trends, payout patterns, method performance
+- **Bulk Payment Setup**: Initiate payment configuration for multiple consultants
+- **Payment Method Verification**: Verify and approve consultant-provided payment details
 
 ### Payout Scheduling & Management
 
@@ -538,10 +546,125 @@ interface ScheduledPayout {
 - **Reconciliation Tools**: Match payouts with bookings and fees
 - **Export & Reporting**: Detailed payout reports for accounting
 
-## 5. Performance Analytics Tab (`/admin/consultants/analytics`)
+## 5. Profile Completion Workflow Tab (`/admin/consultants/completion`)
+
+→ **Workflow Management**: [Admin Profile Completion](../../features/consultant-profile-completion.md)
+← **Data Source**: [LinkedIn Profile Data](../../integrations/linkedin.md#profile-extraction)
+⚡ **Dependencies**: [voltAIc Profile Generation](../../integrations/ai-profile-generation.md), [Manual Profile Review](./admin.md#profile-review-tools)
+
+### Consultant Profile Completion Management
+
+![Profile Completion Workflow](../../../diagrams/spec_v2/features/consultant_profile_completion.png)
+
+**Admin Profile Completion Dashboard**:
+This interface manages the completion of consultant profiles after the simplified LinkedIn-first signup process.
+
+```tsx
+interface ProfileCompletionManagement {
+  pendingProfiles: {
+    consultantId: string;
+    linkedinData: LinkedInProfileData;
+    completionStatus: {
+      basicInfo: 'completed' | 'pending' | 'needs_review';
+      professionalInfo: 'completed' | 'pending' | 'needs_review';
+      kycStatus: 'not_started' | 'in_progress' | 'completed';
+      paymentSetup: 'not_started' | 'in_progress' | 'completed';
+      profileGeneration: 'not_started' | 'in_progress' | 'completed';
+    };
+    assignedAdmin?: string;
+    priorityLevel: 'high' | 'medium' | 'low';
+    completionDeadline?: Date;
+  }[];
+  
+  bulkOperations: {
+    generateProfiles: (consultantIds: string[]) => Promise<void>;
+    initiateKYC: (consultantIds: string[]) => Promise<void>;
+    assignToAdmin: (consultantIds: string[], adminId: string) => Promise<void>;
+    markForReview: (consultantIds: string[]) => Promise<void>;
+  };
+  
+  automationRules: {
+    autoGenerateProfiles: boolean;
+    autoInitiateKYC: boolean;
+    qualityThresholds: ProfileQualityThresholds;
+    reviewRequirements: ReviewRequirement[];
+  };
+}
+```
+
+**Profile Completion Features**:
+- **Completion Status Dashboard**: Visual overview of all consultant profile completion stages
+- **Admin Task Assignment**: Assign specific consultants to admin team members for completion
+- **Automated Profile Generation**: Trigger voltAIc profile generation for multiple consultants
+- **KYC Initiation Queue**: Start KYC processes for consultants ready for payment setup
+- **Bulk Operations**: Mass operations for profile completion tasks
+- **Quality Control**: Review and approve AI-generated profiles before publication
+- **Progress Tracking**: Timeline and milestone tracking for each consultant's completion
+- **Notification System**: Alerts for completion deadlines and quality issues
+
+## 6. voltAIc Profile Generation Tab (`/admin/consultants/voltaic-profiles`)
+
+→ **AI Integration**: [voltAIc Profile Generation Service](../../integrations/voltaic-profile-generation.md)
+← **Data Source**: [LinkedIn Extracted Data](../../integrations/linkedin.md#data-extraction)
+⚡ **Dependencies**: [AI Content Generation](../../backend/api.md#ai-services), [Profile Quality Control](./admin.md#quality-assurance)
+
+### Automated voltAIc Profile Creation
+
+![voltAIc Profile Generation](../../../diagrams/spec_v2/features/voltaic_profile_generation.png)
+
+**voltAIc Profile Generation Interface**:
+This specialized interface manages the automated creation of voltAIc consultant profiles using LinkedIn data extraction and AI-powered content generation.
+
+```tsx
+interface VoltaicProfileGeneration {
+  generationQueue: {
+    consultantId: string;
+    linkedinData: LinkedInProfileData;
+    generationStatus: 'queued' | 'processing' | 'completed' | 'failed' | 'review_required';
+    generatedContent: {
+      biography: PortableTextContent;
+      specializations: string[];
+      expertise: ExpertiseArea[];
+      workExperience: WorkExperience[];
+      qualityScore: number;
+    };
+    reviewNotes?: string;
+    approvalStatus: 'pending' | 'approved' | 'needs_revision' | 'rejected';
+  }[];
+  
+  generationSettings: {
+    contentLength: 'concise' | 'detailed' | 'comprehensive';
+    toneOfVoice: 'professional' | 'approachable' | 'authoritative';
+    focusAreas: string[];
+    includePersonality: boolean;
+    brandAlignment: 'magnetiq' | 'consultant' | 'balanced';
+  };
+  
+  qualityControls: {
+    minimumQualityScore: number;
+    factCheckingEnabled: boolean;
+    plagiarismCheck: boolean;
+    brandConsistency: boolean;
+    grammarValidation: boolean;
+  };
+}
+```
+
+**voltAIc Profile Generation Features**:
+- **Batch Profile Generation**: Process multiple LinkedIn profiles into voltAIc profiles simultaneously
+- **AI Content Optimization**: Generate compelling biographies and specialization descriptions
+- **Quality Assurance Pipeline**: Automated quality scoring and manual review workflows
+- **Brand Alignment Tools**: Ensure generated profiles match voltAIc brand voice and standards
+- **Content Versioning**: A/B test different profile versions for performance optimization
+- **Approval Workflow**: Multi-stage review process for generated content
+- **LinkedIn Data Integration**: Seamless import of LinkedIn profile data for enhancement
+- **Profile Performance Tracking**: Monitor engagement and conversion rates of generated profiles
+
+## 7. Performance Analytics Tab (`/admin/consultants/analytics`)
 
 → **Analytics Integration**: [Analytics Dashboard](../../features/analytics.md#consultant-metrics)
-⚡ **Data Sources**: [Booking Database](../../backend/database.md#consultant-bookings), [Payment Data](../../integrations/payment-processing.md#analytics)
+⚡ **Data Sources**: [Payment Data](../../integrations/payment-processing.md#analytics)
+→ **Booking Data Sources**: [Booking Management Analytics](./business/booking-management.md#data-sources)
 
 ### Consultant Performance Dashboard
 
@@ -553,9 +676,7 @@ interface ConsultantAnalytics {
   performanceMetrics: {
     totalRevenue: MoneyAmount;
     revenueGrowth: PercentageChange;
-    bookingsCount: number;
-    bookingsGrowth: PercentageChange;
-    averageBookingValue: MoneyAmount;
+    // Booking metrics managed in [Booking Management](./business/booking-management.md#consultant-booking-metrics)
     conversionRate: number;
     clientSatisfaction: {
       averageRating: number;
@@ -583,8 +704,7 @@ interface ConsultantAnalytics {
       median: number;
       percentile90: number;
     };
-    availabilityRate: number; // Percentage of time available
-    utilizationRate: number; // Booked time vs. available time
+    // Availability and utilization metrics in [Booking Management](./business/booking-management.md#consultant-utilization-metrics)
     repeatClientRate: number;
     cancellationRate: number;
   };
@@ -595,28 +715,34 @@ interface ConsultantAnalytics {
     blogPostEngagement: number;
     linkedinConnections: number;
     profileViews: number;
-    inquiryToBookingConversion: number;
+    // Booking conversion metrics in [Booking Management](./business/booking-management.md#conversion-metrics)
   };
 }
 ```
 
 **Analytics Dashboard Components**:
 - **Revenue Chart**: Monthly/quarterly revenue trends with projections
-- **Booking Analytics**: Booking patterns, peak times, seasonal trends
+- → **Booking Analytics**: [Complete booking analytics](./business/booking-management.md#booking-patterns-analysis)
 - **Client Satisfaction Matrix**: Rating distribution, review analysis, NPS trends
 - **Performance Comparison**: Consultant rankings and peer comparisons
 - **Geographic Analysis**: Client distribution, regional performance
 - **Content Performance**: Associated content engagement and conversion impact
 
 **Advanced Analytics Features**:
-- **Predictive Analytics**: Revenue forecasting, booking predictions
+- **Predictive Analytics**: Revenue forecasting
+  - → **Booking Predictions**: [Booking demand forecasting](./business/booking-management.md#predictive-booking-analytics)
 - **Cohort Analysis**: Client retention and lifetime value analysis
-- **Attribution Modeling**: Track which content/activities drive bookings
+- **Attribution Modeling**: Track which content/activities drive leads
+  - → **Booking Attribution**: [Booking attribution modeling](./business/booking-management.md#booking-attribution-analysis)
 - **A/B Testing Results**: Profile optimization experiment results
 - **Benchmarking**: Industry and internal performance comparisons
 - **Custom Reports**: Configurable analytics dashboards per consultant
 
 ## Advanced Interface Components
+
+### Enhanced Consultant Management Tables
+
+The following table components have been enhanced to support the simplified signup and admin-managed completion workflow:
 
 ### Table Components for Consultant Listings
 
@@ -631,19 +757,18 @@ interface ConsultantTableComponent {
       status: boolean;
     };
     performance: {
-      totalBookings: boolean;
+      // Booking metrics in [Booking Management](./business/booking-management.md#consultant-table-columns)
       revenue: boolean;
       conversionRate: boolean;
       responseTime: boolean;
     };
-    availability: {
-      currentStatus: boolean;
-      nextAvailable: boolean;
-      timezone: boolean;
-    };
+    // Availability columns in [Booking Management](./business/booking-management.md#availability-table-columns)
     administrative: {
+      signupStatus: boolean; // LinkedIn signup completion
+      profileCompletionStatus: boolean; // Admin-managed completion
       kycStatus: boolean;
       paymentSetup: boolean;
+      assignedAdmin: boolean; // Admin responsible for completion
       lastActivity: boolean;
       createdDate: boolean;
     };
@@ -665,7 +790,7 @@ interface ConsultantTableComponent {
     messageConsultant: boolean;
     toggleStatus: boolean;
     initiateKYC: boolean;
-    scheduleInterview: boolean;
+    // Booking-related actions in [Booking Management](./business/booking-management.md#consultant-booking-actions)
   };
 }
 ```
@@ -686,12 +811,7 @@ interface ConsultantFormComponents {
     certificationUploader: FileUploadComponent;
     experienceEditor: DynamicFormComponent;
   };
-  availabilityForm: {
-    scheduleBuilder: ScheduleEditorComponent;
-    timezoneSelector: TimezoneComponent;
-    holidayManager: DateRangeComponent;
-    bookingSettings: BookingRulesComponent;
-  };
+  // Availability forms managed in [Booking Management](./business/booking-management.md#availability-form-components)
   paymentForm: {
     kycWizard: StepperComponent;
     paymentMethodManager: PaymentMethodComponent;
@@ -758,8 +878,8 @@ interface LinkedInIntegrationComponents {
 ← [Data Retention Policies](../../privacy-compliance.md#data-retention)
 
 ### Feature Integration Cross-References
-↔️ [Booking System Integration](../public/features/book-a-meeting.md#consultant-selection)
-↔️ [Webinar Management Integration](../public/features/webinars.md#consultant-assignment)
+↔️ [Booking System Integration](./business/booking-management.md#consultant-integration)
+↔️ [Webinar Management Integration](./business/webinar-management.md#consultant-assignment)
 ↔️ [Whitepaper System Integration](../public/features/whitepapers.md#author-management)
 ↔️ [Content Marketing Integration](../../features/content-marketing.md#consultant-content)
 

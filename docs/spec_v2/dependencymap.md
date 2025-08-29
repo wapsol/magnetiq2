@@ -266,7 +266,7 @@ No critical cyclical dependencies detected in the Whitepaper system.
 - **API Endpoints** → `/backend/api.md`
   - `POST /api/v1/payments/create-intent` - Payment intent creation
   - `POST /api/v1/payments/webhook` - Stripe webhook handling
-  - `POST /api/v1/payments/consultants/{id}/onboard` - Consultant onboarding
+  - `POST /api/v1/payments/consultants/{id}/setup` - Admin-managed consultant payment setup
   - `GET /api/v1/payments/consultants/{id}/earnings` - Earnings retrieval
   - `POST /api/v1/payments/refunds` - Refund processing
 
@@ -709,7 +709,7 @@ class DependencyValidator:
   - Displays engagement and conversion data
   - Provides content optimization recommendations
 
-- **Payment Management System** → `/frontend/adminpanel/payment-management.md`
+- **Payment Management System** → `/frontend/adminpanel/business/payment-management.md`
   - Financial analytics and revenue tracking
   - Consultant payout analytics
   - Payment method performance analysis
@@ -736,7 +736,7 @@ class DependencyValidator:
 | `/frontend/adminpanel/admin.md` | Dashboard integration documented | ✅ | Main admin panel integration |
 | `/frontend/adminpanel/consultant-management.md` | Consultant analytics integration | ✅ | Performance metrics integration |
 | `/frontend/adminpanel/content-management.md` | Content analytics integration | ✅ | Content performance tracking |
-| `/frontend/adminpanel/payment-management.md` | Financial analytics integration | ✅ | Revenue and payment analytics |
+| `/frontend/adminpanel/business/payment-management.md` | Financial analytics integration | ✅ | Revenue and payment analytics |
 | `/integrations/google-analytics.md` | External analytics integration | ✅ | Website analytics integration |
 | `/integrations/social-analytics.md` | Social media analytics | ✅ | Social engagement tracking |
 | `/security.md` | Analytics security requirements | ✅ | Data access controls and privacy |

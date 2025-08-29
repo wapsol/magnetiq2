@@ -173,113 +173,23 @@ interface MediaLibraryInterface {
 → **Asset Storage**: [File Storage Integration](../integrations/file-storage.md)
 ⚡ **Performance**: [CDN and Optimization](../architecture.md#cdn-configuration)
 
-### 3. Webinar Management with Consultant Assignment
+### 3. Webinar Content Management
 
-![Webinar Management Flow](../../diagrams/spec_v2/features/webinar_management_flow.png)
+→ **Complete Webinar Management**: [Webinar Management Specification](./business/webinar-management.md) (~500+ lines)
+- **Session Creation & Scheduling**: Complete webinar session management with consultant assignment
+- **Content Creation Tools**: PortableText editing for descriptions, agendas, and marketing materials  
+- **Consultant Assignment**: AI-powered speaker matching and performance tracking
+- **Registration Management**: Registration tracking, attendee communication, and analytics
+- **Marketing Integration**: Social media campaigns, email automation, and landing page creation
 
-#### Enhanced Webinar Interface
-```tsx
-interface WebinarManagementInterface {
-  sessionManagement: {
-    sessionCreation: {
-      basicInfo: WebinarBasicInfoForm;
-      contentEditor: PortableTextEditor; // Rich descriptions and agendas
-      consultantAssignment: ConsultantAssignmentInterface;
-      schedulingTools: WebinarSchedulingInterface;
-    };
-    consultantIntegration: {
-      speakerSelection: {
-        availabilityChecker: ConsultantAvailabilityChecker;
-        expertiseMatching: ExpertiseMatchingEngine;
-        performanceHistory: ConsultantPerformanceHistory;
-        compensationCalculator: CompensationCalculatorInterface;
-      };
-      assignmentWorkflow: {
-        invitationSystem: ConsultantInvitationSystem;
-        confirmationTracking: ConfirmationTrackingInterface;
-        preparationManagement: PreparationManagementInterface;
-        requirementsTracking: RequirementsTrackingInterface;
-      };
-    };
-  };
-  
-  contentCreation: {
-    webinarContent: {
-      description: PortableTextEditor;
-      agenda: PortableTextEditor;
-      objectives: PortableTextEditor;
-      prerequisites: PortableTextEditor;
-      speakerBios: Record<string, PortableTextEditor>; // Per consultant bio
-    };
-    marketingMaterials: {
-      promotionalContent: PortableTextEditor;
-      socialMediaPosts: SocialMediaContentGenerator;
-      emailCampaigns: EmailCampaignIntegration;
-      landingPageContent: LandingPageBuilder;
-    };
-  };
-}
-```
+### 4. Whitepaper Content Management
 
-**Consultant Assignment Features:**
-- **Smart Matching**: AI-powered consultant recommendation based on webinar topics
-- **Availability Integration**: Real-time consultant calendar checking
-- **Performance Analytics**: Historical webinar performance by consultant
-- **Compensation Management**: Dynamic pricing and payment tracking
-- **Collaboration Tools**: Preparation coordination and requirement tracking
-
-→ **Full Webinar System**: [Webinar Features](../features/webinar-system.md)
-↔️ **Consultant Management**: [Consultant Assignment](./admin.md#consultant-webinar-integration)
-
-### 4. Whitepaper Management with Consultant Authorship
-
-![Whitepaper Authorship Flow](../../diagrams/spec_v2/features/whitepaper_authorship_flow.png)
-
-#### Enhanced Whitepaper Interface
-```tsx
-interface WhitepaperManagementInterface {
-  authorshipManagement: {
-    authorAssignment: {
-      consultantSelection: ConsultantSelectionInterface;
-      roleDefinition: AuthorshipRoleInterface;
-      contributionTracking: ContributionTrackingInterface;
-      royaltyManagement: RoyaltyManagementInterface;
-    };
-    collaborationTools: {
-      coAuthorWorkflow: CollaborationWorkflowInterface;
-      reviewProcess: PeerReviewInterface;
-      versionControl: ContentVersionControl;
-      approvalWorkflow: ApprovalWorkflowInterface;
-    };
-  };
-  
-  contentCreation: {
-    whitepaperContent: {
-      title: MultilingualInputInterface;
-      abstract: PortableTextEditor;
-      content: PortableTextEditor; // Full whitepaper content
-      appendices: PortableTextEditor;
-      authorBios: Record<string, PortableTextEditor>;
-    };
-    performanceTracking: {
-      downloadAnalytics: DownloadAnalyticsInterface;
-      leadGeneration: LeadGenerationTracker;
-      consultantAttribution: PerformanceAttributionInterface;
-      revenueTracking: RevenueAttributionInterface;
-    };
-  };
-}
-```
-
-**Authorship Management Features:**
-- **Multi-Author Support**: Handle complex authorship with multiple consultants
-- **Contribution Tracking**: Monitor individual consultant contributions and time investment
-- **Performance Attribution**: Track downloads and conversions per author
-- **Royalty Calculation**: Automatic royalty distribution based on contribution
-- **Content Quality Control**: Author-based review and approval workflows
-
-→ **Full Whitepaper System**: [Whitepaper Features](../features/whitepaper-system.md)
-↔️ **Author Management**: [Consultant Authorship](./admin.md#whitepaper-consultant-integration)
+→ **Complete Whitepaper Management**: [Whitepaper Management Specification](./business/whitepapers-manager.md) (~300+ lines)
+- **Consultant Authorship**: Multi-author support with contribution tracking and performance attribution
+- **Collaborative Content Creation**: PortableText editing with real-time collaboration and version control  
+- **Royalty Management**: Automatic royalty calculation and revenue tracking per author
+- **Performance Analytics**: Download analytics, lead generation tracking, and consultant attribution
+- **Editorial Workflows**: Multi-stage review processes with author-specific approval requirements
 
 ### 5. SEO Settings and Optimization Tools
 
@@ -543,8 +453,8 @@ interface ContentAnalyticsInterface {
 ⚡ **Security**: [Content Security Policies](../security.md#content-security)
 
 **Feature Integrations:**
-↔️ **Webinar System**: [Webinar Content Management](../features/webinar-system.md#content-creation)
-↔️ **Whitepaper System**: [Whitepaper Content Management](../features/whitepaper-system.md#content-creation)
+↔️ **Webinar System**: [Webinar Management](./business/webinar-management.md#content-creation)
+↔️ **Whitepaper System**: [Whitepaper Management](./business/whitepapers-manager.md#content-creation)
 ↔️ **Consultant Profiles**: [Consultant Content Integration](./admin.md#consultant-content-management)
 ↔️ **SEO Platform**: [SEO Optimization Features](../features/seo-optimization.md)
 

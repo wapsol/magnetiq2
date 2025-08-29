@@ -374,6 +374,242 @@ GET    /api/v1/admin/payments/reconciliation         # Payment reconciliation da
 GET    /api/v1/admin/payments/tax-reports            # Tax reporting data
 ```
 
+### Coupon Management
+
+#### Public Coupon Validation
+```
+POST   /api/v1/public/coupons/validate               # Validate coupon code for booking
+POST   /api/v1/public/coupons/apply                  # Apply coupon to booking (creates coupon_usage record)
+GET    /api/v1/public/coupons/{code}/info           # Get public coupon information (if valid)
+```
+
+**Request/Response Examples:**
+
+```typescript
+// POST /api/v1/public/coupons/validate
+interface CouponValidationRequest {
+  coupon_code: string;
+  user_email: string;
+  service_type: 'book_a_meeting' | '30_for_30';
+  consultant_id?: number;
+  original_amount_usd: number;
+}
+
+interface CouponValidationResponse {
+  valid: boolean;
+  coupon?: {
+    code: string;
+    discount_type: 'percentage' | 'fixed_amount' | 'free_session';
+    discount_value: number;
+    discount_amount_usd: number;
+    final_amount_usd: number;
+    description?: string;
+  };
+  errors?: string[];
+  user_eligibility: {
+    is_first_time_user: boolean;
+    previous_coupon_usage: number;
+    eligible: boolean;
+  };
+}
+
+// POST /api/v1/public/coupons/apply
+interface CouponApplicationRequest {
+  coupon_code: string;
+  user_email: string;
+  consultant_booking_id: number;
+  user_session_id?: string;
+  referrer_url?: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+}
+
+interface CouponApplicationResponse {
+  success: boolean;
+  coupon_usage_id?: number;
+  discount_applied_usd: number;
+  final_amount_usd: number;
+  message: string;
+  errors?: string[];
+}
+```
+
+#### Admin Coupon Management
+```
+GET    /api/v1/admin/coupons                         # List all coupons with filtering
+POST   /api/v1/admin/coupons                         # Create new coupon
+GET    /api/v1/admin/coupons/{id}                    # Get coupon details
+PUT    /api/v1/admin/coupons/{id}                    # Update coupon
+DELETE /api/v1/admin/coupons/{id}                    # Soft delete coupon
+POST   /api/v1/admin/coupons/{id}/activate           # Activate coupon
+POST   /api/v1/admin/coupons/{id}/deactivate         # Deactivate coupon
+POST   /api/v1/admin/coupons/bulk                    # Bulk create coupons
+
+# Coupon Usage Analytics
+GET    /api/v1/admin/coupons/{id}/usage              # Coupon usage history
+GET    /api/v1/admin/coupons/{id}/analytics          # Detailed coupon performance
+GET    /api/v1/admin/coupons/analytics/summary       # System-wide coupon analytics
+GET    /api/v1/admin/coupons/usage                   # All coupon usage records
+GET    /api/v1/admin/coupons/fraud-detection         # Suspicious coupon usage
+
+# Campaign Management
+GET    /api/v1/admin/coupons/campaigns               # List coupon campaigns
+POST   /api/v1/admin/coupons/campaigns               # Create coupon campaign
+GET    /api/v1/admin/coupons/campaigns/{id}/performance # Campaign performance metrics
+```
+
+**Admin Request/Response Examples:**
+
+```typescript
+// POST /api/v1/admin/coupons
+interface CreateCouponRequest {
+  code: string; // Must be unique and URL-safe
+  internal_name: string;
+  description?: {
+    en: string;
+    de?: string;
+  };
+  discount_type: 'percentage' | 'fixed_amount' | 'free_session';
+  discount_value: number;
+  max_discount_amount?: number;
+  minimum_order_value?: number;
+  max_uses_total?: number;
+  max_uses_per_user?: number;
+  valid_from: string; // ISO datetime
+  valid_until?: string; // ISO datetime
+  applicable_to: 'all' | 'book_a_meeting' | '30_for_30' | 'specific_consultants' | 'first_time_users';
+  consultant_restrictions?: number[]; // Array of consultant IDs
+  service_type_restrictions?: string[]; // Array of session types
+  campaign_source?: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  notes?: string;
+}
+
+interface CouponResponse {
+  id: number;
+  code: string;
+  internal_name: string;
+  description?: object;
+  discount_type: string;
+  discount_value: number;
+  max_discount_amount?: number;
+  minimum_order_value: number;
+  max_uses_total?: number;
+  max_uses_per_user: number;
+  current_usage_count: number;
+  valid_from: string;
+  valid_until?: string;
+  is_active: boolean;
+  applicable_to: string;
+  consultant_restrictions?: number[];
+  service_type_restrictions?: string[];
+  campaign_source?: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  generated_revenue_usd: number;
+  conversion_rate: number;
+  created_by: {
+    id: number;
+    email: string;
+    name: string;
+  };
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+  deactivated_at?: string;
+}
+
+// GET /api/v1/admin/coupons/{id}/analytics
+interface CouponAnalyticsResponse {
+  coupon: CouponResponse;
+  usage_statistics: {
+    total_attempts: number;
+    successful_uses: number;
+    failed_attempts: number;
+    success_rate_percent: number;
+    unique_users: number;
+    repeat_users: number;
+  };
+  financial_impact: {
+    total_discounts_given: number;
+    revenue_generated: number;
+    average_discount_per_use: number;
+    estimated_revenue_without_coupon: number;
+  };
+  conversion_metrics: {
+    bookings_completed: number;
+    sessions_attended: number;
+    attendance_rate_percent: number;
+    conversion_to_paid_customer: number;
+  };
+  usage_timeline: Array<{
+    date: string;
+    attempts: number;
+    successful_uses: number;
+    revenue_generated: number;
+  }>;
+  fraud_analysis: {
+    suspicious_usage_count: number;
+    flagged_users: string[];
+    risk_score_average: number;
+  };
+}
+
+// GET /api/v1/admin/coupons/analytics/summary
+interface SystemCouponAnalytics {
+  overview: {
+    total_coupons: number;
+    active_coupons: number;
+    expired_coupons: number;
+    total_usage_attempts: number;
+    successful_redemptions: number;
+    overall_success_rate: number;
+  };
+  financial_summary: {
+    total_discounts_given: number;
+    revenue_generated_from_coupons: number;
+    average_discount_per_coupon: number;
+    estimated_revenue_impact: number;
+  };
+  top_performing_coupons: Array<{
+    coupon_code: string;
+    usage_count: number;
+    revenue_generated: number;
+    success_rate: number;
+  }>;
+  recent_activity: Array<{
+    date: string;
+    coupon_attempts: number;
+    successful_redemptions: number;
+    new_coupons_created: number;
+  }>;
+  fraud_detection_summary: {
+    flagged_attempts: number;
+    blocked_users: number;
+    risk_score_average: number;
+  };
+}
+```
+
+#### Coupon Security & Fraud Prevention
+```
+POST   /api/v1/admin/coupons/fraud/flag-user         # Flag user for suspicious activity
+GET    /api/v1/admin/coupons/fraud/reports           # Generate fraud analysis reports
+POST   /api/v1/admin/coupons/fraud/whitelist         # Whitelist user from fraud detection
+DELETE /api/v1/admin/coupons/fraud/whitelist/{user_id} # Remove user from whitelist
+
+# Rate Limiting & Security
+GET    /api/v1/admin/coupons/security/rate-limits    # Current rate limiting status
+POST   /api/v1/admin/coupons/security/reset-user     # Reset rate limits for user
+GET    /api/v1/admin/coupons/security/blocked-ips    # List blocked IP addresses
+POST   /api/v1/admin/coupons/security/block-ip       # Block IP address
+DELETE /api/v1/admin/coupons/security/block-ip/{ip}  # Unblock IP address
+```
+
 ### Analytics & Statistics
 
 #### Consultant Analytics

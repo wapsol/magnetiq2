@@ -10,7 +10,9 @@ The Admin Panel is a comprehensive dashboard for managing all aspects of the Mag
 
 This specification serves as the architectural overview and entry point to specialized admin panel features:
 - [Consultant Management](./consultant-management.md) - Consultant profiles, LinkedIn scraping, payments, and performance analytics
-- [Payment Management](./payment-management.md) - Financial transactions, payouts, KYC processing, and billing
+- [Booking Management](./business/booking-management.md) - Meeting scheduling, calendar integration, availability management, and booking workflows
+- [Webinar Management](./business/webinar-management.md) - Session creation, consultant assignment, registration management, and webinar analytics
+- [Payment Management](./business/payment-management.md) - Financial transactions, payouts, KYC processing, and billing
 - [Content Management](./content-management.md) - PortableText editing, multilingual content, and media library
 - [Analytics Dashboard](./analytics-dashboard.md) - Performance metrics, reporting, and business intelligence
 
@@ -136,11 +138,16 @@ Business Management
 ├── Consultants Management → [Consultant Management](./consultant-management.md)
 │   ├── Consultant Profiles → [Consultant Management](./consultant-management.md#profile-management)
 │   ├── Scraping Jobs → [Consultant Management](./consultant-management.md#linkedin-scraping)
-│   ├── Payments & Payouts → [Payment Management](./payment-management.md#consultant-payouts)
+│   ├── Payments & Payouts → [Payment Management](./business/payment-management.md#consultant-payouts)
 │   └── Performance Analytics → [Analytics Dashboard](./analytics-dashboard.md#consultant-analytics)
-├── Webinars → [Content Management](./content-management.md#webinar-management)
-├── Whitepapers → [Content Management](./content-management.md#whitepaper-management)
-└── Bookings → [Consultant Management](./consultant-management.md#booking-integration)
+├── Webinars → [Webinar Management](./business/webinar-management.md)
+├── Whitepapers → [Whitepaper Management](./business/whitepapers-manager.md)
+├── Coupons & Discounts → [Coupon Management](./business/coupon-management.md)
+│   ├── Coupon Creation → [Coupon Management](./business/coupon-management.md#coupon-creation--editing)
+│   ├── Usage Analytics → [Coupon Management](./business/coupon-management.md#analytics-dashboard)
+│   ├── Fraud Prevention → [Coupon Management](./business/coupon-management.md#security--fraud-prevention)
+│   └── Campaign Management → [Coupon Management](./business/coupon-management.md#bulk-operations--campaign-management)
+└── Bookings → [Booking Management](./business/booking-management.md)
 
 Communication Services → [Content Management](./content-management.md#communication-services)
 ├── Email Campaigns → [Content Management](./content-management.md#email-campaigns)
@@ -148,22 +155,22 @@ Communication Services → [Content Management](./content-management.md#communic
 ├── Twitter Management → [Content Management](./content-management.md#social-media)
 └── Analytics & Engagement → [Analytics Dashboard](./analytics-dashboard.md#engagement-metrics)
 
-Financial Management → [Payment Management](./payment-management.md)
-├── Transactions → [Payment Management](./payment-management.md#transaction-management)
-├── Consultant Payouts → [Payment Management](./payment-management.md#payout-management)
-├── KYC Processing → [Payment Management](./payment-management.md#kyc-management)
+Financial Management → [Payment Management](./business/payment-management.md)
+├── Transactions → [Payment Management](./business/payment-management.md#transaction-management)
+├── Consultant Payouts → [Payment Management](./business/payment-management.md#payout-management)
+├── KYC Processing → [Payment Management](./business/payment-management.md#kyc-management)
 └── Financial Reports → [Analytics Dashboard](./analytics-dashboard.md#financial-analytics)
 
 User Management
-├── Admin Users → [User Management](./user-management.md#admin-users)
-├── User Roles → [User Management](./user-management.md#role-management)
+├── Admin Users → [Authentication](./authentication.md#admin-users)
+├── User Roles → [Authentication](./authentication.md#role-management)
 ├── Activity Logs → [Analytics Dashboard](./analytics-dashboard.md#audit-logs)
-└── Sessions → [User Management](./user-management.md#session-management)
+└── Sessions → [Authentication](./authentication.md#session-management)
 
-Integrations → [Integrations Management](./integrations-management.md)
-├── Payment Services → [Payment Management](./payment-management.md#integration-management)
+Integrations → [Integrations Overview](../../integrations/integrations.md)
+├── Payment Services → [Payment Management](./business/payment-management.md#integration-management)
 ├── Social Media APIs → [Consultant Management](./consultant-management.md#social-integrations)
-└── External Services → [Integrations Management](./integrations-management.md#external-services)
+└── External Services → [Integrations Overview](../../integrations/integrations.md#external-services)
 
 System Settings
 ├── General Settings → [System Settings](./system-settings.md#general-configuration)
@@ -191,7 +198,7 @@ The main dashboard provides a high-level overview of system performance and quic
 
 → **Comprehensive Analytics**: [Analytics Dashboard](./analytics-dashboard.md) - Complete performance metrics, reporting, and business intelligence
 → **System Monitoring**: [Analytics Dashboard](./analytics-dashboard.md#system-health) - Real-time system health and performance monitoring
-→ **Financial Overview**: [Payment Management](./payment-management.md#dashboard-overview) - Revenue, payouts, and financial metrics
+→ **Financial Overview**: [Payment Management](./business/payment-management.md#dashboard-overview) - Revenue, payouts, and financial metrics
 
 ### Quick Access Dashboard
 - **System Status**: Overall health indicators and alerts
@@ -230,10 +237,15 @@ The admin panel provides specialized management interfaces for different aspects
 → **Consultant Operations**: [Consultant Management Specification](./consultant-management.md)
 - **Consultant Profiles**: Complete profile management with AI-enhanced features
 - **LinkedIn Integration**: Automated scraping and profile enhancement
-- **Booking System**: Appointment scheduling and consultant matching
 - **Performance Analytics**: Individual and comparative performance metrics
 
-→ **Financial Operations**: [Payment Management Specification](./payment-management.md)  
+→ **Booking Operations**: [Booking Management Specification](./business/booking-management.md)
+- **Meeting Scheduling**: Advanced calendar integration and appointment booking
+- **Availability Management**: Consultant schedule coordination and optimization
+- **Service Configuration**: Dynamic service catalog and pricing management
+- **Booking Analytics**: Performance tracking and revenue optimization
+
+→ **Financial Operations**: [Payment Management Specification](./business/payment-management.md)  
 - **Payment Processing**: Transaction management and automated workflows
 - **KYC Management**: Compliance processing and document verification
 - **Payout Systems**: Automated consultant compensation and scheduling
@@ -251,7 +263,7 @@ The admin panel provides specialized management interfaces for different aspects
 The admin panel provides comprehensive user management capabilities for different user types and access levels.
 
 ### Admin User Management
-→ **Complete User Management**: [User Management Specification](./user-management.md)
+→ **Complete User Management**: [Authentication Specification](./authentication.md)
 - **Admin Users**: Create, edit, and manage administrative accounts
 - **Role Assignment**: Configure roles and permissions for different admin levels
 - **Access Control**: Manage feature access and data visibility permissions
@@ -299,7 +311,7 @@ interface AdminUser {
 
 The admin panel provides unified management of external service integrations and system connections.
 
-→ **Integration Details**: [Integrations Management Specification](./integrations-management.md)
+→ **Integration Details**: [Integrations Overview](../../integrations/integrations.md)
 - **Service Connections**: Manage API credentials and connection status
 - **Integration Monitoring**: Real-time integration health and error tracking  
 - **Configuration Management**: Service-specific settings and field mapping
@@ -418,11 +430,13 @@ VITE_ENABLE_AUDIT_LOGS=true
 ### Specialized Admin Panel Specifications
 ← **Feature-Specific Specifications**:
 - [Consultant Management](./consultant-management.md) - Complete consultant operations management
-- [Payment Management](./payment-management.md) - Financial processing and KYC workflows
+- [Booking Management](./business/booking-management.md) - Meeting scheduling, calendar integration, and booking workflows
+- [Webinar Management](./business/webinar-management.md) - Session creation, consultant assignment, and webinar analytics
+- [Payment Management](./business/payment-management.md) - Financial processing and KYC workflows
 - [Content Management](./content-management.md) - PortableText editing and multilingual content
 - [Analytics Dashboard](./analytics-dashboard.md) - Performance metrics and business intelligence
-- [User Management](./user-management.md) - Admin user and role management
-- [Integrations Management](./integrations-management.md) - External service integration management
+- [Authentication](./authentication.md) - Admin user and role management
+- [Integrations Overview](../../integrations/integrations.md) - External service integration management
 
 ### System Architecture Dependencies
 → **Core System Dependencies**:

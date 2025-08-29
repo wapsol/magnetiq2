@@ -382,7 +382,7 @@ interface ConversionFunnelAnalytics {
 
 ### Payment and Revenue Analytics
 
-→ **Payment System**: [Payment Management](./payment-management.md#analytics-integration)
+→ **Payment System**: [Payment Management](./business/payment-management.md#analytics-integration)
 ← **Financial Data**: [Financial Analytics API](../../backend/api.md#financial-analytics)
 
 #### Financial Reporting Dashboard
@@ -870,7 +870,7 @@ interface ExternalAnalyticsIntegration {
 
 ### Payment System Metrics and Revenue Tracking
 
-→ **Payment Integration**: [Payment Analytics](./payment-management.md#analytics-integration)
+→ **Payment Integration**: [Payment Analytics](./business/payment-management.md#analytics-integration)
 ← **Financial Reporting**: [Financial Analytics API](../../backend/api.md#financial-analytics)
 
 #### Payment Analytics Integration
@@ -1134,7 +1134,7 @@ interface AnalyticsPrivacyCompliance {
 → [Admin Panel Main](./admin.md#analytics-overview)
 → [Consultant Management](./consultant-management.md#analytics-integration)
 → [Content Management](./content-management.md#analytics-integration)
-→ [Payment Management](./payment-management.md#analytics-integration)
+→ [Payment Management](./business/payment-management.md#analytics-integration)
 → [Authentication System](./authentication.md#analytics-access)
 
 **Backend API Cross-References**:

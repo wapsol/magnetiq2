@@ -5,7 +5,7 @@
 The Magnetiq v2 payment processing integration provides comprehensive financial transaction management for the 30-for-30 consultation service, supporting customer payments, consultant payouts, and platform fee collection. This specification defines the implementation of Stripe Connect integration with automated payment escrow, KYC compliance, and multi-currency support.
 
 → **Business Model**: [30-for-30 Consultation Service](../frontend/public/features/book-a-meeting.md#pricing-model)  
-← **Supports**: [Business Revenue Goals](../business/revenue-model.md), [Consultant Onboarding](../users/knowhow-bearer.md#onboarding)  
+← **Supports**: [Business Revenue Goals](../business/revenue-model.md), [Admin-Managed Consultant Setup](../users/knowhow-bearer.md#simplified-onboarding), [Admin Payment Configuration](../frontend/adminpanel/consultant-management.md#admin-managed-kyc-payments)  
 ⚡ **Core Dependencies**: [Security Framework](../security.md#payment-security), [Database Schema](../backend/database.md#payment-tables), [API Endpoints](../backend/api.md#payment-api)
 
 ## Visual Payment Flow Overview
