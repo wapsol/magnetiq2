@@ -1337,25 +1337,25 @@ DELETE FROM admin_users WHERE deleted_at < datetime('now', '-30 days');
 ### Backup Strategy
 ```bash
 # Simple file-based backup
-cp magnetiq.db magnetiq_backup_$(date +%Y%m%d_%H%M%S).db
+cp data/magnetiq.db data/backups/magnetiq_backup_$(date +%Y%m%d_%H%M%S).db
 
 # Backup with SQLite dump
-sqlite3 magnetiq.db .dump > magnetiq_backup_$(date +%Y%m%d_%H%M%S).sql
+sqlite3 data/magnetiq.db .dump > data/backups/magnetiq_backup_$(date +%Y%m%d_%H%M%S).sql
 
 # Compressed backup
-sqlite3 magnetiq.db .dump | gzip > magnetiq_backup_$(date +%Y%m%d_%H%M%S).sql.gz
+sqlite3 data/magnetiq.db .dump | gzip > data/backups/magnetiq_backup_$(date +%Y%m%d_%H%M%S).sql.gz
 ```
 
 ### Recovery Procedures
 ```bash
 # Restore from file backup
-cp magnetiq_backup_20240101_120000.db magnetiq.db
+cp data/backups/magnetiq_backup_20240101_120000.db data/magnetiq.db
 
 # Restore from SQL dump
-sqlite3 magnetiq_restored.db < magnetiq_backup_20240101_120000.sql
+sqlite3 data/magnetiq_restored.db < data/backups/magnetiq_backup_20240101_120000.sql
 
 # Verify database integrity
-sqlite3 magnetiq.db "PRAGMA integrity_check;"
+sqlite3 data/magnetiq.db "PRAGMA integrity_check;"
 ```
 
 ## PortableText Implementation
@@ -1684,7 +1684,7 @@ from datetime import datetime
 
 def initialize_database():
     """Initialize the SQLite database with schema and default data"""
-    db_path = "magnetiq.db"
+    db_path = "data/magnetiq.db"
     
     if os.path.exists(db_path):
         print(f"Database {db_path} already exists")
@@ -1752,7 +1752,7 @@ from datetime import datetime
 
 def export_data_for_v3():
     """Export SQLite data in format compatible with PostgreSQL v3"""
-    conn = sqlite3.connect("magnetiq.db")
+    conn = sqlite3.connect("data/magnetiq.db")
     conn.row_factory = sqlite3.Row
     
     # Export users

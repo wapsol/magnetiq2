@@ -17,7 +17,16 @@ class Settings(BaseSettings):
     port: int = 3036
     
     # Database
-    database_url: str = "sqlite+aiosqlite:///./magnetiq.db"
+    database_url: str = "sqlite+aiosqlite:////Users/ashant/magnetiq2/data/magnetiq.db"
+    
+    # Data Storage Paths
+    data_dir: str = "./data"
+    uploads_dir: str = "./data/uploads"
+    exports_dir: str = "./data/exports"
+    backups_dir: str = "./data/backups"
+    logs_dir: str = "./data/logs"
+    cache_dir: str = "./data/cache"
+    temp_dir: str = "./data/temp"
     
     # Security
     secret_key: str = "dev-secret-key-change-in-production"
@@ -41,7 +50,11 @@ class Settings(BaseSettings):
     # File Upload
     max_file_size: int = 10485760  # 10MB
     allowed_file_types: List[str] = ["jpg", "jpeg", "png", "gif", "pdf", "docx"]
-    upload_dir: str = "./media"
+    upload_dir: str = "./data/uploads"  # Updated to use data directory
+    
+    # Media Processing
+    media_cache_dir: str = "./data/cache/media"
+    temp_processing_dir: str = "./data/temp/processing"
     
     # External APIs (placeholders)
     linkedin_client_id: Optional[str] = None

@@ -1,0 +1,58 @@
+# Data Directory - Git Ignore Rules
+
+# User uploaded files (contain sensitive data)
+uploads/*
+!uploads/.gitkeep
+
+# Generated exports (may contain sensitive data)
+exports/*
+!exports/.gitkeep
+
+# Backups (contain sensitive database information)
+backups/*
+!backups/.gitkeep
+
+# Application logs (may contain sensitive information)
+logs/*
+!logs/.gitkeep
+
+# Cache files (temporary data)
+cache/*
+!cache/.gitkeep
+
+# Temporary files (processing workspace)
+temp/*
+!temp/.gitkeep
+
+# Database files (if stored in data directory)
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
+# Sensitive configuration files
+*.env
+*.key
+*.pem
+*.crt
+
+# Large files that should not be in git
+*.log
+*.zip
+*.tar
+*.tar.gz
+*.csv
+*.xlsx
+*.pdf
+*.mp4
+*.mov
+*.avi
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
