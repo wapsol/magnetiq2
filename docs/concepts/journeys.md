@@ -15,7 +15,7 @@
 - **"Join as Consultant"** (Consultant signup)
 - **"Register for Webinar"** (Webinar registration)
 - **"Download Whitepaper"** (Lead generation)
-- **"Subscribe"** (Newsletter/updates)
+- **"Get Updates"** (Announcements/Notifications/Insights)
 
 ## 🗺️ **Phase 1: Conversion Journey Mapping**
 
@@ -28,7 +28,7 @@
 
 ### **1.2 CTA Inventory & Classification**
 - **Primary CTAs**: Main conversion goals (Book Consultation, Join as Consultant)
-- **Secondary CTAs**: Supporting conversions (Download, Subscribe, Learn More)
+- **Secondary CTAs**: Supporting conversions (Download, Get Updates, Learn More)
 - **Micro-CTAs**: Small commitment steps (View Profile, Read More, Watch Video)
 - **CTA Placement Analysis**: Above fold, in content, sidebar, footer positioning
 
