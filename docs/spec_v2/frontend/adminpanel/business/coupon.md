@@ -6,7 +6,7 @@ The Coupon Management interface provides administrators with comprehensive tools
 
 → **Backend Integration**: [Coupon APIs](../../backend/api.md#coupon-management)
 ← **Database Schema**: [Coupon Tables](../../backend/database.md#coupon--discount-management)
-⚡ **Dependencies**: [Payment Processing](./payment-management.md), [Analytics Dashboard](./analytics-dashboard.md)
+⚡ **Dependencies**: [Payment Processing](./payment.md), [Analytics Dashboard](./analytics-dashboard.md)
 
 This specification covers:
 - **Coupon Creation & Management**: Creating and configuring promotional codes with advanced targeting
@@ -595,7 +595,7 @@ interface ResponsiveDesign {
 ### Cross-System Integration
 
 #### Payment System Integration
-→ **Payment Processing**: [Payment Management](./payment-management.md#coupon-integration)
+→ **Payment Processing**: [Payment Management](./payment.md#coupon-integration)
 - **Free Session Handling**: Process $0.00 transactions properly
 - **Discount Application**: Modify payment amounts before processing
 - **Revenue Attribution**: Track coupon-driven vs. organic revenue
@@ -682,7 +682,7 @@ interface MarketingIntegration {
 
 ### Business Operations Integration  
 ↔️ **Business Process Integration**:
-- [Payment Management](./payment-management.md) - Financial transaction processing with coupon discounts
+- [Payment Management](./payment.md) - Financial transaction processing with coupon discounts
 - [Consultant Management](./consultant-management.md) - Consultant-specific coupon targeting and revenue impact
 - [Content Management](./content-management.md) - Promotional content and coupon distribution channels
 

@@ -286,7 +286,7 @@ interface AdvancedWhitepaperAnalytics {
 
 **Feature Integrations:**
 ↔️ **Consultant Management**: [Consultant System Integration](../consultant-management.md#whitepaper-integration)
-↔️ **Payment Management**: [Royalty and Payout Integration](./payment-management.md#whitepaper-royalties)
+↔️ **Payment Management**: [Royalty and Payout Integration](./payment.md#whitepaper-royalties)
 ↔️ **Analytics Dashboard**: [Whitepaper Analytics](../analytics-dashboard.md#whitepaper-metrics)
 ↔️ **Content Management**: [PortableText Integration](../content-management.md#portabletext-blocks)
 

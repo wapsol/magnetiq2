@@ -12,7 +12,7 @@ The Webinar Management Admin Panel provides comprehensive tools for creating, sc
 → **Public Webinar System**: [Webinar Features](../public/features/webinars.md) (~1,684 lines)
 → **Consultant Integration**: [Consultant Management](./consultant-management.md#webinar-integration)
 → **Analytics Dashboard**: [Analytics Dashboard](./analytics-dashboard.md#webinar-analytics)
-→ **Payment Integration**: [Payment Management](./payment-management.md#webinar-revenue)
+→ **Payment Integration**: [Payment Management](./payment.md#webinar-revenue)
 → **Content Tools**: [Content Management](./content-management.md#portable-text-editor)
 
 ## Visual System Overview
@@ -236,7 +236,7 @@ interface SessionCreationWizard {
 
 → **Consultant Profiles**: [Consultant Management](./consultant-management.md#profile-management)
 ← **Performance Data**: [Analytics Dashboard](./analytics-dashboard.md#consultant-performance)
-⚡ **Dependencies**: [Calendar Integration](../../integrations/calendar.md), [Payment System](./payment-management.md#consultant-payouts)
+⚡ **Dependencies**: [Calendar Integration](../../integrations/calendar.md), [Payment System](./payment.md#consultant-payouts)
 
 ### Speaker Selection and Management
 
@@ -433,7 +433,7 @@ interface WebinarMarketingCampaign {
 
 → **Registration System**: [Public Webinar Features](../public/features/webinars.md#registration-modal)
 ← **Analytics Data**: [Analytics Dashboard](./analytics-dashboard.md#registration-analytics)
-⚡ **Dependencies**: [Email System](../../integrations/email.md), [Payment Processing](./payment-management.md#webinar-payments)
+⚡ **Dependencies**: [Email System](../../integrations/email.md), [Payment Processing](./payment.md#webinar-payments)
 
 ### Registration Dashboard
 
@@ -751,7 +751,7 @@ interface WebinarProgramSettings {
 ↔️ [Public Webinar System](../public/features/webinars.md) - Complete public-facing webinar features
 ↔️ [Consultant Management](./consultant-management.md#webinar-integration) - Speaker assignment and performance
 ↔️ [Content Management](./content-management.md#portable-text-editor) - PortableText content creation
-↔️ [Payment Management](./payment-management.md#webinar-revenue) - Financial transactions and consultant payouts
+↔️ [Payment Management](./payment.md#webinar-revenue) - Financial transactions and consultant payouts
 ↔️ [Analytics Dashboard](./analytics-dashboard.md#webinar-analytics) - Performance metrics and reporting
 
 ### User Experience Cross-References

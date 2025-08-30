@@ -100,10 +100,10 @@ interface ConsultantProfile {
     scraperNotes?: string;
   };
   
-  // Availability & Booking → [Booking Management](./business/booking-management.md#consultant-availability)
+  // Availability & Booking → [Booking Management](./business/book-a-meeting.md#consultant-availability)
   availability: {
     // Consultant availability configuration
-    // → Complete booking settings in [Booking Management](./business/booking-management.md#availability-management)
+    // → Complete booking settings in [Booking Management](./business/book-a-meeting.md#availability-management)
     basicAvailability: ConsultantBasicAvailability;
   };
   
@@ -124,7 +124,7 @@ interface ConsultantProfile {
   // Content Associations ↔ [Content Management](../features/content-management.md)
   contentAssociations: {
     authoredWhitepapers: string[]; // → [Whitepaper System](../public/features/whitepapers.md)
-    webinarSessions: string[]; // → [Webinar Management](./business/webinar-management.md)
+    webinarSessions: string[]; // → [Webinar Management](./business/webinar.md)
     blogPosts: string[];
     caseStudies: string[];
   };
@@ -132,7 +132,7 @@ interface ConsultantProfile {
   // Performance Analytics ← [Analytics System](../../features/analytics.md)
   analytics: {
     // Basic performance metrics
-    // → Complete booking analytics in [Booking Management](./business/booking-management.md#consultant-analytics)
+    // → Complete booking analytics in [Booking Management](./business/book-a-meeting.md#consultant-analytics)
     performanceOverview: ConsultantPerformanceOverview;
     totalRatings: number;
     responseTime: number; // Average response time in minutes
@@ -195,25 +195,25 @@ interface LinkedInProfileData {
 - **Quick Actions**: Edit profile, view details, toggle status, initiate scraping
 - **Bulk Operations**: Mass status updates, export selected, bulk email
 - **Smart Filtering**: By status, expertise, earnings, verification level
-  - → Availability filtering in [Booking Management](./business/booking-management.md#availability-filtering)
+  - → Availability filtering in [Booking Management](./business/book-a-meeting.md#availability-filtering)
 - **Search**: Full-text search across name, expertise, bio, and skills
 
 **Card View Features**:
 - **Profile Cards**: Photo, name, title, rating, and key metrics
 - **Hover Actions**: Quick preview, edit, message, view analytics
 - **Status Overlays**: Online status, new inquiry indicators
-  - → Booking availability in [Booking Management](./business/booking-management.md#consultant-availability-status)
+  - → Booking availability in [Booking Management](./business/book-a-meeting.md#consultant-availability-status)
 - **Performance Metrics**: Revenue, rating display
-  - → Booking count metrics in [Booking Management](./business/booking-management.md#consultant-booking-metrics)
+  - → Booking count metrics in [Booking Management](./business/book-a-meeting.md#consultant-booking-metrics)
 
 **Profile Detail View**:
 - **Tabbed Interface**: Personal Info, Professional Info, LinkedIn Data, Payment Info, Analytics
 - **Live LinkedIn Preview**: Side-by-side comparison with scraped data
 - **Content Association Manager**: Link/unlink whitepapers, webinars, blog posts
 - **Analytics Dashboard**: Performance charts, revenue trends
-  - → Booking history and analytics in [Booking Management](./business/booking-management.md#booking-analytics)
+  - → Booking history and analytics in [Booking Management](./business/book-a-meeting.md#booking-analytics)
 - **Communication Log**: Message history, admin notes
-  - → Booking inquiries and communication in [Booking Management](./business/booking-management.md#booking-communication)
+  - → Booking inquiries and communication in [Booking Management](./business/book-a-meeting.md#booking-communication)
 
 ## 2. LinkedIn Scraping Tab (`/admin/consultants/scraping`)
 
@@ -664,7 +664,7 @@ interface VoltaicProfileGeneration {
 
 → **Analytics Integration**: [Analytics Dashboard](../../features/analytics.md#consultant-metrics)
 ⚡ **Data Sources**: [Payment Data](../../integrations/payment-processing.md#analytics)
-→ **Booking Data Sources**: [Booking Management Analytics](./business/booking-management.md#data-sources)
+→ **Booking Data Sources**: [Booking Management Analytics](./business/book-a-meeting.md#data-sources)
 
 ### Consultant Performance Dashboard
 
@@ -676,7 +676,7 @@ interface ConsultantAnalytics {
   performanceMetrics: {
     totalRevenue: MoneyAmount;
     revenueGrowth: PercentageChange;
-    // Booking metrics managed in [Booking Management](./business/booking-management.md#consultant-booking-metrics)
+    // Booking metrics managed in [Booking Management](./business/book-a-meeting.md#consultant-booking-metrics)
     conversionRate: number;
     clientSatisfaction: {
       averageRating: number;
@@ -704,7 +704,7 @@ interface ConsultantAnalytics {
       median: number;
       percentile90: number;
     };
-    // Availability and utilization metrics in [Booking Management](./business/booking-management.md#consultant-utilization-metrics)
+    // Availability and utilization metrics in [Booking Management](./business/book-a-meeting.md#consultant-utilization-metrics)
     repeatClientRate: number;
     cancellationRate: number;
   };
@@ -715,14 +715,14 @@ interface ConsultantAnalytics {
     blogPostEngagement: number;
     linkedinConnections: number;
     profileViews: number;
-    // Booking conversion metrics in [Booking Management](./business/booking-management.md#conversion-metrics)
+    // Booking conversion metrics in [Booking Management](./business/book-a-meeting.md#conversion-metrics)
   };
 }
 ```
 
 **Analytics Dashboard Components**:
 - **Revenue Chart**: Monthly/quarterly revenue trends with projections
-- → **Booking Analytics**: [Complete booking analytics](./business/booking-management.md#booking-patterns-analysis)
+- → **Booking Analytics**: [Complete booking analytics](./business/book-a-meeting.md#booking-patterns-analysis)
 - **Client Satisfaction Matrix**: Rating distribution, review analysis, NPS trends
 - **Performance Comparison**: Consultant rankings and peer comparisons
 - **Geographic Analysis**: Client distribution, regional performance
@@ -730,10 +730,10 @@ interface ConsultantAnalytics {
 
 **Advanced Analytics Features**:
 - **Predictive Analytics**: Revenue forecasting
-  - → **Booking Predictions**: [Booking demand forecasting](./business/booking-management.md#predictive-booking-analytics)
+  - → **Booking Predictions**: [Booking demand forecasting](./business/book-a-meeting.md#predictive-booking-analytics)
 - **Cohort Analysis**: Client retention and lifetime value analysis
 - **Attribution Modeling**: Track which content/activities drive leads
-  - → **Booking Attribution**: [Booking attribution modeling](./business/booking-management.md#booking-attribution-analysis)
+  - → **Booking Attribution**: [Booking attribution modeling](./business/book-a-meeting.md#booking-attribution-analysis)
 - **A/B Testing Results**: Profile optimization experiment results
 - **Benchmarking**: Industry and internal performance comparisons
 - **Custom Reports**: Configurable analytics dashboards per consultant
@@ -757,12 +757,12 @@ interface ConsultantTableComponent {
       status: boolean;
     };
     performance: {
-      // Booking metrics in [Booking Management](./business/booking-management.md#consultant-table-columns)
+      // Booking metrics in [Booking Management](./business/book-a-meeting.md#consultant-table-columns)
       revenue: boolean;
       conversionRate: boolean;
       responseTime: boolean;
     };
-    // Availability columns in [Booking Management](./business/booking-management.md#availability-table-columns)
+    // Availability columns in [Booking Management](./business/book-a-meeting.md#availability-table-columns)
     administrative: {
       signupStatus: boolean; // LinkedIn signup completion
       profileCompletionStatus: boolean; // Admin-managed completion
@@ -790,7 +790,7 @@ interface ConsultantTableComponent {
     messageConsultant: boolean;
     toggleStatus: boolean;
     initiateKYC: boolean;
-    // Booking-related actions in [Booking Management](./business/booking-management.md#consultant-booking-actions)
+    // Booking-related actions in [Booking Management](./business/book-a-meeting.md#consultant-booking-actions)
   };
 }
 ```
@@ -811,7 +811,7 @@ interface ConsultantFormComponents {
     certificationUploader: FileUploadComponent;
     experienceEditor: DynamicFormComponent;
   };
-  // Availability forms managed in [Booking Management](./business/booking-management.md#availability-form-components)
+  // Availability forms managed in [Booking Management](./business/book-a-meeting.md#availability-form-components)
   paymentForm: {
     kycWizard: StepperComponent;
     paymentMethodManager: PaymentMethodComponent;
@@ -878,8 +878,8 @@ interface LinkedInIntegrationComponents {
 ← [Data Retention Policies](../../privacy-compliance.md#data-retention)
 
 ### Feature Integration Cross-References
-↔️ [Booking System Integration](./business/booking-management.md#consultant-integration)
-↔️ [Webinar Management Integration](./business/webinar-management.md#consultant-assignment)
+↔️ [Booking System Integration](./business/book-a-meeting.md#consultant-integration)
+↔️ [Webinar Management Integration](./business/webinar.md#consultant-assignment)
 ↔️ [Whitepaper System Integration](../public/features/whitepapers.md#author-management)
 ↔️ [Content Marketing Integration](../../features/content-marketing.md#consultant-content)
 

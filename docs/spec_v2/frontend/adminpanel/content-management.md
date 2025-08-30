@@ -175,7 +175,7 @@ interface MediaLibraryInterface {
 
 ### 3. Webinar Content Management
 
-→ **Complete Webinar Management**: [Webinar Management Specification](./business/webinar-management.md) (~500+ lines)
+→ **Complete Webinar Management**: [Webinar Management Specification](./business/webinar.md) (~500+ lines)
 - **Session Creation & Scheduling**: Complete webinar session management with consultant assignment
 - **Content Creation Tools**: PortableText editing for descriptions, agendas, and marketing materials  
 - **Consultant Assignment**: AI-powered speaker matching and performance tracking
@@ -184,7 +184,7 @@ interface MediaLibraryInterface {
 
 ### 4. Whitepaper Content Management
 
-→ **Complete Whitepaper Management**: [Whitepaper Management Specification](./business/whitepapers-manager.md) (~300+ lines)
+→ **Complete Whitepaper Management**: [Whitepaper Management Specification](./business/whitepapers.md) (~300+ lines)
 - **Consultant Authorship**: Multi-author support with contribution tracking and performance attribution
 - **Collaborative Content Creation**: PortableText editing with real-time collaboration and version control  
 - **Royalty Management**: Automatic royalty calculation and revenue tracking per author
@@ -453,8 +453,8 @@ interface ContentAnalyticsInterface {
 ⚡ **Security**: [Content Security Policies](../security.md#content-security)
 
 **Feature Integrations:**
-↔️ **Webinar System**: [Webinar Management](./business/webinar-management.md#content-creation)
-↔️ **Whitepaper System**: [Whitepaper Management](./business/whitepapers-manager.md#content-creation)
+↔️ **Webinar System**: [Webinar Management](./business/webinar.md#content-creation)
+↔️ **Whitepaper System**: [Whitepaper Management](./business/whitepapers.md#content-creation)
 ↔️ **Consultant Profiles**: [Consultant Content Integration](./admin.md#consultant-content-management)
 ↔️ **SEO Platform**: [SEO Optimization Features](../features/seo-optimization.md)
 

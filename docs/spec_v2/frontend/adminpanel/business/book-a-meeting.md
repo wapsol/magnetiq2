@@ -105,7 +105,7 @@ interface AdminBookingManagement {
     specialRequirements: string[];
   };
   
-  // Payment & Financial Tracking → [Payment Management](./payment-management.md#booking-payments)
+  // Payment & Financial Tracking → [Payment Management](./payment.md#booking-payments)
   financialTracking: {
     paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded' | 'disputed';
     totalAmount: number;
@@ -443,7 +443,7 @@ interface ServiceConfigurationManagement {
     serviceLifecycleManagement: ServiceLifecycleManagement;
   };
   
-  // Pricing & Revenue Configuration → [Payment Management](./payment-management.md#service-pricing)
+  // Pricing & Revenue Configuration → [Payment Management](./payment.md#service-pricing)
   pricingConfiguration: {
     basePricingRules: BasePricingRule[];
     dynamicPricingFactors: DynamicPricingFactor[];
@@ -551,7 +551,7 @@ interface BookingAnalyticsEngine {
     reschedulingPatterns: ReschedulingPatternMetric[];
   };
   
-  // Revenue Analytics → [Payment Management](./payment-management.md#revenue-analytics)
+  // Revenue Analytics → [Payment Management](./payment.md#revenue-analytics)
   revenueAnalytics: {
     totalRevenue: RevenueMetric[];
     revenuePerService: ServiceRevenueBreakdown[];
@@ -758,7 +758,7 @@ interface BookingManagementForms {
 ### Feature Integration Cross-References
 ↔️ [Book-a-Meeting Public Feature](../../public/features/book-a-meeting.md) - Public booking interface integration
 ↔️ [Consultant Management](../consultant-management.md) - Consultant profile and availability management
-↔️ [Payment Management](./payment-management.md) - Financial processing and payout workflows
+↔️ [Payment Management](./payment.md) - Financial processing and payout workflows
 ↔️ [Analytics Dashboard](../analytics-dashboard.md) - Performance metrics and business intelligence
 ↔️ [Email Campaign Management](../../../integrations/smtp-brevo.md) - Automated communication workflows
 
