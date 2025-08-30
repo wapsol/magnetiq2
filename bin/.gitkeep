@@ -1,0 +1,2 @@
+# This file ensures the bin directory is tracked by Git
+# All executable scripts should be stored in this directory
