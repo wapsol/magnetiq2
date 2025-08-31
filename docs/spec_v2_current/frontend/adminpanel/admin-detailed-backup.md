@@ -166,9 +166,14 @@ Integrations → [Integrations Overview](../../integrations/integrations.md)
 └── External Services → [Integrations Overview](../../integrations/integrations.md#external-services)
 
 System Settings
-├── General Settings → [System Settings](./system-settings.md#general-configuration)
+├── Contact Information → [System Settings](./system-settings.md#contact-information-management)
+├── General Configuration → [System Settings](./system-settings.md#general-configuration)
+├── Site Configuration → [System Settings](./system-settings.md#site-configuration)
+├── Email Configuration → [System Settings](./system-settings.md#email-configuration)
+├── Security Settings → [System Settings](./system-settings.md#security-settings)
+├── Backup & Recovery → [System Settings](./system-settings.md#backup-recovery)
+├── System Maintenance → [System Settings](./system-settings.md#system-maintenance)
 ├── Multilingual → [Content Management](./content-management.md#multilingual-settings)
-├── Backup & Recovery → [System Settings](./system-settings.md#backup-management)
 └── Logs → [Analytics Dashboard](./analytics-dashboard.md#system-logs)
 ```
 

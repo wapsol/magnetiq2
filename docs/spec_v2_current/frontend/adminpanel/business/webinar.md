@@ -629,7 +629,7 @@ interface WebinarAnalyticsDashboard {
 
 ## 7. Program Settings (`/admin/webinars/settings`)
 
-→ **System Configuration**: [System Settings](./system-settings.md#webinar-configuration)
+→ **System Configuration**: [System Settings](../system-settings.md#webinar-configuration)
 ← **Integration Settings**: [Integrations Management](./integrations-management.md#webinar-integrations)
 ⚡ **Dependencies**: [Email Templates](../../integrations/email.md#templates), [Platform Integrations](../../integrations/video-platforms.md)
 

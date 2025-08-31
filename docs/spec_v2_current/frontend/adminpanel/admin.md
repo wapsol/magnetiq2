@@ -17,6 +17,7 @@ This specification serves as the architectural overview and entry point to speci
 - [Integration Management](./integration-management.md) - External service integrations, configurations, monitoring, and troubleshooting
 - [Content Management](./content-management.md) - PortableText editing, multilingual content, and media library
 - [Analytics Dashboard](./analytics-dashboard.md) - Performance metrics, reporting, and business intelligence
+- [System Settings](./system-settings.md) - Contact management, general configuration, security, backup, and system maintenance
 
 ## Technical Foundation
 
@@ -179,9 +180,14 @@ Integrations → [Integration Management](./integration-management.md)
 └── Health Monitoring → [Integration Management](./integration-management.md#integration-health-monitoring)
 
 System Settings
-├── General Settings → [System Settings](./system-settings.md#general-configuration)
+├── Contact Information → [System Settings](./system-settings.md#contact-information-management)
+├── General Configuration → [System Settings](./system-settings.md#general-configuration)
+├── Site Configuration → [System Settings](./system-settings.md#site-configuration)
+├── Email Configuration → [System Settings](./system-settings.md#email-configuration)
+├── Security Settings → [System Settings](./system-settings.md#security-settings)
+├── Backup & Recovery → [System Settings](./system-settings.md#backup-recovery)
+├── System Maintenance → [System Settings](./system-settings.md#system-maintenance)
 ├── Multilingual → [Content Management](./content-management.md#multilingual-settings)
-├── Backup & Recovery → [System Settings](./system-settings.md#backup-management)
 └── Logs → [Analytics Dashboard](./analytics-dashboard.md#system-logs)
 ```
 
@@ -449,6 +455,7 @@ VITE_ENABLE_AUDIT_LOGS=true
 - [Integration Management](./integration-management.md) - External service integrations, configurations, and monitoring
 - [Content Management](./content-management.md) - PortableText editing and multilingual content
 - [Analytics Dashboard](./analytics-dashboard.md) - Performance metrics and business intelligence
+- [System Settings](./system-settings.md) - Contact management, system configuration, and maintenance
 - [Authentication](./authentication.md) - Admin user and role management
 
 ### System Architecture Dependencies

@@ -169,10 +169,6 @@ This sitemap defines the complete URL structure and navigation hierarchy for the
 ### 👥 About Section
 ```
 /about/ → /de/ueber-uns/
-├── /about/story/ → /de/ueber-uns/geschichte/
-├── /about/team/ → /de/ueber-uns/team/
-│   └── [Dynamic Pages] /about/team/[member-slug]/ → /de/ueber-uns/team/[member-slug]/
-├── /about/mission/ → /de/ueber-uns/mission/
 ├── /about/careers/ → /de/ueber-uns/karriere/
 │   ├── /about/careers/culture/ → /de/ueber-uns/karriere/kultur/
 │   ├── /about/careers/benefits/ → /de/ueber-uns/karriere/vorteile/
@@ -182,23 +178,14 @@ This sitemap defines the complete URL structure and navigation hierarchy for the
     └── [Dynamic Pages] /about/news/[news-slug]/ → /de/ueber-uns/presse/[news-slug]/
 ```
 
-**Company Story** (`/about/story/`)
-- Company founding and evolution
-- Key milestones and achievements
-- Vision and future direction
+**About Page** (`/about/`)
+- Combined company story, team, and mission in single comprehensive page
+- Company founding, evolution, and key milestones
+- Leadership team profiles and expertise areas
+- Mission statement, core values, and principles
+- Commitment to AI ethics and sustainability
 - Awards and recognitions
-
-**Team** (`/about/team/`)
-- Leadership team profiles
-- Consultant expertise areas
-- Professional backgrounds
-- Contact information and booking links
-
-**Mission & Values** (`/about/mission/`)
-- Company mission statement
-- Core values and principles
-- Commitment to AI ethics
-- Sustainability initiatives
+- Call-to-action for consultation booking
 
 **Careers** (`/about/careers/`)
 - Company culture and values
@@ -416,7 +403,7 @@ const routes = [
 ```typescript
 interface NavItem {
   label: TranslatedText;
-  href: string;
+  href?: string;
   children?: NavItem[];
   icon?: string;
   description?: TranslatedText;
@@ -425,13 +412,44 @@ interface NavItem {
 const primaryNavigation: NavItem[] = [
   {
     label: { en: "Services", de: "Dienstleistungen" },
-    href: "/services/",
     children: [
       { label: { en: "AI Consulting", de: "KI-Beratung" }, href: "/services/ai-consulting/" },
-      // ... other service items
+      { label: { en: "Digital Transformation", de: "Digitale Transformation" }, href: "/services/digital-transformation/" },
+      { label: { en: "Automation", de: "Automatisierung" }, href: "/services/automation/" },
+      { label: { en: "Development", de: "Entwicklung" }, href: "/services/development/" }
     ]
   },
-  // ... other primary nav items
+  {
+    label: { en: "Solutions", de: "Lösungen" },
+    children: [
+      { label: { en: "Industries", de: "Branchen" }, href: "/solutions/industries/" },
+      { label: { en: "Technology", de: "Technologie" }, href: "/solutions/technology/" },
+      { label: { en: "Case Studies", de: "Fallstudien" }, href: "/solutions/case-studies/" }
+    ]
+  },
+  {
+    label: { en: "Resources", de: "Ressourcen" },
+    children: [
+      { label: { en: "Webinars", de: "Webinare" }, href: "/resources/webinars/" },
+      { label: { en: "Whitepapers", de: "Whitepapers" }, href: "/resources/whitepapers/" },
+      { label: { en: "Blog", de: "Blog" }, href: "/resources/blog/" },
+      { label: { en: "Tools", de: "Tools" }, href: "/resources/tools/" }
+    ]
+  }
+];
+
+// About page moved to footer navigation
+const footerNavigation: NavItem[] = [
+  {
+    label: { en: "Company", de: "Unternehmen" },
+    children: [
+      { label: { en: "About", de: "Über uns" }, href: "/about/" },
+      { label: { en: "Careers", de: "Karriere" }, href: "/about/careers/" },
+      { label: { en: "Partners", de: "Partner" }, href: "/about/partners/" },
+      { label: { en: "News", de: "Presse" }, href: "/about/news/" },
+      { label: { en: "Contact", de: "Kontakt" }, href: "/contact/" }
+    ]
+  }
 ];
 ```
 
@@ -467,8 +485,9 @@ const primaryNavigation: NavItem[] = [
 ### Key Performance Pages
 - Service landing pages (conversion rate optimization)
 - Resource detail pages (engagement metrics)
-- About team pages (trust building metrics)
+- Combined About page (trust building metrics)
 - Contact booking flow (abandonment analysis)
+- Homepage hero and CTA performance
 
 ## Content Management Integration
 

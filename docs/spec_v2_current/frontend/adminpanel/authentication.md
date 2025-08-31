@@ -646,6 +646,6 @@ This Admin Panel Authentication feature has dependencies on and relationships wi
 - **Admin User Management**: `/frontend/adminpanel/user_management.md` - Admin user administration
 - **Admin Content Management**: `/frontend/adminpanel/content_management.md` - Content administration
 - **Admin Business Management**: `/frontend/adminpanel/business_management.md` - Business administration
-- **Admin System Settings**: `/frontend/adminpanel/system_settings.md` - System configuration
+- **Admin System Settings**: `/frontend/adminpanel/system-settings.md` - System configuration
 - **Admin Audit Logging**: `/backend/audit_logging.md` - Comprehensive admin activity tracking
 - **Admin Monitoring**: `/monitoring/admin_monitoring.md` - Admin-specific monitoring and alerting
