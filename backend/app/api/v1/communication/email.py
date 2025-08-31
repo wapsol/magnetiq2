@@ -23,7 +23,7 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/email", tags=["Email"])
+router = APIRouter(tags=["Email"])
 
 
 @router.post("/send", response_model=EmailResponse)
