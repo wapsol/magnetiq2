@@ -11,6 +11,7 @@ from app.database import init_db, close_db
 from app.api.v1.auth.auth import router as auth_router
 from app.api.v1.content.pages import router as pages_router
 from app.api.v1.business.webinars import router as webinars_router
+from app.api.v1.communication.email import router as email_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -23,6 +24,9 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Magnetiq v2 backend...")
     await init_db()
     logger.info("Database initialized")
+    
+    # Validate configuration
+    settings.validate_configuration()
     
     yield
     
@@ -181,6 +185,12 @@ app.include_router(
     webinars_router,
     prefix="/api/v1/business/webinars",
     tags=["Business - Webinars"]
+)
+
+app.include_router(
+    email_router,
+    prefix="/api/v1/communication/email",
+    tags=["Communication - Email"]
 )
 
 

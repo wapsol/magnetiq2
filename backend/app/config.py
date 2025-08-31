@@ -1,6 +1,9 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List, Optional
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
@@ -39,13 +42,19 @@ class Settings(BaseSettings):
     allowed_methods: List[str] = ["GET", "POST", "PUT", "PATCH", "DELETE"]
     allowed_headers: List[str] = ["*"]
     
-    # Email Settings
-    smtp_host: str = "localhost"
+    # SMTP Email Settings (Brevo Configuration)
+    smtp_host: str = "smtp-relay.brevo.com"
     smtp_port: int = 587
-    smtp_user: str = ""
-    smtp_password: str = ""
-    smtp_from_email: str = "noreply@magnetiq.local"
-    smtp_from_name: str = "Magnetiq System"
+    smtp_username: Optional[str] = None
+    smtp_password: Optional[str] = None
+    smtp_from_email: str = "noreply@voltaic.systems"
+    smtp_from_name: str = "voltAIc Systems"
+    smtp_use_tls: bool = False  # Direct TLS connection (port 465)
+    smtp_use_starttls: bool = True  # STARTTLS (port 587)
+    
+    # Business Email Settings
+    business_email_crm: str = "hello@voltaic.systems"
+    business_email_support: str = "support@voltaic.systems"
     
     # File Upload
     max_file_size: int = 10485760  # 10MB
@@ -63,6 +72,31 @@ class Settings(BaseSettings):
     twitter_api_secret: Optional[str] = None
     twitter_access_token: Optional[str] = None
     twitter_access_secret: Optional[str] = None
+
+    def is_smtp_configured(self) -> bool:
+        """Check if SMTP email is properly configured"""
+        return bool(
+            self.smtp_username and 
+            self.smtp_password and 
+            self.smtp_host and 
+            self.smtp_from_email
+        )
+    
+    def validate_configuration(self):
+        """Validate configuration and log warnings for missing services"""
+        if not self.is_smtp_configured():
+            logger.warning("SMTP email not configured - email notifications will be disabled")  
+            logger.info("To enable email: Set SMTP_USERNAME and SMTP_PASSWORD")
+        else:
+            logger.info(f"SMTP configured: {self.smtp_host}:{self.smtp_port} (user: {self.smtp_username})")
+            
+            # Provide helpful configuration tips for common providers
+            if "brevo.com" in self.smtp_host or "sendinblue.com" in self.smtp_host:
+                if self.smtp_port != 587:
+                    logger.warning(f"Brevo SMTP typically uses port 587, you have: {self.smtp_port}")
+            elif "gmail.com" in self.smtp_host:
+                if self.smtp_port not in [587, 465]:
+                    logger.warning(f"Gmail SMTP typically uses port 587 or 465, you have: {self.smtp_port}")
 
 
 settings = Settings()
