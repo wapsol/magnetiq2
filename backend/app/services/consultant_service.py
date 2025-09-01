@@ -1,9 +1,11 @@
 from typing import Optional, Dict, Any, List
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import and_, or_, func, desc, asc
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy import and_, or_, func, desc, asc, select
 from datetime import datetime, timedelta
 import uuid
 import asyncio
+import logging
 
 from ..models.consultant import (
     Consultant, ConsultantKYC, ConsultantProject, ConsultantReview,
@@ -12,20 +14,27 @@ from ..models.consultant import (
 )
 from .ai_profile_generation_service import AIProfileGenerationService
 
+logger = logging.getLogger(__name__)
+
 
 class ConsultantService:
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession):
         self.db = db
         self.ai_service = AIProfileGenerationService(db)
 
     async def get_consultant_by_id(self, consultant_id: str) -> Optional[Dict[str, Any]]:
         """Get consultant by ID with related data"""
         
-        consultant = self.db.query(Consultant).options(
-            joinedload(Consultant.kyc_documents),
-            joinedload(Consultant.projects),
-            joinedload(Consultant.reviews)
-        ).filter(Consultant.id == consultant_id).first()
+        result = await self.db.execute(
+            select(Consultant)
+            .options(
+                selectinload(Consultant.kyc_documents),
+                selectinload(Consultant.projects),
+                selectinload(Consultant.reviews)
+            )
+            .where(Consultant.id == consultant_id)
+        )
+        consultant = result.scalar_one_or_none()
         
         if not consultant:
             return None
@@ -35,9 +44,10 @@ class ConsultantService:
     async def get_consultant_by_linkedin_url(self, linkedin_url: str) -> Optional[Dict[str, Any]]:
         """Get consultant by LinkedIn URL"""
         
-        consultant = self.db.query(Consultant).filter(
-            Consultant.linkedin_url == linkedin_url
-        ).first()
+        result = await self.db.execute(
+            select(Consultant).where(Consultant.linkedin_url == linkedin_url)
+        )
+        consultant = result.scalar_one_or_none()
         
         if not consultant:
             return None
@@ -60,7 +70,8 @@ class ConsultantService:
     ) -> Dict[str, Any]:
         """Search consultants with filtering and pagination"""
         
-        query_obj = self.db.query(Consultant)
+        # Build base query
+        stmt = select(Consultant)
         
         # Apply filters
         filters = []
@@ -95,20 +106,24 @@ class ConsultantService:
             filters.append(Consultant.availability_status == availability)
         
         if filters:
-            query_obj = query_obj.filter(and_(*filters))
+            stmt = stmt.where(and_(*filters))
         
         # Apply sorting
         sort_column = getattr(Consultant, sort_by, Consultant.created_at)
         if sort_order == 'asc':
-            query_obj = query_obj.order_by(asc(sort_column))
+            stmt = stmt.order_by(asc(sort_column))
         else:
-            query_obj = query_obj.order_by(desc(sort_column))
+            stmt = stmt.order_by(desc(sort_column))
         
         # Get total count
-        total_count = query_obj.count()
+        count_stmt = select(func.count()).select_from(stmt.subquery())
+        count_result = await self.db.execute(count_stmt)
+        total_count = count_result.scalar()
         
         # Apply pagination
-        consultants = query_obj.offset(offset).limit(limit).all()
+        stmt = stmt.offset(offset).limit(limit)
+        result = await self.db.execute(stmt)
+        consultants = result.scalars().all()
         
         # Format results
         consultant_data = []
@@ -132,9 +147,10 @@ class ConsultantService:
     ) -> Dict[str, Any]:
         """Update consultant information"""
         
-        consultant = self.db.query(Consultant).filter(
-            Consultant.id == consultant_id
-        ).first()
+        result = await self.db.execute(
+            select(Consultant).where(Consultant.id == consultant_id)
+        )
+        consultant = result.scalar_one_or_none()
         
         if not consultant:
             return {
@@ -158,7 +174,10 @@ class ConsultantService:
             
             consultant.updated_at = datetime.utcnow()
             
-            self.db.commit()
+            await self.db.commit()
+            await self.db.refresh(consultant)
+            
+            logger.info(f"Consultant {consultant_id} updated by {updated_by or 'system'}")
             
             return {
                 'success': True,
@@ -167,7 +186,8 @@ class ConsultantService:
             }
             
         except Exception as e:
-            self.db.rollback()
+            await self.db.rollback()
+            logger.error(f"Consultant update failed for {consultant_id}: {e}")
             return {
                 'success': False,
                 'error': f'Update failed: {str(e)}'
@@ -182,9 +202,10 @@ class ConsultantService:
     ) -> Dict[str, Any]:
         """Update consultant status with audit trail"""
         
-        consultant = self.db.query(Consultant).filter(
-            Consultant.id == consultant_id
-        ).first()
+        result = await self.db.execute(
+            select(Consultant).where(Consultant.id == consultant_id)
+        )
+        consultant = result.scalar_one_or_none()
         
         if not consultant:
             return {
@@ -200,9 +221,10 @@ class ConsultantService:
             if status == ConsultantStatus.ARCHIVED:
                 consultant.archived_at = datetime.utcnow()
             
-            # Log status change (could be expanded to include audit table)
+            # Log status change
+            logger.info(f"Consultant {consultant_id} status changed from {old_status} to {status} by {admin_user_id or 'system'}")
             
-            self.db.commit()
+            await self.db.commit()
             
             return {
                 'success': True,
@@ -212,7 +234,8 @@ class ConsultantService:
             }
             
         except Exception as e:
-            self.db.rollback()
+            await self.db.rollback()
+            logger.error(f"Status update failed for consultant {consultant_id}: {e}")
             return {
                 'success': False,
                 'error': f'Status update failed: {str(e)}'

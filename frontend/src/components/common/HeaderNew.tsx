@@ -46,6 +46,11 @@ const Header = () => {
           href: `${basePath}/${language === 'en' ? 'services/data-management' : 'dienstleistungen/datenmanagement'}`,
           description: language === 'en' ? 'Data strategy and governance' : 'Datenstrategie und Governance'
         },
+        { 
+          name: t('services.management_advisory'), 
+          href: `${basePath}/${language === 'en' ? 'services/management-advisory' : 'dienstleistungen/management-beratung'}`,
+          description: language === 'en' ? 'Strategic IT consulting and transformation' : 'Strategische IT-Beratung und Transformation'
+        },
       ]
     },
     {

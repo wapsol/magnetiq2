@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 from datetime import datetime, timedelta
 from pydantic import BaseModel
@@ -28,7 +28,7 @@ class DateRange(BaseModel):
 @router.get("/platform/overview")
 async def get_platform_overview(
     days: int = Query(30, description="Number of days to analyze"),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get platform-wide overview analytics"""
     
@@ -63,7 +63,7 @@ async def get_platform_overview(
 @router.get("/platform/performance")
 async def get_platform_performance(
     days: int = Query(30, description="Number of days to analyze"),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get platform performance metrics"""
     
@@ -105,7 +105,7 @@ async def get_platform_performance(
 @router.get("/platform/revenue")
 async def get_platform_revenue(
     days: int = Query(30, description="Number of days to analyze"),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get platform revenue analytics"""
     
@@ -146,7 +146,7 @@ async def get_platform_revenue(
 @router.get("/platform/top-performers")
 async def get_top_performers(
     limit: int = Query(10, le=50),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get top performing consultants"""
     
@@ -181,7 +181,7 @@ async def get_top_performers(
 async def get_consultant_overview(
     consultant_id: str,
     days: int = Query(30, description="Number of days to analyze"),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get consultant-specific overview analytics"""
     
@@ -216,7 +216,7 @@ async def get_consultant_overview(
 @router.get("/consultant/{consultant_id}/performance-report")
 async def get_consultant_performance_report(
     consultant_id: str,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get detailed performance report for a consultant"""
     
@@ -241,7 +241,7 @@ async def get_consultant_performance_report(
 @router.post("/custom-query")
 async def custom_analytics_query(
     request: AnalyticsRequest,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Run custom analytics query with flexible parameters"""
     
@@ -273,7 +273,7 @@ async def custom_analytics_query(
 # Real-time Statistics
 @router.get("/real-time/stats")
 async def get_realtime_stats(
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get real-time platform statistics"""
     
@@ -320,7 +320,7 @@ async def get_realtime_stats(
 async def export_platform_report(
     format: str = Query("json", pattern="^(json|csv)$"),
     days: int = Query(30, le=365),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Export platform analytics report"""
     

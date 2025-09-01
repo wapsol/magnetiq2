@@ -1,6 +1,6 @@
 from typing import Dict, Any, List, Optional
-from sqlalchemy.orm import Session
-from sqlalchemy import func, desc, asc, and_, extract
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import func, desc, asc, and_, extract, select
 from datetime import datetime, timedelta
 import logging
 
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class AnalyticsService:
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession):
         self.db = db
 
     async def get_consultant_analytics(
@@ -94,36 +94,52 @@ class AnalyticsService:
         """Get basic overview metrics"""
         
         # Total consultants
-        total_consultants = self.db.query(Consultant).filter(consultant_filter).count()
+        result = await self.db.execute(
+            select(func.count(Consultant.id)).where(consultant_filter)
+        )
+        total_consultants = result.scalar()
         
         # New consultants in period
-        new_consultants = self.db.query(Consultant).filter(
-            consultant_filter,
-            Consultant.created_at >= date_from,
-            Consultant.created_at <= date_to
-        ).count()
+        result = await self.db.execute(
+            select(func.count(Consultant.id)).where(
+                consultant_filter,
+                Consultant.created_at >= date_from,
+                Consultant.created_at <= date_to
+            )
+        )
+        new_consultants = result.scalar()
         
         # Active projects in period
-        active_projects = self.db.query(ConsultantProject).join(Consultant).filter(
-            consultant_filter,
-            ConsultantProject.status.in_([ProjectStatus.OPEN, ProjectStatus.IN_PROGRESS]),
-            ConsultantProject.created_at >= date_from
-        ).count()
+        result = await self.db.execute(
+            select(func.count(ConsultantProject.id))
+            .select_from(ConsultantProject.join(Consultant))
+            .where(
+                consultant_filter,
+                ConsultantProject.status.in_([ProjectStatus.OPEN, ProjectStatus.IN_PROGRESS]),
+                ConsultantProject.created_at >= date_from
+            )
+        )
+        active_projects = result.scalar()
         
         # Completed projects in period
-        completed_projects = self.db.query(ConsultantProject).join(Consultant).filter(
-            consultant_filter,
-            ConsultantProject.status == ProjectStatus.COMPLETED,
-            ConsultantProject.completed_at >= date_from,
-            ConsultantProject.completed_at <= date_to
-        ).count()
+        result = await self.db.execute(
+            select(func.count(ConsultantProject.id))
+            .select_from(ConsultantProject.join(Consultant))
+            .where(
+                consultant_filter,
+                ConsultantProject.status == ProjectStatus.COMPLETED,
+                ConsultantProject.completed_at >= date_from,
+                ConsultantProject.completed_at <= date_to
+            )
+        )
+        completed_projects = result.scalar()
         
         return {
-            'total_consultants': total_consultants,
-            'new_consultants': new_consultants,
-            'active_projects': active_projects,
-            'completed_projects': completed_projects,
-            'new_consultants_change': self._calculate_period_change(
+            'total_consultants': total_consultants or 0,
+            'new_consultants': new_consultants or 0,
+            'active_projects': active_projects or 0,
+            'completed_projects': completed_projects or 0,
+            'new_consultants_change': await self._calculate_period_change(
                 'consultants', date_from, date_to, consultant_filter
             )
         }
@@ -384,7 +400,7 @@ class AnalyticsService:
             for consultant in top_consultants
         ]
 
-    def _calculate_period_change(
+    async def _calculate_period_change(
         self, 
         metric_type: str, 
         date_from: datetime, 
@@ -398,17 +414,23 @@ class AnalyticsService:
         previous_to = date_from
         
         if metric_type == 'consultants':
-            current = self.db.query(Consultant).filter(
-                consultant_filter,
-                Consultant.created_at >= date_from,
-                Consultant.created_at <= date_to
-            ).count()
+            result = await self.db.execute(
+                select(func.count(Consultant.id)).where(
+                    consultant_filter,
+                    Consultant.created_at >= date_from,
+                    Consultant.created_at <= date_to
+                )
+            )
+            current = result.scalar() or 0
             
-            previous = self.db.query(Consultant).filter(
-                consultant_filter,
-                Consultant.created_at >= previous_from,
-                Consultant.created_at <= previous_to
-            ).count()
+            result = await self.db.execute(
+                select(func.count(Consultant.id)).where(
+                    consultant_filter,
+                    Consultant.created_at >= previous_from,
+                    Consultant.created_at <= previous_to
+                )
+            )
+            previous = result.scalar() or 0
         else:
             current = previous = 0
         

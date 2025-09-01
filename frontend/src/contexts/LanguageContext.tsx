@@ -267,6 +267,8 @@ const translations: Record<Language, Record<string, string>> = {
     // Services
     'services.ai_consulting': 'AI Consulting',
     'services.digital_transformation': 'Digital Transformation',
+    'services.data_management': 'Data Management',
+    'services.management_advisory': 'Management Advisory',
     'services.automation': 'Automation',
     'services.development': 'Development',
     
@@ -329,6 +331,8 @@ const translations: Record<Language, Record<string, string>> = {
     // Services
     'services.ai_consulting': 'KI-Beratung',
     'services.digital_transformation': 'Digitale Transformation',
+    'services.data_management': 'Datenmanagement',
+    'services.management_advisory': 'Management-Beratung',
     'services.automation': 'Automatisierung',
     'services.development': 'Entwicklung',
     

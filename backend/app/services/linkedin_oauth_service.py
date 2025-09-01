@@ -3,15 +3,20 @@ import httpx
 import json
 from urllib.parse import urlencode
 import secrets
+import uuid
 from datetime import datetime, timedelta
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+import logging
 
 from ..config import settings
 from ..models.consultant import Consultant, ConsultantStatus, KYCStatus
 
+logger = logging.getLogger(__name__)
+
 
 class LinkedInOAuthService:
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession):
         self.db = db
         self.client_id = settings.linkedin_client_id
         self.client_secret = settings.linkedin_client_secret
@@ -175,62 +180,110 @@ class LinkedInOAuthService:
         try:
             profile_data = linkedin_profile['profile_data']
             
-            # Check if consultant already exists
-            existing_consultant = self.db.query(Consultant).filter(
-                Consultant.linkedin_id == profile_data['linkedin_id']
-            ).first()
+            # Validate required fields
+            if not profile_data.get('email'):
+                return {
+                    'success': False,
+                    'error': 'LinkedIn profile must have a public email address'
+                }
+            
+            if not profile_data.get('first_name') or not profile_data.get('last_name'):
+                return {
+                    'success': False,
+                    'error': 'LinkedIn profile must have first and last name'
+                }
+            
+            # Check if consultant already exists by LinkedIn ID or email
+            existing_consultant = None
+            
+            if profile_data.get('linkedin_id'):
+                result = await self.db.execute(
+                    select(Consultant).where(Consultant.linkedin_id == profile_data['linkedin_id'])
+                )
+                existing_consultant = result.scalar_one_or_none()
+            
+            if not existing_consultant and profile_data.get('email'):
+                result = await self.db.execute(
+                    select(Consultant).where(Consultant.email == profile_data['email'])
+                )
+                existing_consultant = result.scalar_one_or_none()
             
             if existing_consultant:
                 # Update existing consultant
+                existing_consultant.linkedin_url = linkedin_url
+                existing_consultant.linkedin_id = profile_data.get('linkedin_id', existing_consultant.linkedin_id)
+                existing_consultant.linkedin_data = profile_data.get('raw_data', existing_consultant.linkedin_data)
                 existing_consultant.email = profile_data['email']
                 existing_consultant.first_name = profile_data['first_name']
                 existing_consultant.last_name = profile_data['last_name']
-                existing_consultant.headline = profile_data['headline']
-                existing_consultant.location = profile_data['location']
-                existing_consultant.industry = profile_data['industry']
-                existing_consultant.profile_picture_url = profile_data['profile_picture_url']
-                existing_consultant.linkedin_data = profile_data['raw_data']
+                existing_consultant.headline = profile_data.get('headline', existing_consultant.headline)
+                existing_consultant.location = profile_data.get('location', existing_consultant.location)
+                existing_consultant.industry = profile_data.get('industry', existing_consultant.industry)
+                existing_consultant.profile_picture_url = profile_data.get('profile_picture_url', existing_consultant.profile_picture_url)
                 existing_consultant.updated_at = datetime.utcnow()
+                existing_consultant.last_active_at = datetime.utcnow()
                 
-                self.db.commit()
+                await self.db.commit()
+                await self.db.refresh(existing_consultant)
                 
                 return {
                     'success': True,
                     'consultant_id': existing_consultant.id,
                     'is_new': False,
-                    'message': 'Consultant profile updated'
+                    'message': 'Consultant profile updated',
+                    'profile_data': {
+                        'id': existing_consultant.id,
+                        'full_name': existing_consultant.full_name,
+                        'email': existing_consultant.email,
+                        'headline': existing_consultant.headline,
+                        'status': existing_consultant.status,
+                        'kyc_status': existing_consultant.kyc_status
+                    }
                 }
             
             else:
                 # Create new consultant
                 new_consultant = Consultant(
+                    id=str(uuid.uuid4()),
                     linkedin_url=linkedin_url,
-                    linkedin_id=profile_data['linkedin_id'],
-                    linkedin_data=profile_data['raw_data'],
+                    linkedin_id=profile_data.get('linkedin_id'),
+                    linkedin_data=profile_data.get('raw_data'),
                     email=profile_data['email'],
                     first_name=profile_data['first_name'],
                     last_name=profile_data['last_name'],
-                    profile_picture_url=profile_data['profile_picture_url'],
-                    headline=profile_data['headline'],
-                    location=profile_data['location'],
-                    industry=profile_data['industry'],
+                    profile_picture_url=profile_data.get('profile_picture_url'),
+                    headline=profile_data.get('headline', ''),
+                    location=profile_data.get('location', ''),
+                    industry=profile_data.get('industry'),
                     status=ConsultantStatus.PENDING,
-                    kyc_status=KYCStatus.NOT_STARTED
+                    kyc_status=KYCStatus.NOT_STARTED,
+                    last_active_at=datetime.utcnow()
                 )
                 
                 self.db.add(new_consultant)
-                self.db.commit()
-                self.db.refresh(new_consultant)
+                await self.db.commit()
+                await self.db.refresh(new_consultant)
+                
+                logger.info(f"New consultant created: {new_consultant.id} ({new_consultant.email})")
                 
                 return {
                     'success': True,
                     'consultant_id': new_consultant.id,
                     'is_new': True,
-                    'message': 'New consultant profile created'
+                    'message': 'New consultant profile created',
+                    'profile_data': {
+                        'id': new_consultant.id,
+                        'full_name': new_consultant.full_name,
+                        'email': new_consultant.email,
+                        'headline': new_consultant.headline,
+                        'status': new_consultant.status,
+                        'kyc_status': new_consultant.kyc_status
+                    }
                 }
                 
         except Exception as e:
-            self.db.rollback()
+            await self.db.rollback()
+            logger.error(f"Consultant creation error: {e}")
             return {
                 'error': f'Consultant creation error: {str(e)}',
                 'success': False

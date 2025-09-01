@@ -3,7 +3,8 @@ import httpx
 import json
 import asyncio
 from datetime import datetime
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, func
 import logging
 
 from ..config import settings
@@ -20,7 +21,7 @@ class ScooppIntegrationService:
     would require proper API credentials and endpoint documentation.
     """
     
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession):
         self.db = db
         self.api_key = getattr(settings, 'scoopp_api_key', None)
         self.base_url = getattr(settings, 'scoopp_base_url', 'https://api.scoopp.ai')
@@ -291,9 +292,11 @@ class ScooppIntegrationService:
         """Enrich existing consultant profile with Scoopp data"""
         
         try:
-            consultant = self.db.query(Consultant).filter(
-                Consultant.id == consultant_id
-            ).first()
+            # Get consultant
+            result = await self.db.execute(
+                select(Consultant).where(Consultant.id == consultant_id)
+            )
+            consultant = result.scalar_one_or_none()
             
             if not consultant:
                 return {
@@ -344,7 +347,10 @@ class ScooppIntegrationService:
             }
             
             consultant.updated_at = datetime.utcnow()
-            self.db.commit()
+            await self.db.commit()
+            await self.db.refresh(consultant)
+            
+            logger.info(f"Consultant {consultant_id} profile enriched successfully via {scrape_result['source']}")
             
             return {
                 'success': True,
@@ -358,8 +364,8 @@ class ScooppIntegrationService:
             }
             
         except Exception as e:
-            self.db.rollback()
-            logger.error(f"Profile enrichment error: {e}")
+            await self.db.rollback()
+            logger.error(f"Profile enrichment error for consultant {consultant_id}: {e}")
             return {
                 'success': False,
                 'error': f'Profile enrichment failed: {str(e)}'
@@ -407,35 +413,48 @@ class ScooppIntegrationService:
         """Get statistics about profile enrichment status"""
         
         try:
-            total_consultants = self.db.query(Consultant).count()
+            # Total consultants
+            result = await self.db.execute(select(func.count(Consultant.id)))
+            total_consultants = result.scalar()
             
-            enriched_consultants = self.db.query(Consultant).filter(
-                Consultant.linkedin_data.isnot(None)
-            ).count()
+            # Enriched consultants (have linkedin_data)
+            result = await self.db.execute(
+                select(func.count(Consultant.id)).where(
+                    Consultant.linkedin_data.isnot(None)
+                )
+            )
+            enriched_consultants = result.scalar()
             
-            # Consultants with Scoopp data
-            scoopp_enriched = self.db.query(Consultant).filter(
-                Consultant.linkedin_data.contains('"source": "scoopp"')
-            ).count()
+            # Consultants with Scoopp data (this would need proper JSON querying in production)
+            result = await self.db.execute(
+                select(func.count(Consultant.id)).where(
+                    Consultant.linkedin_data.contains('"source": "scoopp"')
+                )
+            )
+            scoopp_enriched = result.scalar()
             
-            # Recent enrichments (last 7 days)
-            seven_days_ago = datetime.utcnow().timestamp() - (7 * 24 * 60 * 60)
-            recent_enrichments = self.db.query(Consultant).filter(
-                Consultant.linkedin_data.contains(f'"scraped_at"')
-            ).count()  # Simplified - would need proper JSON querying
+            # Recent enrichments (simplified - would need proper date filtering in production)
+            result = await self.db.execute(
+                select(func.count(Consultant.id)).where(
+                    Consultant.linkedin_data.contains('"scraped_at"')
+                )
+            )
+            recent_enrichments = result.scalar()
             
             return {
-                'total_consultants': total_consultants,
-                'enriched_consultants': enriched_consultants,
+                'total_consultants': total_consultants or 0,
+                'enriched_consultants': enriched_consultants or 0,
                 'enrichment_rate': (enriched_consultants / total_consultants * 100) if total_consultants > 0 else 0,
-                'scoopp_enriched': scoopp_enriched,
-                'recent_enrichments_7d': recent_enrichments,
-                'api_configured': bool(self.api_key)
+                'scoopp_enriched': scoopp_enriched or 0,
+                'recent_enrichments_7d': recent_enrichments or 0,
+                'api_configured': bool(self.api_key),
+                'service_status': 'configured' if self.api_key else 'not_configured'
             }
             
         except Exception as e:
             logger.error(f"Enrichment statistics error: {e}")
             return {
                 'error': str(e),
-                'api_configured': bool(self.api_key)
+                'api_configured': bool(self.api_key),
+                'service_status': 'error'
             }

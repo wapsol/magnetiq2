@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, Dict, Any
 from pydantic import BaseModel
 import logging
@@ -52,7 +52,7 @@ class KYCReviewRequest(BaseModel):
 @router.get("/consultant/{consultant_id}/kyc-status")
 async def get_kyc_status(
     consultant_id: str,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get KYC status and requirements for consultant"""
     
@@ -81,7 +81,7 @@ async def upload_kyc_document(
     document_type: str = Form(...),
     document_subtype: str = Form(None),
     file: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Upload KYC document for consultant"""
     
@@ -130,7 +130,7 @@ async def upload_kyc_document(
 async def update_kyc_personal_info(
     consultant_id: str,
     request: KYCPersonalInfoRequest,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Update KYC personal information"""
     
@@ -160,7 +160,7 @@ async def update_kyc_personal_info(
 async def update_kyc_banking_info(
     consultant_id: str,
     request: KYCBankingInfoRequest,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Update KYC banking information"""
     
@@ -189,7 +189,7 @@ async def update_kyc_banking_info(
 @router.post("/consultant/{consultant_id}/kyc-submit")
 async def submit_kyc_for_review(
     consultant_id: str,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Submit KYC for admin review"""
     
@@ -215,7 +215,7 @@ async def submit_kyc_for_review(
 async def get_pending_kyc_reviews(
     limit: int = 50,
     offset: int = 0,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get all KYC submissions pending review"""
     
@@ -240,7 +240,7 @@ async def get_pending_kyc_reviews(
 @router.get("/admin/consultant/{consultant_id}/kyc-details")
 async def get_kyc_details_for_review(
     consultant_id: str,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get full KYC details for admin review"""
     
@@ -268,7 +268,7 @@ async def get_kyc_details_for_review(
 async def review_kyc_submission(
     consultant_id: str,
     request: KYCReviewRequest,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Review and approve/reject KYC submission"""
     
@@ -305,7 +305,7 @@ async def review_kyc_submission(
 
 @router.get("/admin/kyc-statistics")
 async def get_kyc_statistics(
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get KYC processing statistics"""
     

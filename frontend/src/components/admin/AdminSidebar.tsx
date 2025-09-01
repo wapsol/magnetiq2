@@ -6,6 +6,7 @@ import {
   VideoCameraIcon, 
   CalendarDaysIcon,
   UsersIcon,
+  UserGroupIcon,
   BoltIcon,
   ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline'
@@ -34,6 +35,16 @@ const navigation = [
     children: [
       { name: 'Webinars', href: '/admin/business/webinars' },
       { name: 'Bookings', href: '/admin/business/bookings' },
+    ]
+  },
+  { 
+    name: 'Consultants', 
+    href: '/admin/consultants',
+    icon: UserGroupIcon,
+    description: 'Consultant management',
+    children: [
+      { name: 'Management', href: '/admin/consultants' },
+      { name: 'Analytics', href: '/admin/consultants/analytics' },
     ]
   },
   { 

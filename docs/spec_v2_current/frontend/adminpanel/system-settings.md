@@ -2,11 +2,17 @@
 
 ## Overview
 
-The System Settings Admin interface provides comprehensive configuration management for the voltAIc platform, including contact information management, general system settings, backup and recovery, security configuration, and other system-wide settings that appear across the public website and admin interface.
+The System Settings Admin interface provides comprehensive configuration management for the voltAIc platform, accessible via the gear icon dropdown in the admin panel header. This includes contact information management, general system settings, backup and recovery, security configuration, and other system-wide settings that appear across the public website and admin interface.
 
-→ **Core Admin Architecture**: [Main Admin Panel](./admin.md#system-settings) 
+→ **Core Admin Architecture**: [Main Admin Panel](./admin.md#header-based-settings-access)
 ← **Used by**: [Site Admin](../../users/site-admin.md), [Content Editor](../../users/content-editor.md)
 ⚡ **Dependencies**: [Backend Settings API](../../backend/api.md#settings-endpoints), [Database Settings Schema](../../backend/database.md#settings-tables)
+
+### Access Method
+- **Location**: Header gear icon dropdown → System Configuration
+- **Route**: `/admin/settings/system` (accessed via header dropdown, not sidebar navigation)
+- **Permission Level**: Admin and Super Admin roles only
+- **Navigation Pattern**: Header-based access for quick system configuration without disrupting main workflow
 
 ## Visual System Settings Overview
 ![System Settings Architecture](../../../diagrams/spec_v2/features/system_settings_architecture.png)
@@ -14,19 +20,27 @@ The System Settings Admin interface provides comprehensive configuration managem
 
 ## Tab Navigation Structure
 
-### Main System Settings Interface (`/admin/settings`)
+### Main System Settings Interface (`/admin/settings/system`)
+
+**Access Path**: Header Gear Icon → System Configuration
 
 ```
-├── Contact Information (/admin/settings/contact)
-├── General Configuration (/admin/settings/general)
-├── Site Configuration (/admin/settings/site)
-├── Email Configuration (/admin/settings/email)
-├── Security Settings (/admin/settings/security)
-├── Backup & Recovery (/admin/settings/backup)
-└── System Maintenance (/admin/settings/maintenance)
+├── Contact Information (/admin/settings/system/contact)
+├── General Configuration (/admin/settings/system/general)  
+├── Site Configuration (/admin/settings/system/site)
+├── Email Configuration (/admin/settings/system/email)
+├── Security Settings (/admin/settings/system/security)
+├── Backup & Recovery (/admin/settings/system/backup)
+└── System Maintenance (/admin/settings/system/maintenance)
 ```
 
-## 1. Contact Information Management Tab (`/admin/settings/contact`)
+### Navigation Integration
+- **Header Access**: Gear icon dropdown → System Configuration
+- **Breadcrumb Path**: Admin > Settings > System Configuration > [Specific Tab]
+- **Quick Access**: Available from any admin panel section without navigation disruption
+- **Context Preservation**: Returns to previous admin section after settings configuration
+
+## 1. Contact Information Management Tab (`/admin/settings/system/contact`)
 
 ### Contact Details Configuration
 

@@ -69,47 +69,50 @@ const TranslationManager = () => {
   const loadTranslations = async () => {
     setLoading(true)
     try {
-      // Mock API call - replace with actual API
-      const mockTranslations: Translation[] = [
-        {
-          id: '1',
-          namespace: 'common',
-          key: 'nav.home',
-          source_text: 'Home',
-          translated_text: 'Startseite',
-          target_language: 'de',
-          status: 'approved',
-          created_at: '2024-08-31T10:00:00Z',
-          updated_at: '2024-08-31T10:00:00Z'
-        },
-        {
-          id: '2',
-          namespace: 'industries',
-          key: 'fintech.title',
-          source_text: 'Financial Services',
-          translated_text: 'Finanzdienstleistungen',
-          target_language: 'de',
-          status: 'approved',
-          created_at: '2024-08-31T10:00:00Z',
-          updated_at: '2024-08-31T10:00:00Z'
-        },
-        {
-          id: '3',
-          namespace: 'common',
-          key: 'button.save',
-          source_text: 'Save',
-          translated_text: '',
-          target_language: 'de',
-          status: 'pending',
-          created_at: '2024-08-31T10:00:00Z',
-          updated_at: '2024-08-31T10:00:00Z'
-        }
-      ]
+      // Build query parameters
+      const params = new URLSearchParams({
+        limit: pagination.limit.toString(),
+        offset: pagination.offset.toString()
+      })
       
-      setTranslations(mockTranslations)
-      setPagination(prev => ({ ...prev, total: mockTranslations.length }))
+      if (filters.namespace) params.append('namespace', filters.namespace)
+      if (filters.language) params.append('language', filters.language)
+      if (filters.status) params.append('status', filters.status)
+      if (filters.query) params.append('query', filters.query)
+      
+      const response = await fetch(`/api/v1/translations/admin/translations?${params}`)
+      const data = await response.json()
+      
+      if (data.success && data.data) {
+        const translationsData = data.data.items || data.data.translations || []
+        const total = data.data.total || translationsData.length
+        
+        // Map API response to our Translation interface
+        const mappedTranslations: Translation[] = translationsData.map((t: any) => ({
+          id: t.id,
+          namespace: t.namespace,
+          key: t.key,
+          source_text: t.source_text,
+          translated_text: t.translated_text || '',
+          target_language: t.target_language,
+          status: t.status,
+          created_at: t.created_at,
+          updated_at: t.updated_at,
+          confidence: t.confidence_score,
+          method: t.translation_method
+        }))
+        
+        setTranslations(mappedTranslations)
+        setPagination(prev => ({ ...prev, total }))
+      } else {
+        console.error('Failed to load translations:', data)
+        setTranslations([])
+        setPagination(prev => ({ ...prev, total: 0 }))
+      }
     } catch (error) {
       console.error('Failed to load translations:', error)
+      setTranslations([])
+      setPagination(prev => ({ ...prev, total: 0 }))
     } finally {
       setLoading(false)
     }
@@ -117,37 +120,32 @@ const TranslationManager = () => {
 
   const loadStatistics = async () => {
     try {
-      // Mock stats - replace with actual API
-      const mockStats: TranslationStats = {
-        total_translations: 156,
-        by_language: {
-          'de': 156,
-          'en': 156
-        },
-        by_status: {
-          'approved': 120,
-          'translated': 25,
-          'pending': 11,
-          'rejected': 0
-        },
-        by_namespace: {
-          'common': 45,
-          'industries': 32,
-          'services': 28,
-          'admin': 51
-        },
-        completion_rate: {
-          'de': {
-            total: 156,
-            completed: 145,
-            percentage: 92.9
-          }
-        }
-      }
+      const response = await fetch('/api/v1/translations/admin/translations/statistics')
+      const data = await response.json()
       
-      setStats(mockStats)
+      if (data.success && data.data) {
+        setStats(data.data)
+      } else {
+        console.error('Failed to load statistics:', data)
+        // Fallback to empty stats
+        setStats({
+          total_translations: 0,
+          by_language: {},
+          by_status: {},
+          by_namespace: {},
+          completion_rate: {}
+        })
+      }
     } catch (error) {
       console.error('Failed to load statistics:', error)
+      // Fallback to empty stats
+      setStats({
+        total_translations: 0,
+        by_language: {},
+        by_status: {},
+        by_namespace: {},
+        completion_rate: {}
+      })
     }
   }
 
@@ -320,10 +318,15 @@ const TranslationManager = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow p-6">
+          <div 
+            className="bg-white rounded-lg shadow p-6 cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => setFilters(prev => ({ ...prev, status: filters.status === 'approved' ? '' : 'approved' }))}
+          >
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                <div className={`w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center ${
+                  filters.status === 'approved' ? 'ring-2 ring-green-500' : ''
+                }`}>
                   <CheckCircleIcon className="h-5 w-5 text-green-600" />
                 </div>
               </div>
@@ -334,10 +337,15 @@ const TranslationManager = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div 
+            className="bg-white rounded-lg shadow p-6 cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => setFilters(prev => ({ ...prev, status: filters.status === 'pending' ? '' : 'pending' }))}
+          >
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <div className={`w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center ${
+                  filters.status === 'pending' ? 'ring-2 ring-yellow-500' : ''
+                }`}>
                   <ClockIcon className="h-5 w-5 text-yellow-600" />
                 </div>
               </div>

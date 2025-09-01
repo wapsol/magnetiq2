@@ -40,7 +40,8 @@ This sitemap defines the complete URL structure and navigation hierarchy for the
 ├── /services/digital-transformation/ → /de/dienstleistungen/digitale-transformation/
 │   ├── /services/development/ → /de/dienstleistungen/entwicklung/
 │   └── /services/automation/ → /de/dienstleistungen/automatisierung/
-└── /services/data-management/ → /de/dienstleistungen/datenmanagement/
+├── /services/data-management/ → /de/dienstleistungen/datenmanagement/
+└── /services/management-advisory/ → /de/dienstleistungen/management-beratung/
 ```
 
 **AI Consulting** (`/services/ai-consulting/`)
@@ -65,6 +66,25 @@ This sitemap defines the complete URL structure and navigation hierarchy for the
 - Master data management
 - Data integration and migration
 - Analytics and reporting infrastructure
+
+**Management Advisory** (`/services/management-advisory/`)
+- **IT Strategy & Transformation**: Comprehensive IT concepts ensuring future-proof architecture with strategic infrastructure alignment and digital process optimization
+- **Program & Project Management**: Successful project realization within quality, time, and budget constraints through systematic conceptualization and implementation
+- **Change Management & Organizational Transformation**: Strategic implementation of organizational changes, addressing resistance and creating flexible, resilient structures
+- **Crisis Handling & Project Rescue**: Stabilize and secure endangered projects through root cause analysis and realignment with project goals
+- **IT Service Management Optimization**: Efficient IT service design and continuous improvement with standardized methodologies and infrastructure resilience
+- **Digital Transformation Roadmaps**: Enhance organizational performance through digital technologies with strategic roadmaps and cloud-based integration
+- **ERP Consulting with AI Enhancements**: Harmonize business areas with vendor-agnostic, AI-featured ERP solutions for comprehensive business optimization
+
+**Page Content Features**:
+- Hero section with comprehensive service overview and key value propositions
+- Detailed service cards with icons, descriptions, and benefits for each advisory area
+- Key consulting principles section highlighting voltAIc's methodology and approach
+- Success metrics and measurable outcomes for management advisory engagements
+- Integration with consultation booking system for direct lead conversion
+- Multilingual content support (English/German) with semantic URL translation
+- SEO-optimized content structure with proper meta tags and hreflang attributes
+- Mobile-responsive design with touch-optimized interaction elements
 
 ---
 
@@ -324,6 +344,8 @@ const routes = [
           { path: "digital-transformation", element: <DigitalTransformationPage /> },
           { path: "automation", element: <AutomationPage /> },
           { path: "development", element: <DevelopmentPage /> },
+          { path: "data-management", element: <DataManagementPage /> },
+          { path: "management-advisory", element: <ManagementAdvisoryPage /> },
         ]
       },
       {
@@ -368,7 +390,21 @@ const routes = [
     path: "/de",
     element: <Layout locale="de" />,
     children: [
-      // Similar structure with German components
+      { index: true, element: <HomePage /> },
+      {
+        path: "dienstleistungen",
+        element: <ServicesLayout />,
+        children: [
+          { index: true, element: <ServicesOverview /> },
+          { path: "ki-beratung", element: <AIConsultingPage /> },
+          { path: "digitale-transformation", element: <DigitalTransformationPage /> },
+          { path: "automatisierung", element: <AutomationPage /> },
+          { path: "entwicklung", element: <DevelopmentPage /> },
+          { path: "datenmanagement", element: <DataManagementPage /> },
+          { path: "management-beratung", element: <ManagementAdvisoryPage /> },
+        ]
+      }
+      // Additional German routes follow similar pattern
     ]
   }
 ];
@@ -392,17 +428,19 @@ const routes = [
 
 **Meta Tags Structure**:
 ```html
-<!-- English pages -->
-<link rel="canonical" href="https://voltAIc.systems/services/ai-consulting/" />
-<link rel="alternate" hreflang="en" href="https://voltAIc.systems/services/ai-consulting/" />
-<link rel="alternate" hreflang="de" href="https://voltAIc.systems/de/dienstleistungen/ki-beratung/" />
-<link rel="alternate" hreflang="x-default" href="https://voltAIc.systems/services/ai-consulting/" />
+<!-- English pages (example: Management Advisory) -->
+<link rel="canonical" href="https://voltAIc.systems/services/management-advisory/" />
+<link rel="alternate" hreflang="en" href="https://voltAIc.systems/services/management-advisory/" />
+<link rel="alternate" hreflang="de" href="https://voltAIc.systems/de/dienstleistungen/management-beratung/" />
+<link rel="alternate" hreflang="x-default" href="https://voltAIc.systems/services/management-advisory/" />
 
-<!-- German pages -->
-<link rel="canonical" href="https://voltAIc.systems/de/dienstleistungen/ki-beratung/" />
-<link rel="alternate" hreflang="en" href="https://voltAIc.systems/services/ai-consulting/" />
-<link rel="alternate" hreflang="de" href="https://voltAIc.systems/de/dienstleistungen/ki-beratung/" />
-<link rel="alternate" hreflang="x-default" href="https://voltAIc.systems/services/ai-consulting/" />
+<!-- German pages (example: Management Advisory) -->
+<link rel="canonical" href="https://voltAIc.systems/de/dienstleistungen/management-beratung/" />
+<link rel="alternate" hreflang="en" href="https://voltAIc.systems/services/management-advisory/" />
+<link rel="alternate" hreflang="de" href="https://voltAIc.systems/de/dienstleistungen/management-beratung/" />
+<link rel="alternate" hreflang="x-default" href="https://voltAIc.systems/services/management-advisory/" />
+
+<!-- Similar structure applies to all service pages -->
 ```
 
 **Structured Data**:
@@ -437,7 +475,8 @@ const primaryNavigation: NavItem[] = [
           { label: { en: "Automation", de: "Automatisierung" }, href: "/services/automation/" }
         ]
       },
-      { label: { en: "Data Management", de: "Datenmanagement" }, href: "/services/data-management/" }
+      { label: { en: "Data Management", de: "Datenmanagement" }, href: "/services/data-management/" },
+      { label: { en: "Management Advisory", de: "Management-Beratung" }, href: "/services/management-advisory/" }
     ]
   },
   {

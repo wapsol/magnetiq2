@@ -12,6 +12,7 @@ import AIConsultingPage from './pages/services/AIConsultingPage'
 import DigitalTransformationPage from './pages/services/DigitalTransformationPage'
 import AutomationPage from './pages/services/AutomationPage'
 import DevelopmentPage from './pages/services/DevelopmentPage'
+import ManagementAdvisoryPage from './pages/services/ManagementAdvisoryPage'
 
 // Pages - Solutions
 import SolutionsOverview from './pages/solutions/SolutionsOverview'
@@ -55,6 +56,8 @@ import TranslationManager from './pages/admin/content/TranslationManager'
 import BusinessOverview from './pages/admin/business/BusinessOverview'
 import WebinarsManager from './pages/admin/business/WebinarsManager'
 import UsersManager from './pages/admin/users/UsersManager'
+import { ConsultantManagement } from './pages/admin/consultants/ConsultantManagement'
+import { ConsultantAnalytics } from './pages/admin/consultants/ConsultantAnalytics'
 
 // Error pages
 import NotFound from './pages/NotFound'
@@ -77,6 +80,7 @@ function App() {
             <Route path="digital-transformation" element={<DigitalTransformationPage />} />
             <Route path="automation" element={<AutomationPage />} />
             <Route path="development" element={<DevelopmentPage />} />
+            <Route path="management-advisory" element={<ManagementAdvisoryPage />} />
           </Route>
           
           {/* Solutions */}
@@ -145,6 +149,7 @@ function App() {
             <Route path="digitale-transformation" element={<DigitalTransformationPage />} />
             <Route path="automatisierung" element={<AutomationPage />} />
             <Route path="entwicklung" element={<DevelopmentPage />} />
+            <Route path="management-beratung" element={<ManagementAdvisoryPage />} />
           </Route>
           
           {/* Lösungen (Solutions) */}
@@ -236,6 +241,12 @@ function App() {
           
           {/* User Management */}
           <Route path="users" element={<UsersManager />} />
+          
+          {/* Consultant Management */}
+          <Route path="consultants">
+            <Route index element={<ConsultantManagement />} />
+            <Route path="analytics" element={<ConsultantAnalytics />} />
+          </Route>
           
           {/* Business Operations */}
           <Route path="business">

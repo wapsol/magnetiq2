@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from pydantic import BaseModel
 import logging
@@ -29,7 +29,7 @@ class LinkedInScrapeRequest(BaseModel):
 async def enrich_consultant_profile(
     consultant_id: str,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Enrich consultant profile with LinkedIn data via Scoopp"""
     
@@ -57,7 +57,7 @@ async def enrich_consultant_profile(
 @router.post("/consultant/{consultant_id}/enrich-sync")
 async def enrich_consultant_profile_sync(
     consultant_id: str,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Enrich consultant profile synchronously (for admin use)"""
     
@@ -82,7 +82,7 @@ async def enrich_consultant_profile_sync(
 async def batch_enrich_consultants(
     request: BatchEnrichmentRequest,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Batch enrich multiple consultant profiles"""
     
@@ -113,7 +113,7 @@ async def batch_enrich_consultants(
 @router.post("/linkedin/scrape")
 async def scrape_linkedin_profile(
     request: LinkedInScrapeRequest,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Scrape LinkedIn profile data (for testing/preview)"""
     
@@ -155,7 +155,7 @@ async def scrape_linkedin_profile(
 
 @router.get("/statistics")
 async def get_enrichment_statistics(
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get profile enrichment statistics"""
     
@@ -182,16 +182,18 @@ async def get_enrichment_statistics(
 @router.get("/consultant/{consultant_id}/enrichment-status")
 async def get_consultant_enrichment_status(
     consultant_id: str,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get enrichment status for specific consultant"""
     
     try:
         from ....models.consultant import Consultant
+        from sqlalchemy import select
         
-        consultant = db.query(Consultant).filter(
-            Consultant.id == consultant_id
-        ).first()
+        result = await db.execute(
+            select(Consultant).where(Consultant.id == consultant_id)
+        )
+        consultant = result.scalar_one_or_none()
         
         if not consultant:
             raise HTTPException(status_code=404, detail="Consultant not found")
@@ -222,7 +224,7 @@ async def get_consultant_enrichment_status(
 
 
 # Background task functions
-async def enrich_profile_background(consultant_id: str, db: Session):
+async def enrich_profile_background(consultant_id: str, db: AsyncSession):
     """Background task for profile enrichment"""
     try:
         service = ScooppIntegrationService(db)
@@ -237,7 +239,7 @@ async def enrich_profile_background(consultant_id: str, db: Session):
         logger.error(f"Background enrichment error for {consultant_id}: {e}")
 
 
-async def batch_enrich_background(consultant_ids: List[str], db: Session):
+async def batch_enrich_background(consultant_ids: List[str], db: AsyncSession):
     """Background task for batch profile enrichment"""
     try:
         service = ScooppIntegrationService(db)
@@ -258,18 +260,22 @@ async def batch_enrich_background(consultant_ids: List[str], db: Session):
 async def enrich_all_pending_consultants(
     background_tasks: BackgroundTasks,
     limit: int = 100,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Enrich all consultants without LinkedIn data (admin only)"""
     
     try:
         from ....models.consultant import Consultant
+        from sqlalchemy import select
         
         # Get consultants without enrichment data
-        consultants_to_enrich = db.query(Consultant).filter(
-            Consultant.linkedin_url.isnot(None),
-            Consultant.linkedin_data.is_(None)
-        ).limit(limit).all()
+        result = await db.execute(
+            select(Consultant).where(
+                Consultant.linkedin_url.isnot(None),
+                Consultant.linkedin_data.is_(None)
+            ).limit(limit)
+        )
+        consultants_to_enrich = result.scalars().all()
         
         consultant_ids = [c.id for c in consultants_to_enrich]
         

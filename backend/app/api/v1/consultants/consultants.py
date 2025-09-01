@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, EmailStr
 import logging
@@ -49,7 +49,7 @@ class ConsultantStatusUpdateRequest(BaseModel):
 @router.post("/auth/linkedin/init")
 async def init_linkedin_auth(
     request: LinkedInAuthRequest,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Initialize LinkedIn OAuth flow for consultant signup"""
     
@@ -75,7 +75,7 @@ async def init_linkedin_auth(
 async def linkedin_auth_callback(
     request: LinkedInCallbackRequest,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Handle LinkedIn OAuth callback and create consultant profile"""
     
@@ -136,7 +136,7 @@ async def search_consultants(
     offset: int = Query(0, ge=0),
     sort_by: str = Query('average_rating', pattern='^(average_rating|hourly_rate|created_at|total_projects)$'),
     sort_order: str = Query('desc', pattern='^(asc|desc)$'),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Search and filter consultants (public endpoint)"""
     
@@ -175,7 +175,7 @@ async def search_consultants(
 @router.get("/{consultant_id}")
 async def get_consultant_profile(
     consultant_id: str,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get public consultant profile"""
     
@@ -237,7 +237,7 @@ async def get_all_consultants_admin(
     offset: int = Query(0, ge=0),
     sort_by: str = Query('created_at'),
     sort_order: str = Query('desc'),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get all consultants for admin (includes all statuses and full data)"""
     
@@ -267,7 +267,7 @@ async def get_all_consultants_admin(
 @router.get("/admin/consultants/{consultant_id}")
 async def get_consultant_admin(
     consultant_id: str,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get full consultant details for admin"""
     
@@ -292,7 +292,7 @@ async def get_consultant_admin(
 async def update_consultant_admin(
     consultant_id: str,
     request: ConsultantUpdateRequest,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Update consultant information (admin only)"""
     
@@ -324,7 +324,7 @@ async def update_consultant_admin(
 async def update_consultant_status(
     consultant_id: str,
     request: ConsultantStatusUpdateRequest,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Update consultant status (admin only)"""
     
@@ -360,7 +360,7 @@ async def update_consultant_status(
 async def generate_consultant_ai_profile(
     consultant_id: str,
     force_regenerate: bool = Query(False),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Generate AI profile content for consultant"""
     
@@ -386,7 +386,7 @@ async def generate_consultant_ai_profile(
 
 @router.get("/admin/statistics")
 async def get_consultant_statistics(
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get consultant platform statistics"""
     
@@ -405,7 +405,7 @@ async def get_consultant_statistics(
 
 
 # Background task functions
-async def generate_ai_profile_background(consultant_id: str, db: Session):
+async def generate_ai_profile_background(consultant_id: str, db: AsyncSession):
     """Background task to generate AI profile"""
     try:
         service = ConsultantService(db)

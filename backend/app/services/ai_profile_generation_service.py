@@ -1,27 +1,30 @@
 from typing import Dict, Any, List, Optional
-import openai
+from openai import AsyncOpenAI
 import json
 import asyncio
+import logging
 from datetime import datetime
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 from ..config import settings
 from ..models.consultant import Consultant
 
+logger = logging.getLogger(__name__)
+
 
 class AIProfileGenerationService:
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession):
         self.db = db
         self.api_key = settings.openai_api_key
-        if self.api_key:
-            openai.api_key = self.api_key
-        self.model = "gpt-4"
+        self.client = AsyncOpenAI(api_key=self.api_key) if self.api_key else None
+        self.model = "gpt-4-turbo-preview"
         self.temperature = 0.7  # Creative but consistent
 
     async def generate_consultant_profile(self, consultant: Consultant) -> Dict[str, Any]:
         """Generate comprehensive AI-powered consultant profile"""
         
-        if not self.api_key:
+        if not self.client:
             return {
                 'success': False,
                 'error': 'AI profile generation not configured - missing OpenAI API key'
@@ -30,27 +33,26 @@ class AIProfileGenerationService:
         try:
             # Build context from LinkedIn data
             context = self._build_consultant_context(consultant)
+            logger.info(f"Generating AI profile for consultant {consultant.id} ({consultant.full_name})")
             
-            # Generate profile components
-            tasks = [
-                self._generate_professional_summary(context),
-                self._generate_skills_assessment(context),
-                self._generate_market_positioning(context),
-                self._generate_keywords(context)
-            ]
+            # Generate profile components sequentially to avoid rate limits
+            summary_result = await self._generate_professional_summary(context)
+            if isinstance(summary_result, Exception):
+                raise summary_result
+                
+            skills_result = await self._generate_skills_assessment(context)
+            if isinstance(skills_result, Exception):
+                raise skills_result
+                
+            positioning_result = await self._generate_market_positioning(context)
+            if isinstance(positioning_result, Exception):
+                raise positioning_result
+                
+            keywords_result = await self._generate_keywords(context)
+            if isinstance(keywords_result, Exception):
+                raise keywords_result
             
-            # Execute all tasks
-            results = await asyncio.gather(*tasks, return_exceptions=True)
-            
-            # Process results
-            summary_result, skills_result, positioning_result, keywords_result = results
-            
-            # Check for errors
-            if any(isinstance(result, Exception) for result in results):
-                return {
-                    'success': False,
-                    'error': 'AI profile generation failed'
-                }
+            logger.info(f"AI profile generated successfully for consultant {consultant.id}")
             
             return {
                 'success': True,
@@ -60,10 +62,15 @@ class AIProfileGenerationService:
                     'market_positioning': positioning_result,
                     'keywords': keywords_result
                 },
-                'generated_at': datetime.utcnow().isoformat()
+                'generation_metadata': {
+                    'model_used': self.model,
+                    'generated_at': datetime.utcnow().isoformat(),
+                    'context_quality': self._assess_context_quality(context)
+                }
             }
             
         except Exception as e:
+            logger.error(f"AI profile generation error for consultant {consultant.id}: {e}")
             return {
                 'success': False,
                 'error': f'AI profile generation error: {str(e)}'
@@ -75,18 +82,60 @@ class AIProfileGenerationService:
         context = {
             'basic_info': {
                 'name': f"{consultant.first_name} {consultant.last_name}",
-                'headline': consultant.headline,
-                'location': consultant.location,
-                'industry': consultant.industry,
+                'headline': consultant.headline or '',
+                'location': consultant.location or '',
+                'industry': consultant.industry or '',
                 'years_experience': consultant.years_experience
             },
             'linkedin_data': consultant.linkedin_data or {},
             'specializations': consultant.specializations or [],
             'languages': consultant.languages_spoken or ['English'],
-            'rate_range': f"{consultant.hourly_rate} {consultant.currency}" if consultant.hourly_rate else None
+            'rate_range': f"{consultant.hourly_rate} {consultant.currency}" if consultant.hourly_rate else None,
+            'performance_metrics': {
+                'total_projects': consultant.total_projects,
+                'completed_projects': consultant.completed_projects,
+                'success_rate': consultant.success_rate,
+                'average_rating': float(consultant.average_rating) if consultant.average_rating else None,
+                'response_rate': float(consultant.response_rate) if consultant.response_rate else None
+            }
         }
         
         return context
+
+    def _assess_context_quality(self, context: Dict[str, Any]) -> str:
+        """Assess the quality of available context data for AI generation"""
+        
+        score = 0
+        max_score = 10
+        
+        # Basic info completeness
+        if context['basic_info']['headline']:
+            score += 2
+        if context['basic_info']['industry']:
+            score += 1
+        if context['basic_info']['years_experience']:
+            score += 1
+        if context['specializations']:
+            score += 1
+            
+        # LinkedIn data richness
+        if context['linkedin_data']:
+            score += 2
+            
+        # Performance data
+        if context['performance_metrics']['total_projects'] > 0:
+            score += 2
+        if context['performance_metrics']['average_rating']:
+            score += 1
+            
+        if score >= 8:
+            return 'excellent'
+        elif score >= 6:
+            return 'good'
+        elif score >= 4:
+            return 'moderate'
+        else:
+            return 'limited'
 
     async def _generate_professional_summary(self, context: Dict[str, Any]) -> str:
         """Generate professional summary with voltAIc branding"""
@@ -119,7 +168,7 @@ LinkedIn Data Context:
 Create a compelling professional summary that positions this consultant as a premium expert on the voltAIc platform."""
 
         try:
-            response = await openai.ChatCompletion.acreate(
+            response = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": system_prompt},
@@ -132,6 +181,7 @@ Create a compelling professional summary that positions this consultant as a pre
             return response.choices[0].message.content.strip()
             
         except Exception as e:
+            logger.error(f"Professional summary generation failed: {e}")
             return f"Professional consultant with expertise in {context['basic_info']['industry']} and {context['basic_info']['years_experience']} years of experience."
 
     async def _generate_skills_assessment(self, context: Dict[str, Any]) -> Dict[str, Any]:
@@ -175,7 +225,7 @@ Additional Context:
 Generate a comprehensive skills assessment focusing on AI/digital transformation readiness and consulting capabilities."""
 
         try:
-            response = await openai.ChatCompletion.acreate(
+            response = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": system_prompt},
@@ -191,15 +241,20 @@ Generate a comprehensive skills assessment focusing on AI/digital transformation
             try:
                 return json.loads(content)
             except json.JSONDecodeError:
+                logger.warning(f"Skills assessment JSON parsing failed, using fallback")
                 # Fallback to basic assessment
                 return {
                     "core_competencies": [
-                        {"skill": context['basic_info']['industry'], "proficiency": "Advanced", "confidence": 0.8}
+                        {"skill": context['basic_info']['industry'] or "Business Consulting", "proficiency": "Advanced", "confidence": 0.8}
+                    ],
+                    "industry_expertise": [
+                        {"industry": context['basic_info']['industry'] or "General Business", "depth": "Deep", "years": context['basic_info']['years_experience'] or 5}
                     ],
                     "ai_readiness": {"score": 70, "reasoning": "Industry experience suggests good adaptation potential"}
                 }
             
         except Exception as e:
+            logger.error(f"Skills assessment generation failed: {e}")
             return {"error": f"Skills assessment failed: {str(e)}"}
 
     async def _generate_market_positioning(self, context: Dict[str, Any]) -> str:
@@ -228,7 +283,7 @@ Rate: {context['rate_range'] or 'Premium pricing'}
 Position this consultant as a premium expert who delivers exceptional ROI through AI-enhanced solutions."""
 
         try:
-            response = await openai.ChatCompletion.acreate(
+            response = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": system_prompt},
@@ -241,7 +296,8 @@ Position this consultant as a premium expert who delivers exceptional ROI throug
             return response.choices[0].message.content.strip()
             
         except Exception as e:
-            return f"Premium {context['basic_info']['industry']} consultant with proven track record in digital transformation and business optimization."
+            logger.error(f"Market positioning generation failed: {e}")
+            return f"Premium {context['basic_info']['industry'] or 'business'} consultant with proven track record in digital transformation and business optimization."
 
     async def _generate_keywords(self, context: Dict[str, Any]) -> List[str]:
         """Generate SEO and discovery keywords"""
@@ -268,7 +324,7 @@ Experience level: {context['basic_info']['years_experience']} years
 Focus on terms that potential clients would search for when looking for this type of consultant."""
 
         try:
-            response = await openai.ChatCompletion.acreate(
+            response = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": system_prompt},
@@ -281,22 +337,29 @@ Focus on terms that potential clients would search for when looking for this typ
             content = response.choices[0].message.content.strip()
             
             try:
-                return json.loads(content)
-            except json.JSONDecodeError:
+                keywords = json.loads(content)
+                if isinstance(keywords, list) and keywords:
+                    return keywords
+                else:
+                    raise ValueError("Invalid keywords format")
+            except (json.JSONDecodeError, ValueError):
+                logger.warning(f"Keywords JSON parsing failed, using fallback")
                 # Fallback to basic keywords
                 basic_keywords = [
-                    context['basic_info']['industry'].lower(),
                     'consultant',
                     'digital transformation',
                     'business optimization',
                     'ai strategy'
                 ]
+                if context['basic_info']['industry']:
+                    basic_keywords.append(context['basic_info']['industry'].lower())
                 if context['specializations']:
                     basic_keywords.extend([spec.lower() for spec in context['specializations'][:5]])
                 return basic_keywords
             
         except Exception as e:
-            return ['consultant', 'business expert', context['basic_info']['industry'].lower()]
+            logger.error(f"Keywords generation failed: {e}")
+            return ['consultant', 'business expert', context['basic_info']['industry'].lower() if context['basic_info']['industry'] else 'general']
 
     async def generate_profile_variations(
         self,
@@ -356,7 +419,7 @@ Experience: {context['basic_info']['years_experience']} years
 Specializations: {context['specializations']}"""
 
         try:
-            response = await openai.ChatCompletion.acreate(
+            response = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": system_prompt},
@@ -369,4 +432,107 @@ Specializations: {context['specializations']}"""
             return response.choices[0].message.content.strip()
             
         except Exception as e:
-            return f"Professional {context['basic_info']['industry']} consultant with {context['basic_info']['years_experience']} years of experience."
+            logger.error(f"Styled summary generation failed: {e}")
+            return f"Professional {context['basic_info']['industry'] or 'business'} consultant with {context['basic_info']['years_experience'] or 5} years of experience."
+    
+    async def batch_generate_profiles(
+        self,
+        consultant_ids: List[str],
+        force_regenerate: bool = False
+    ) -> Dict[str, Any]:
+        """Generate AI profiles for multiple consultants in batch"""
+        
+        if not self.client:
+            return {
+                'success': False,
+                'error': 'AI profile generation not configured'
+            }
+        
+        results = []
+        successful_count = 0
+        failed_count = 0
+        
+        for consultant_id in consultant_ids:
+            try:
+                # Get consultant
+                result = await self.db.execute(
+                    select(Consultant).where(Consultant.id == consultant_id)
+                )
+                consultant = result.scalar_one_or_none()
+                
+                if not consultant:
+                    results.append({
+                        'consultant_id': consultant_id,
+                        'success': False,
+                        'error': 'Consultant not found'
+                    })
+                    failed_count += 1
+                    continue
+                
+                # Skip if profile already exists and not forcing regeneration
+                if consultant.ai_summary and not force_regenerate:
+                    results.append({
+                        'consultant_id': consultant_id,
+                        'success': True,
+                        'message': 'Profile already exists, skipped',
+                        'skipped': True
+                    })
+                    successful_count += 1
+                    continue
+                
+                # Generate AI profile
+                generation_result = await self.generate_consultant_profile(consultant)
+                
+                if generation_result['success']:
+                    # Update consultant with generated content
+                    ai_content = generation_result['ai_content']
+                    consultant.ai_summary = ai_content['summary']
+                    consultant.ai_skills_assessment = ai_content['skills_assessment']
+                    consultant.ai_market_positioning = ai_content['market_positioning']
+                    consultant.ai_generated_keywords = ai_content['keywords']
+                    consultant.updated_at = datetime.utcnow()
+                    
+                    results.append({
+                        'consultant_id': consultant_id,
+                        'success': True,
+                        'message': 'AI profile generated successfully'
+                    })
+                    successful_count += 1
+                else:
+                    results.append({
+                        'consultant_id': consultant_id,
+                        'success': False,
+                        'error': generation_result['error']
+                    })
+                    failed_count += 1
+                    
+            except Exception as e:
+                logger.error(f"Batch generation failed for consultant {consultant_id}: {e}")
+                results.append({
+                    'consultant_id': consultant_id,
+                    'success': False,
+                    'error': str(e)
+                })
+                failed_count += 1
+        
+        # Commit all changes
+        try:
+            await self.db.commit()
+        except Exception as e:
+            await self.db.rollback()
+            logger.error(f"Batch profile generation commit failed: {e}")
+            return {
+                'success': False,
+                'error': 'Failed to save generated profiles'
+            }
+        
+        return {
+            'success': True,
+            'results': results,
+            'summary': {
+                'total_processed': len(consultant_ids),
+                'successful': successful_count,
+                'failed': failed_count,
+                'success_rate': (successful_count / len(consultant_ids)) * 100 if consultant_ids else 0
+            }
+        }

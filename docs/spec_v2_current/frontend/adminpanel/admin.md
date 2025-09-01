@@ -2,11 +2,18 @@
 
 ## Overview
 
-The Admin Panel is a comprehensive dashboard for managing all aspects of the Magnetiq CMS. It provides a secure, intuitive interface for administrators to control the entire system through a modular architecture with dedicated management interfaces.
+The Admin Panel is a streamlined dashboard for managing all aspects of the Magnetiq CMS. It provides a secure, intuitive interface for administrators through a simplified navigation structure with four core sections (Dashboard, Content, Business, Users) and header-based settings access.
 
 → **Architecture Foundation**: [System Architecture](../../architecture.md#admin-panel-architecture)
 ← **Used by**: [Site Admin](../../users/site-admin.md), [Content Editor](../../users/content-editor.md)
 ⚡ **Dependencies**: [Backend API](../../backend/api.md), [Authentication System](../../security.md#admin-authentication)
+
+### Key Navigation Features
+- **Streamlined Sidebar**: Four main sections with logical sub-navigation
+- **Header-Based Settings**: Settings moved to gear icon dropdown for quick access
+- **Integrated Analytics**: Analytics functionality embedded within Dashboard and feature areas
+- **Contextual Search**: Global search bar with intelligent filtering
+- **Real-Time Notifications**: Bell icon with notification feed and management
 
 This specification serves as the architectural overview and entry point to specialized admin panel features:
 - [Consultant Management](./consultant-management.md) - Consultant profiles, LinkedIn scraping, payments, and performance analytics
@@ -213,6 +220,69 @@ Settings functionality has been moved from the left sidebar to a gear icon dropd
 - Dashboard overview analytics
 - Feature-specific analytics within each section
 - Comprehensive reporting accessible via Settings > System Configuration > Reports
+
+### Navigation Architecture Changes
+
+#### Simplified Left Sidebar Structure
+The navigation has been streamlined from a complex multi-level menu to a focused four-section approach:
+
+**Previous Complex Structure** → **Current Simplified Structure**
+- Multiple top-level sections with deep nesting → Four main sections with logical grouping
+- Settings as a separate navigation item → Settings moved to header dropdown
+- Analytics as standalone section → Analytics integrated into Dashboard
+- Complex sub-menus throughout → Clean sub-navigation only where needed
+
+#### Header-Based Settings Integration
+**Settings Access Pattern**:
+- **Location**: Top right header gear icon dropdown
+- **Scope**: System-wide configuration and preferences
+- **Benefits**: 
+  - Reduces sidebar clutter
+  - Provides contextual access regardless of current section
+  - Follows modern admin panel UX patterns
+  - Separates configuration from operational navigation
+
+#### Navigation State Management
+```tsx
+interface NavigationState {
+  currentSection: 'dashboard' | 'content' | 'business' | 'users';
+  activeSubRoute?: string;
+  expandedMenus: string[];
+  sidebarCollapsed: boolean;
+  settingsDropdownOpen: boolean;
+  notificationsDropdownOpen: boolean;
+  userDropdownOpen: boolean;
+}
+```
+
+#### Route Organization
+```tsx
+// Main navigation routes
+const mainRoutes = {
+  dashboard: '/admin',
+  content: '/admin/content',
+  business: '/admin/business', 
+  users: '/admin/users'
+};
+
+// Settings routes (accessed via header dropdown)
+const settingsRoutes = {
+  systemConfig: '/admin/settings/system',
+  userPreferences: '/admin/settings/preferences',
+  notifications: '/admin/settings/notifications'
+};
+
+// Sub-navigation routes
+const subRoutes = {
+  content: {
+    pages: '/admin/content/pages'
+  },
+  business: {
+    webinars: '/admin/business/webinars',
+    bookings: '/admin/business/bookings'
+  }
+};
+```
 
 ### Navigation Implementation
 ```tsx

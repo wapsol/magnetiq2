@@ -2,11 +2,17 @@
 
 ## Overview
 
-The Analytics Dashboard provides comprehensive business intelligence and performance monitoring for the Magnetiq platform. It serves as the central hub for data-driven decision making, featuring real-time metrics, consultant performance tracking, content analytics, revenue reporting, and user engagement insights.
+The Analytics Dashboard provides comprehensive business intelligence and performance monitoring integrated directly into the main Admin Dashboard. Rather than being a separate navigation section, analytics functionality is embedded throughout the admin interface, with primary analytics accessible via the Dashboard section and feature-specific analytics within each respective area.
 
 → **Business Value**: [Revenue Optimization](../../business/revenue-optimization.md), [Performance Management](../../business/performance-management.md)
 ← **Supports Users**: [Site Admin](../../users/site-admin.md#analytics-access), [Content Editor](../../users/content-editor.md#performance-tracking)
 ⚡ **Core Dependencies**: [Analytics API](../../backend/api.md#analytics-endpoints), [Database Analytics](../../backend/database.md#analytics-tables)
+
+### Analytics Access Pattern
+- **Primary Location**: Dashboard section (`/admin`) - Main KPI overview and system health
+- **Feature-Specific Analytics**: Embedded within Content, Business, and Users sections
+- **Detailed Reporting**: Available through individual feature management interfaces
+- **Real-Time Monitoring**: Integrated notification system for performance alerts
 
 ## Visual Dashboard Overview
 ![Analytics Dashboard](../../../diagrams/spec_v2/adminpanel/analytics_dashboard.png)
