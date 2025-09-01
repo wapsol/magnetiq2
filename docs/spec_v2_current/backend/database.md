@@ -18,6 +18,9 @@ The Magnetiq v2 database schema is designed for simplicity, maintainability, and
 - **Soft deletes** with `deleted_at` timestamps
 - **Basic audit trails** for critical operations
 - **Simple indexing** strategy for common query patterns
+
+### SQLite-Only Architecture
+**Important**: Magnetiq v2 uses SQLite exclusively for all environments to maintain simplicity and eliminate external dependencies. PostgreSQL references in this document relate only to future v3 migration paths and are not used in v2 implementation.
 - **Full-text search** using SQLite FTS5 with language-specific indexes
 - **Multilingual content** using JSON columns with validation
 - **Translation management** for UI strings and content workflows
@@ -60,7 +63,7 @@ CREATE TABLE admin_users (
     language TEXT DEFAULT 'en',
     
     -- Role & Permissions
-    role TEXT NOT NULL DEFAULT 'viewer' CHECK (role IN ('admin', 'editor', 'viewer')),
+    role TEXT NOT NULL DEFAULT 'viewer' CHECK (role IN ('super_admin', 'admin', 'editor', 'viewer')),
     
     -- Status & Activity
     is_active BOOLEAN NOT NULL DEFAULT 1,

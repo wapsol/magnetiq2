@@ -21,84 +21,100 @@ import {
   FeatureTemplate, 
   CTATemplate 
 } from '../../components/templates'
+import HeroImageRenderer from '../../components/content/HeroImageRenderer'
+import GalleryRenderer from '../../components/content/GalleryRenderer'
+import ImageRenderer from '../../components/content/ImageRenderer'
 
 const HomePage = () => {
   const features = [
     {
       icon: <CpuChipIcon className="h-6 w-6" />,
       title: 'DOS - Data Operating System',
-      description: 'Unser semantisches Datenmanagement-System ermöglicht Unternehmen die vollständige Kontrolle über ihre Datenlandschaft.',
+      description: 'Vollständige semantische Datenverwaltung mit autonomer KI-Integration für Enterprise-Umgebungen und komplexe Datenlandschaften.',
       href: '/webinars'
     },
     {
       icon: <ChartBarIcon className="h-6 w-6" />,
       title: 'AI Data Mapper',
-      description: 'KI-gesteuerte Datenintegration und -transformation für komplexe Unternehmensarchitekturen und Prozessautomatisierung.',
+      description: 'Intelligente Datenintegration und -transformation mit Machine Learning für komplexe Unternehmensstrukturen und Prozessautomatisierung.',
       href: '/whitepapers'
     },
     {
       icon: <BoltIcon className="h-6 w-6" />,
-      title: 'AI Customizing',
-      description: 'Maßgeschneiderte KI-Lösungen für Ihre spezifischen Geschäftsanforderungen mit Model Fine-tuning und Prozessoptimierung.',
+      title: 'AI Customizing & Model Fine-tuning',
+      description: 'Maßgeschneiderte KI-Lösungen mit Model Fine-tuning für spezifische Geschäftsanforderungen und Prozessoptimierung.',
       href: '/book-consultation'
     },
     {
       icon: <ShieldCheckIcon className="h-6 w-6" />,
-      title: 'Enterprise Solutions',
-      description: 'Branchenspezifische Lösungen für Finanzdienstleistungen, Gesundheitswesen, Fertigung und weitere Industrien.'
+      title: 'Elastic Autonomous Cloud Solutions',
+      description: 'Skalierbare Cloud-native KI-Infrastruktur mit autonomer Verwaltung und Elastic Computing für Enterprise-Anwendungen.'
     },
   ]
 
   const stats = [
-    { label: 'AI-Lösungen', value: '100+' },
-    { label: 'Unternehmen', value: '50+' },
-    { label: 'Standorte', value: '2' },
-    { label: 'Datenquellen', value: '1000+' },
+    { label: 'Enterprise AI Lösungen', value: '100+' },
+    { label: 'Zufriedene Unternehmen', value: '50+' },
+    { label: 'Deutsche Standorte', value: '2' },
+    { label: 'Integrierte Datenquellen', value: '1000+' },
   ]
 
   const benefits = [
-    'Semantische Datenmanagement-Plattform',
-    'KI-gesteuerte Prozessautomatisierung',
-    'Maßgeschneiderte Unternehmenslösungen',
-    'Dediziertes Entwickler-Support-Team',
-    'Bewiesene Zuverlässigkeit in komplexen Umgebungen',
-    'Nachhaltige KI-Technologie für die Zukunft',
+    'Semantische Datenmanagement-Plattform mit vollständiger Datensouveränität',
+    'KI-gesteuerte Prozessautomatisierung und autonome Systeme',
+    'Maßgeschneiderte Enterprise AI-Lösungen mit Model Fine-tuning',
+    'Dediziertes Entwickler-Support-Team und 24/7 Service',
+    'Bewiesene Zuverlässigkeit in komplexen Enterprise-Umgebungen',
+    'Nachhaltige KI-Technologie für zukunftsorientierte Unternehmen',
   ]
 
   return (
     <ContentTemplate className="bg-white">
-      {/* Hero Section */}
-      <HeroTemplate
-        badge={{ text: "🤖 Stuttgart & Frankfurt • Deutschland", variant: "primary" }}
-        title={<>
-          Daten-Intelligenz für <span className="bg-gradient-to-r from-primary-600 to-primary-800 dark:from-primary-400 dark:to-primary-200 bg-clip-text text-transparent">Unternehmen</span> <br />
-          Souveränität und <span className="bg-gradient-to-r from-primary-600 to-primary-800 dark:from-primary-400 dark:to-primary-200 bg-clip-text text-transparent">Autonomie</span> in der IT
-        </>}
-        description="VoltAIc bedeutet künstliche Intelligenz langfristig gedacht: Der Schritt von großartigen KI-Möglichkeiten zu wirtschaftlich gesunden KI-Lösungen für jedes Unternehmen. Semantische Datenquelle und KI-gesteuerte Unternehmenslösungen."
-        primaryAction={{
-          text: "Software entdecken",
-          href: "/webinars",
-          variant: "primary"
+      {/* Hero Image Section with Professional Background */}
+      <HeroImageRenderer
+        block={{
+          _type: 'hero_image',
+          _key: 'voltaic-hero-main',
+          title: 'Enterprise AI Agents und Semantic Data Management',
+          subtitle: 'Daten-Intelligenz für Unternehmen - Souveränität und Autonomie',
+          description: 'VoltAIc bedeutet künstliche Intelligenz langfristig gedacht: Der Schritt von großartigen KI-Möglichkeiten zu wirtschaftlich gesunden KI-Lösungen für jedes Unternehmen.',
+          primary_action: {
+            text: 'Enterprise Lösungen entdecken',
+            href: '/webinars',
+            variant: 'primary'
+          },
+          secondary_action: {
+            text: 'Über voltAIc erfahren',
+            href: '/about'
+          },
+          background_image: '/images/migrated/voltaic-systems/hero/hero_laptop_data.jpg',
+          background_image_alt: 'Laptop mit Datenvisualisierung für Enterprise AI Solutions',
+          mobile_image: '/images/migrated/voltaic-systems/hero/hero_building_reflection.jpg',
+          overlay_opacity: 0.4,
+          overlay_color: '#000000',
+          text_alignment: 'left',
+          text_position: 'center',
+          content_width: 'wide',
+          height: 'large'
         }}
-        secondaryAction={{
-          text: "Mehr erfahren", 
-          href: "/templates"
-        }}
-        backgroundVariant="gradient"
-        backgroundImage={undefined}
-        size="xlarge"
-        alignment="center"
+        language="de"
+      />
+
+      {/* Stats Section */}
+      <SectionTemplate
+        title=""
+        size="medium"
+        background="white"
       >
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-8 border-t border-primary-100 dark:border-gray-600 mt-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 py-8">
           {stats.map((stat, index) => (
             <div key={index} className="text-center">
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stat.value}</div>
-              <div className="text-sm text-primary-600 dark:text-primary-300">{stat.label}</div>
+              <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">{stat.value}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300 mt-2">{stat.label}</div>
             </div>
           ))}
         </div>
-      </HeroTemplate>
+      </SectionTemplate>
 
       {/* Industries Section */}
       <SectionTemplate
@@ -108,46 +124,36 @@ const HomePage = () => {
         size="medium"
         background="white"
       >
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           <div className="text-center p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
             <div className="text-4xl mb-3">🏦</div>
             <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Financial Services</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-200">Risikomanagement & Compliance</p>
+            <p className="text-sm text-gray-600 dark:text-gray-200">Risikomanagement, Compliance und Fraud Detection</p>
           </div>
           <div className="text-center p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
             <div className="text-4xl mb-3">🏥</div>
             <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Healthcare</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-200">Patientendaten & Diagnostik</p>
+            <p className="text-sm text-gray-600 dark:text-gray-200">Patientendaten-Management und Diagnostik-Unterstützung</p>
           </div>
           <div className="text-center p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
             <div className="text-4xl mb-3">🏭</div>
             <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Manufacturing</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-200">Produktionsoptimierung</p>
+            <p className="text-sm text-gray-600 dark:text-gray-200">Produktionsoptimierung und Qualitätskontrolle</p>
           </div>
           <div className="text-center p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-            <div className="text-4xl mb-3">📊</div>
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Analytics</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-200">Business Intelligence</p>
-          </div>
-          <div className="text-center p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-            <div className="text-4xl mb-3">🚚</div>
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Logistics</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-200">Supply Chain Management</p>
+            <div className="text-4xl mb-3">⚡</div>
+            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Energy & Utilities</h4>
+            <p className="text-sm text-gray-600 dark:text-gray-200">Smart Grid Optimierung und Predictive Maintenance</p>
           </div>
           <div className="text-center p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
             <div className="text-4xl mb-3">🏢</div>
             <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Retail</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-200">Customer Experience</p>
+            <p className="text-sm text-gray-600 dark:text-gray-200">Customer Experience Enhancement und Inventory Management</p>
           </div>
           <div className="text-center p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-            <div className="text-4xl mb-3">⚙️</div>
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Automation</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-200">Prozessautomatisierung</p>
-          </div>
-          <div className="text-center p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-            <div className="text-4xl mb-3">💱</div>
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Enterprise</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-200">Unternehmensintegration</p>
+            <div className="text-4xl mb-3">🤝</div>
+            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Sales & Customer Service</h4>
+            <p className="text-sm text-gray-600 dark:text-gray-200">CRM Enhancement und automatisierte Kundenbetreuung</p>
           </div>
         </div>
       </SectionTemplate>
@@ -171,9 +177,9 @@ const HomePage = () => {
 
       {/* Mission Section */}
       <SectionTemplate
-        title="Unsere Vision"
-        subtitle="Künstliche Intelligenz langfristig gedacht"
-        description="VoltAIc bedeutet KI langfristig gedacht: Der Schritt von großartigen KI-Möglichkeiten zu wirtschaftlich gesunden KI-Lösungen für jedes Unternehmen."
+        title="Unsere Vision: Enterprise AI langfristig gedacht"
+        subtitle="Datensouveränität und Autonomie für Ihr Unternehmen"
+        description="VoltAIc Systems bedeutet KI langfristig gedacht: Der Schritt von großartigen KI-Möglichkeiten zu wirtschaftlich gesunden, nachhaltigen Enterprise AI-Lösungen für jedes Unternehmen."
         size="medium"
         background="primary"
         alignment="center"
@@ -185,7 +191,7 @@ const HomePage = () => {
             </div>
             <h3 className="text-xl font-semibold mb-2 dark:text-gray-100">Autonomie</h3>
             <p className="text-gray-600 dark:text-gray-200">
-              Vollständige Kontrolle über Ihre Daten und KI-Systeme ohne Abhängigkeiten
+              Vollständige Kontrolle über Ihre Daten und KI-Systeme ohne Abhängigkeiten von externen Anbietern
             </p>
           </div>
           <div className="text-center">
@@ -194,7 +200,7 @@ const HomePage = () => {
             </div>
             <h3 className="text-xl font-semibold mb-2 dark:text-gray-100">Souveränität</h3>
             <p className="text-gray-600 dark:text-gray-200">
-              Datensouveränität und Unabhängigkeit in Ihrer IT-Infrastruktur
+              Datensouveränität und Unabhängigkeit in Ihrer IT-Infrastruktur mit deutscher Ingenieursqualität
             </p>
           </div>
           <div className="text-center">
@@ -203,7 +209,7 @@ const HomePage = () => {
             </div>
             <h3 className="text-xl font-semibold mb-2 dark:text-gray-100">Innovation</h3>
             <p className="text-gray-600 dark:text-gray-200">
-              Modernste KI-Technologien für nachhaltige Unternehmenslösungen
+              Modernste KI-Technologien und Semantic Data Engineering für nachhaltige Enterprise-Lösungen
             </p>
           </div>
         </div>
@@ -260,16 +266,129 @@ const HomePage = () => {
         </div>
       </SectionTemplate>
 
+      {/* Technology Gallery */}
+      <SectionTemplate
+        title="Moderne Technologien für Enterprise AI"
+        subtitle="Cutting-edge Technologies"
+        description="Unsere KI-Lösungen basieren auf modernsten Technologien für Semantic Data Engineering und autonome Cloud-Systeme"
+        size="large"
+        background="gray"
+      >
+        <GalleryRenderer
+          block={{
+            _type: 'gallery',
+            _key: 'voltaic-tech-gallery',
+            title: '',
+            images: [
+              {
+                src: '/images/migrated/voltaic-systems/graphics/ai_intelligence.webp',
+                alt: 'Artificial Intelligence und Machine Learning Visualisierung',
+                caption: 'Agentic AI - Intelligente autonome Systeme',
+                width: 800,
+                height: 600
+              },
+              {
+                src: '/images/migrated/voltaic-systems/graphics/futuristic_tech.jpg',
+                alt: 'Futuristische Technologie und Innovation',
+                caption: 'Elastic Autonomous Cloud Solutions',
+                width: 800,
+                height: 600
+              },
+              {
+                src: '/images/migrated/voltaic-systems/graphics/network_tech.jpg',
+                alt: 'Netzwerk und Datenverbindungen',
+                caption: 'Semantic Data Engineering',
+                width: 800,
+                height: 600
+              }
+            ],
+            layout: 'grid',
+            columns: 3,
+            gap: 'large',
+            aspect_ratio: '4:3',
+            show_captions: true,
+            enable_lightbox: true,
+            _meta: {
+              responsive: true,
+              responsive_config: {
+                mobile_columns: 1,
+                tablet_columns: 2,
+                desktop_columns: 3
+              }
+            }
+          }}
+          language="de"
+        />
+      </SectionTemplate>
+
+      {/* Partner Gallery */}
+      <SectionTemplate
+        title="Technologie-Partner"
+        subtitle="Zusammenarbeit mit Führenden der Branche"
+        description="Partnerschaften mit führenden Technologie-Unternehmen für erstklassige Enterprise AI Solutions"
+        size="medium"
+        background="white"
+      >
+        <GalleryRenderer
+          block={{
+            _type: 'gallery',
+            _key: 'voltaic-partners',
+            title: '',
+            images: [
+              {
+                src: '/images/migrated/voltaic-systems/partners/nvidia_logo.webp',
+                alt: 'NVIDIA Logo - AI Computing Platform Partnership',
+                width: 300,
+                height: 200
+              },
+              {
+                src: '/images/migrated/voltaic-systems/partners/google_logo.webp',
+                alt: 'Google Logo - Cloud Services Integration',
+                width: 300,
+                height: 200
+              },
+              {
+                src: '/images/migrated/voltaic-systems/partners/bvmw_logo.webp',
+                alt: 'BVMW Logo - German Business Network',
+                width: 300,
+                height: 200
+              },
+              {
+                src: '/images/migrated/voltaic-systems/partners/50_experts_logo.webp',
+                alt: '50 Experts Logo - Professional Network',
+                width: 300,
+                height: 200
+              }
+            ],
+            layout: 'grid',
+            columns: 4,
+            gap: 'large',
+            aspect_ratio: '3:2',
+            show_captions: false,
+            enable_lightbox: false,
+            _meta: {
+              responsive: true,
+              responsive_config: {
+                mobile_columns: 2,
+                tablet_columns: 2,
+                desktop_columns: 4
+              }
+            }
+          }}
+          language="de"
+        />
+      </SectionTemplate>
+
       {/* CTA Section */}
       <CTATemplate
-        title="Starten Sie Ihre KI-Transformation"
-        description="Schließen Sie sich Dutzenden von Unternehmen an, die mit voltAIc Systems ihre Datenlandschaft revolutionieren. Lassen Sie uns gemeinsam Ihre maßgeschneiderte Lösung entwickeln."
+        title="Starten Sie Ihre Enterprise AI-Transformation"
+        description="Schließen Sie sich Dutzenden von Unternehmen an, die mit voltAIc Systems ihre Datenlandschaft revolutionieren. Lassen Sie uns gemeinsam Ihre maßgeschneiderte KI-Lösung entwickeln."
         primaryAction={{
-          text: "Beratung anfragen",
+          text: "Enterprise Beratung anfragen",
           href: "/book-consultation"
         }}
         secondaryAction={{
-          text: "Dokumentation",
+          text: "Technische Dokumentation",
           href: "/whitepapers"
         }}
         variant="centered"

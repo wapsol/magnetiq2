@@ -17,7 +17,7 @@ interface AdminUser {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'super_admin' | 'admin' | 'content_editor';
+  role: 'super_admin' | 'admin' | 'editor' | 'viewer';
   isActive: boolean;
   lastLoginAt?: Date;
   createdAt: Date;

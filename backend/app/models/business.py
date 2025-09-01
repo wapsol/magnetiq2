@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, Text, JSON, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, JSON, DateTime, Boolean, ForeignKey, Numeric
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.database import Base
+from enum import Enum
 
 
 class Webinar(Base):
@@ -214,3 +215,96 @@ class BookAMeeting(Base):
 
     # Relationships
     assigned_user = relationship("AdminUser", backref="assigned_book_a_meetings")
+
+
+class ConsultationBookingStatus(str, Enum):
+    PENDING_PAYMENT = "pending_payment"
+    CONFIRMED = "confirmed"
+    CANCELLED = "cancelled"
+    COMPLETED = "completed"
+    NO_SHOW = "no_show"
+
+
+class PaymentStatus(str, Enum):
+    PENDING = "pending"
+    PROCESSING = "processing"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    REFUNDED = "refunded"
+
+
+class ConsultationBooking(Base):
+    __tablename__ = "consultation_bookings"
+
+    id = Column(String, primary_key=True, index=True)
+    consultant_id = Column(String, ForeignKey("consultants.id"), nullable=False, index=True)
+    
+    # Contact Information
+    first_name = Column(String(100), nullable=False)
+    last_name = Column(String(100), nullable=False)
+    email = Column(String(255), nullable=False, index=True)
+    company = Column(String(255))
+    website = Column(String(500))
+    phone = Column(String(50), nullable=False)
+    
+    # Meeting Details
+    consultation_date = Column(DateTime(timezone=True), nullable=False, index=True)
+    time_slot = Column(String(10), nullable=False)  # "10:00" or "14:00"
+    duration_minutes = Column(Integer, default=30, nullable=False)
+    timezone = Column(String(50), default='UTC')
+    
+    # Fixed Pricing (30/30 system)
+    amount = Column(Numeric(10, 2), default=30.00, nullable=False)
+    currency = Column(String(3), default='EUR', nullable=False)
+    
+    # Billing Information
+    billing_first_name = Column(String(100))
+    billing_last_name = Column(String(100))
+    billing_company = Column(String(255))
+    billing_street = Column(String(255))
+    billing_postal_code = Column(String(20))
+    billing_city = Column(String(100))
+    billing_country = Column(String(2), default='DE')
+    vat_number = Column(String(50))
+    
+    # Status Management
+    booking_status = Column(String(20), nullable=False, default=ConsultationBookingStatus.PENDING_PAYMENT)
+    payment_status = Column(String(20), nullable=False, default=PaymentStatus.PENDING)
+    
+    # Legal & Compliance
+    terms_accepted = Column(Boolean, default=False, nullable=False)
+    terms_accepted_at = Column(DateTime(timezone=True))
+    gdpr_consent = Column(Boolean, default=True, nullable=False)
+    
+    # Meeting Information
+    meeting_url = Column(String(500))
+    meeting_notes = Column(Text)
+    consultation_summary = Column(Text)
+    
+    # Payment Details
+    payment_method = Column(String(50))
+    payment_reference = Column(String(255))
+    payment_provider = Column(String(50))
+    paid_at = Column(DateTime(timezone=True))
+    
+    # Source Tracking
+    booking_source = Column(String(50), default='website')
+    utm_source = Column(String(100))
+    utm_medium = Column(String(100))
+    utm_campaign = Column(String(100))
+    user_agent = Column(Text)
+    ip_address = Column(String(45))
+    
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    cancelled_at = Column(DateTime(timezone=True))
+    completed_at = Column(DateTime(timezone=True))
+    
+    # Admin Management
+    admin_notes = Column(Text)
+    assigned_admin_id = Column(Integer, ForeignKey("admin_users.id"))
+    
+    # Relationships
+    consultant = relationship("Consultant", backref="consultation_bookings")
+    assigned_admin = relationship("AdminUser", backref="managed_consultations")

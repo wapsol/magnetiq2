@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>voltAIc Systems - Sovereign Enterprise AI Solutions</title>
+    <meta name="description" content="voltAIc Systems - Leading provider of sovereign enterprise AI solutions. Transform your business with our Data Operating System (DOS) and industry-specific AI automation." />
+    <meta name="author" content="voltAIc Systems" />
+    <meta name="keywords" content="enterprise AI, sovereign AI, data sovereignty, AI automation, DOS, voltAIc Systems" />
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <meta property="og:title" content="voltAIc Systems - Sovereign Enterprise AI Solutions" />
+    <meta property="og:description" content="Leading provider of sovereign enterprise AI solutions. Transform your business with our Data Operating System (DOS) and industry-specific AI automation." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://voltaic.systems/og-image.png" />
+    <meta property="og:site_name" content="voltAIc Systems" />
+
+    <meta name="description" content="voltAIc Systems - Sovereign Enterprise AI Solutions for data sovereignty and business transformation." />
+    <script type="module" crossorigin src="/assets/index-CbcVGTIM.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BmROExg_.css">
+  </head>
+
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

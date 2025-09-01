@@ -1636,7 +1636,7 @@ class TestFinancialDataSecurity:
         """Test financial data access controls"""
         access_request = {
             "user_id": "admin-1",
-            "user_role": "content_editor",  # Should not have access
+            "user_role": "editor",  # Should not have access
             "resource": "consultant_financial_data",
             "consultant_id": "consultant-1",
             "action": "read"
@@ -2680,7 +2680,7 @@ class TestPCIDSSCompliance:
         """Test access controls for payment systems"""
         access_attempt = {
             "user_id": "admin-1",
-            "user_role": "content_editor",
+            "user_role": "editor",
             "requested_resource": "payment_data",
             "action": "read"
         }
@@ -3276,19 +3276,9 @@ jobs:
 
   backend-tests:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:14
-        env:
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: magnetiq_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
+    # Note: Magnetiq v2 uses SQLite - no database service needed
+    # services:
+    #   postgres: [removed - using SQLite]
     
     steps:
       - uses: actions/checkout@v4
@@ -3315,7 +3305,7 @@ jobs:
       - name: Run tests
         run: pytest --cov=. --cov-report=xml
         env:
-          DATABASE_URL: postgresql://postgres:test@localhost:5432/magnetiq_test
+          DATABASE_URL: sqlite:///tmp/magnetiq_test.db
       
       - name: Upload coverage
         uses: codecov/codecov-action@v3

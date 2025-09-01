@@ -186,6 +186,58 @@ export interface ImageBlock extends BaseContentBlock {
   alignment?: BlockAlignment
 }
 
+export interface GalleryImageItem {
+  src: string
+  alt: string
+  caption?: string
+  title?: string
+  width?: number
+  height?: number
+  thumbnail_src?: string
+  _meta?: any
+}
+
+export interface GalleryBlock extends BaseContentBlock {
+  _type: 'gallery'
+  title?: string
+  description?: string
+  images: GalleryImageItem[]
+  layout?: 'grid' | 'masonry' | 'carousel' | 'lightbox'
+  columns?: number
+  gap?: 'none' | 'small' | 'medium' | 'large'
+  aspect_ratio?: string
+  show_captions?: boolean
+  enable_lightbox?: boolean
+  lazy_loading?: boolean
+}
+
+export interface HeroImageBlock extends BaseContentBlock {
+  _type: 'hero_image'
+  title: string
+  subtitle?: string
+  description?: string
+  primary_action?: ActionButton
+  secondary_action?: ActionButton
+  
+  // Image configuration
+  background_image: string
+  background_image_alt: string
+  mobile_image?: string
+  overlay_opacity?: number
+  overlay_color?: string
+  
+  // Layout and presentation
+  text_alignment?: 'left' | 'center' | 'right'
+  text_position?: 'top' | 'center' | 'bottom'
+  content_width?: 'narrow' | 'medium' | 'wide' | 'full'
+  height?: 'small' | 'medium' | 'large' | 'viewport' | 'auto'
+  
+  // Advanced image settings
+  focal_point?: { x: number; y: number }
+  parallax_enabled?: boolean
+  blur_background?: boolean
+}
+
 export interface VideoBlock extends BaseContentBlock {
   _type: 'video'
   src: string
@@ -216,6 +268,8 @@ export type ContentBlock =
   | FAQBlock
   | PricingBlock
   | ImageBlock
+  | GalleryBlock
+  | HeroImageBlock
   | VideoBlock
   | SectionBlock
 

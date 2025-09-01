@@ -13,7 +13,7 @@ Magnetiq v2 is a streamlined Content Management System (CMS) with integrated bus
 - **Database**: SQLite (all environments - development, testing, production) (see [Database Schema](./backend/database.md))
 - **API Documentation**: OpenAPI 3.0 with auto-generated Swagger UI (see [Backend API Specification](./backend/api.md))
 - **Validation**: Pydantic v2 for request/response validation
-- **Authentication**: JWT with HS256 algorithm and refresh tokens
+- **Authentication**: JWT with RS256 algorithm and refresh tokens
 
 ### Frontend
 - **Framework**: React 18 with TypeScript 5.0+
@@ -81,7 +81,7 @@ Data flows through validation, transformation, business processing, and persiste
 
 ### 1. Authentication & Authorization Service
 See [Security Specification](./security.md) for detailed implementation.
-- **JWT Authentication**: HS256 tokens with 15-minute access and 7-day refresh tokens
+- **JWT Authentication**: RS256 tokens with 15-minute access and 7-day refresh tokens
 - **Role-Based Access Control**: Simple hierarchical permissions (Admin > Editor > Viewer)
 - **Session Management**: Database-backed session store
 - **Security Features**: Password reset, account lockout, basic audit logging
@@ -185,7 +185,7 @@ For complete database schema and table definitions, see [Database Schema Specifi
 For comprehensive security implementation details, see [Security Specification](./security.md).
 
 ### Authentication & Authorization
-- **JWT Implementation**: HS256 algorithm with shared secret
+- **JWT Implementation**: RS256 algorithm with RSA key pair
 - **Token Lifecycle**: 15-minute access tokens, 7-day refresh tokens
 - **Role-Based Access Control**: Simple permissions with resource-level granularity
 - **Session Security**: Basic session management with logout capabilities
@@ -210,11 +210,35 @@ For comprehensive security implementation details, see [Security Specification](
 - **Database Queries**: < 200ms (p95)
 - **File Operations**: Progressive upload with feedback
 
-### Scalability Considerations
-- **SQLite Limits**: Read-heavy workloads, moderate concurrent writes
-- **Vertical Scaling**: CPU and storage optimization
+### Scalability Considerations & Limitations
+
+#### SQLite Performance Characteristics
+- **Concurrent Reads**: Excellent performance (unlimited concurrent readers)
+- **Concurrent Writes**: **Limited** - SQLite serializes all write operations
+- **Recommended Limits**: 
+  - Maximum concurrent users: **100 active sessions**
+  - Write operations rate: **<50 writes/second system-wide**
+  - Database file size: **<100GB** for optimal performance
+  - Login attempts: **<10 attempts/second** (security operations)
+
+#### Performance Trade-offs
+- **Response Time**: May increase under high concurrent write load
+- **Brief Delays**: Possible during database maintenance operations (VACUUM, etc.)
+- **Write Bottlenecks**: Login storms, bulk data imports may cause temporary slowdowns
+
+#### Scaling Solutions
+- **Vertical Scaling**: CPU and storage optimization (recommended approach)
+- **Read Replicas**: File-based backups for read-only operations
 - **Caching**: Basic in-memory caching for frequently accessed data
 - **Static Assets**: Nginx caching and compression
+- **Database Optimization**: Regular VACUUM, WAL mode, proper indexing
+
+#### When to Consider Migration
+Consider migrating to PostgreSQL (v3) when:
+- Sustained >100 concurrent users
+- >100 write operations/second required
+- Multi-server deployment needed
+- Complex reporting queries affecting performance
 
 ## Development Standards
 

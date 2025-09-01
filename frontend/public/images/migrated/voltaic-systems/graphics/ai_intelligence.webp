@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="de-DE" data-website-id="1" data-main-object="ir.ui.view(253,)">
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="generator" content="Odoo"/>
+        <meta name="robots" content="noindex"/>
+            
+        <meta property="og:type" content="website"/>
+        <meta property="og:title" content="Page Not Found | voltaic.systems | Enterprise AI Agents and Semantic Data Management"/>
+        <meta property="og:site_name" content="voltaic.systems | Enterprise AI Agents and Semantic Data Management"/>
+        <meta property="og:url" content="https://voltaic.systems/unsplash/9wjtGixx6Ls_artificial intelligence.webp"/>
+        <meta property="og:image" content="https://voltaic.systems/web/image/website/1/logo?unique=28cf50b"/>
+            
+        <meta name="twitter:card" content="summary_large_image"/>
+        <meta name="twitter:title" content="Page Not Found | voltaic.systems | Enterprise AI Agents and Semantic Data Management"/>
+        <meta name="twitter:image" content="https://voltaic.systems/web/image/website/1/logo/300x300?unique=28cf50b"/>
+        <meta name="twitter:site" content="@Odoo"/>
+        
+        <link rel="canonical" href="https://voltaic.systems/unsplash/9wjtGixx6Ls_artificial+intelligence.webp"/>
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin=""/>
+        <title> Page Not Found | voltaic.systems | Enterprise AI Agents and Semantic Data Management </title>
+        <link type="image/x-icon" rel="shortcut icon" href="/web/image/website/1/favicon?unique=28cf50b"/>
+        <link rel="preload" href="/web/static/src/libs/fontawesome/fonts/fontawesome-webfont.woff2?v=4.7.0" as="font" crossorigin=""/>
+        <link type="text/css" rel="stylesheet" href="/web/assets/1/cdd8018/web.assets_frontend.min.css"/>
+        <script id="web.layout.odooscript" type="text/javascript">
+            var odoo = {
+                csrf_token: "5b1b32ad5bbd625ffa2ffc32e7f4b56243a5bab8o1788199242",
+                debug: "",
+            };
+        </script>
+        <script type="text/javascript">
+            odoo.__session_info__ = {"is_admin": false, "is_system": false, "is_public": true, "is_website_user": true, "uid": null, "is_frontend": true, "profile_session": null, "profile_collectors": null, "profile_params": null, "show_effect": true, "currencies": {"125": {"symbol": "\u20ac", "position": "after", "digits": [69, 2]}, "1": {"symbol": "$", "position": "before", "digits": [69, 2]}}, "bundle_params": {"lang": "en_US", "website_id": 1}, "test_mode": false, "websocket_worker_version": "18.0-1", "translationURL": "/website/translations", "cache_hashes": {"translations": "4fec42eb8f4d4090520f930b982cbeb2a2d5ae52"}, "geoip_country_code": null, "geoip_phone_code": null, "lang_url_code": "de"};
+            if (!/(^|;\s)tz=/.test(document.cookie)) {
+                const userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                document.cookie = `tz=${userTZ}; path=/`;
+            }
+        </script>
+        <script type="text/javascript" defer="defer" src="/web/assets/1/d1ba737/web.assets_frontend_minimal.min.js" onerror="__odooAssetError=1"></script>
+        <script type="text/javascript" defer="defer" data-src="/web/assets/1/80ce416/web.assets_frontend_lazy.min.js" onerror="__odooAssetError=1"></script>
+        
+        
+    </head>
+    <body>
+
+
+
+        <div id="wrapwrap" class="   ">
+            <a class="o_skip_to_content btn btn-primary rounded-0 visually-hidden-focusable position-absolute start-0" href="#wrap">Zum Inhalt springen</a>
+                <header id="top" data-anchor="true" data-name="Header" data-extra-items-toggle-aria-label="Schaltfläche für zusätzliche Elemente" class="   o_header_standard" style=" ">
+                    
+    <nav data-name="Navbar" aria-label="Main" class="navbar navbar-expand-lg navbar-light o_colored_level o_cc d-none d-lg-block shadow-sm ">
+        
+
+            <div id="o_main_nav" class="o_main_nav container">
+                
+    <a data-name="Navbar Logo" href="/" class="navbar-brand logo me-4">
+            
+            <span role="img" aria-label="Logo of voltaic.systems | Enterprise AI Agents and Semantic Data Management" title="voltaic.systems | Enterprise AI Agents and Semantic Data Management"><img src="/web/image/website/1/logo/voltaic.systems%20%7C%20Enterprise%20AI%20Agents%20and%20Semantic%20Data%20Management?unique=28cf50b" class="img img-fluid" width="95" height="40" alt="voltaic.systems | Enterprise AI Agents and Semantic Data Management" loading="lazy"/></span>
+        </a>
+    
+                
+    <ul role="menu" id="top_menu" class="nav navbar-nav top_menu o_menu_loading me-auto">
+        
+
+                    
+    <li role="presentation" class="nav-item dropdown position-static">
+        <a data-bs-toggle="dropdown" href="#" role="menuitem" class="nav-link dropdown-toggle o_mega_menu_toggle  " data-bs-display="static">
+            <span>Software</span>
+        </a>
+            <div data-name="Mega Menu" role="menuitem" class="dropdown-menu o_mega_menu "><section class="s_mega_menu_odoo_menu pt16 o_colored_level o_cc o_cc1">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-lg-3 pt16 pb24 o_colored_level border" style="border-width: 15px !important; border-color: rgb(255, 255, 255) !important;">
+                    <h4 class="text-uppercase h5 fw-bold mt-0">PRODUKTE</h4>
+                    <div class="s_hr pt4 pb16" data-name="Trennlinie">
+                        <hr class="w-100 mx-auto" style="border-top-width: 2px; border-top-color: var(--primary);">
+                    </div>
+                    <nav class="nav flex-column">
+                        <a href="/software/produkte/dos-basic" class="nav-link px-0" data-name="Menu Item">DOS Basic</a>
+                        <a href="/software/produkte/dos-standard" class="nav-link px-0" data-name="Menu Item">DOS Standard</a>
+                        <br>
+                        <a href="/software/produkte/datenversprechen" class="nav-link px-0" data-name="Menu Item">Datenversprechen</a>
+                        <a href="/software/produkte/industrie-anwendungen" class="nav-link px-0" data-name="Menu Item">Industrielle Anwendungen &amp; Einsatzgebiete</a>
+                        
+                    </nav>
+                </div>
+                <div class="col-12 col-lg-3 pt16 pb24 o_colored_level border" style="border-width: 15px !important; border-color: rgb(255, 255, 255) !important;">
+                    <h4 class="text-uppercase h5 fw-bold mt-0">KOMPONENTEN</h4>
+                    <div class="s_hr pt4 pb16" data-name="Trennlinie">
+                        <hr class="w-100 mx-auto" style="border-top-width: 2px; border-top-color: var(--secondary);">
+                    </div>
+                    <nav class="nav flex-column">
+                        <a href="/produkte/ai-data-mapper" class="nav-link px-0" data-name="Menu Item">Mapper</a>
+                        <a href="/software/komponenten/models" class="nav-link px-0" data-name="Menu Item">Models</a>
+                        <a href="/software/komponenten/vector-space" class="nav-link px-0" data-name="Menu Item">Vector Space</a><a href="/software/komponenten/user-interfaces" class="nav-link px-0" data-name="Menu Item">Interfaces &amp; Application Framework</a>
+                    </nav>
+                </div>
+                <div class="col-12 col-lg-3 pt16 pb24 o_colored_level border" style="border-width: 15px !important; border-color: rgb(255, 255, 255) !important;">
+                    <h4 class="text-uppercase h5 fw-bold mt-0">Downstream Features</h4>
+                    <div class="s_hr pt4 pb16" data-name="Trennlinie">
+                        <hr class="w-100 mx-auto" style="border-top-width: 2px; border-top-color: var(--primary);">
+                    </div>
+                    <nav class="nav flex-column">
+                        <a href="#" class="nav-link px-0" data-name="Menu Item">Sales Automation</a>
+                        <a href="#" class="nav-link px-0" data-name="Menu Item">Marketing Automation</a>
+                        <a href="http://H" class="nav-link px-0" data-name="Menu Item">HR Automation</a>
+                        
+                        
+                    </nav>
+                </div>
+                <div class="col-12 col-lg-3 pt16 pb24 o_colored_level border" style="border-width: 15px !important; border-color: rgb(255, 255, 255) !important;">
+                    <h4 class="text-uppercase h5 fw-bold mt-0">BRANCHENLÖSUNGEN</h4>
+                    <div class="s_hr pt4 pb16" data-name="Trennlinie">
+                        <hr class="w-100 mx-auto" style="border-top-width: 2px; border-top-color: var(--secondary);">
+                    </div>
+                    <nav class="nav flex-column">
+                        <a href="/software/branchenloesungen/fintech" class="nav-link px-0" data-name="Menu Item">Financial Services</a>
+                        <a href="/software/branchenloesungen/fintech" class="nav-link px-0" data-name="Menu Item">Healthcare &amp; Life Sciences</a>
+                        <a href="/software/branchenloesungen/fintech" class="nav-link px-0" data-name="Menu Item">Manufacturing &amp; Supply Chain</a>
+                        <a href="/software/branchenloesungen/fintech" class="nav-link px-0" data-name="Menu Item">Retail &amp; E-Commerce</a><a href="/software/branchenloesungen/fintech" class="nav-link px-0" data-name="Menu Item">Energy &amp; Utilities</a><a href="/software/branchenloesungen/fintech" class="nav-link px-0" data-name="Menu Item">Sales &amp; Customer Services</a><a href="/software/branchenloesungen/fintech" class="nav-link px-0" data-name="Menu Item">Service Provider</a><a href="/software/branchenloesungen/fintech" class="nav-link px-0" data-name="Menu Item" aria-describedby="popover948715">Food &amp; Beverage</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid border-top s_mega_menu_odoo_menu_footer">
+            <div class="row">
+                <div class="col-12 pt8 pb8 o_colored_level">
+                    <div class="s_social_media text-center o_not_editable" data-snippet="s_social_media" data-name="Social Media">
+                        <h5 class="s_social_media_title d-none">Folgen Sie uns</h5>
+<a href="/website/social/linkedin" class="s_social_media_linkedin me-3 ms-3" target="_blank" aria-label="LinkedIn">
+                            <i class="fa fa-2x fa-linkedin m-1 o_editable_media"></i>
+                        </a>
+<a href="/website/social/github" class="s_social_media_github me-3 ms-3" target="_blank" aria-label="GitHub">
+                            <i class="fa fa-2x fa-github m-1 o_editable_media"></i>
+                        </a>
+<a href="/website/social/youtube" class="s_social_media_youtube me-3 ms-3" target="_blank" aria-label="YouTube">
+                            <i class="fa fa-2x fa-youtube m-1 o_editable_media"></i>
+                        </a>
+</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+</div>
+    </li>
+    <li role="presentation" class="nav-item dropdown position-static">
+        <a data-bs-toggle="dropdown" href="#" role="menuitem" class="nav-link dropdown-toggle o_mega_menu_toggle  " data-bs-display="static">
+            <span>Services</span>
+        </a>
+            <div data-name="Mega Menu" role="menuitem" class="dropdown-menu o_mega_menu "><section class="s_mega_menu_odoo_menu pt16 o_colored_level o_cc o_cc1">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 pt16 pb24 o_colored_level border col-lg-4" style="border-width: 15px !important; border-color: rgb(255, 255, 255) !important;">
+                    <h4 class="text-uppercase h5 fw-bold mt-0">KI Customising</h4><div class="s_hr oe_snippet_body o_colored_level pb0 pt8" data-snippet="s_hr" data-name="Trennlinie">
+        <hr class="w-100 mx-auto" style="border-top-color: rgb(111, 66, 193);">
+    </div><nav class="nav flex-column">
+                        <a href="/model-finetuning" class="nav-link px-0" data-name="Menu Item">Model Finetuning</a>
+                        <a href="/datenstrukturierung-u-pipelines" class="nav-link px-0" data-name="Menu Item">Datenstrukturierung und Pipelines</a>
+                        <a href="/ki-prozessautomatisierung" class="nav-link px-0" data-name="Menu Item">KI Prozess-Automatisierung</a>
+                        <a href="/projektmanagement" class="nav-link px-0" data-name="Menu Item">Projektmanagement</a>
+                        
+                        
+                    </nav>
+                </div>
+                <div class="col-12 pt16 pb24 o_colored_level border col-lg-4" style="border-width: 15px !important; border-color: rgb(255, 255, 255) !important; border-style: dashed !important;">
+                    <h4 class="text-uppercase h5 fw-bold mt-0">Know-How Aufbau</h4>
+                    <div class="s_hr pt4 pb16 o_colored_level" data-name="Trennlinie">
+                        <hr class="w-100 mx-auto" style="border-top-color: rgb(111, 66, 193);">
+                    </div>
+                    <nav class="nav flex-column">
+                        <a href="/kl-roadmap" class="nav-link px-0" data-name="Menu Item">KI Roadmap</a>
+                        <a href="/ki-aus-it-perspektive" class="nav-link px-0" data-name="Menu Item">KI aus IT-Perspektive (Schulungsprogramm)</a>
+                        <a href="/mitarbeiter-schulung" class="nav-link px-0" data-name="Menu Item" aria-describedby="popover197650">KI aus Geschäfts-Perspektive (Schulungsprogramm)</a>
+                    </nav>
+                </div>
+                <div class="col-12 pt16 pb24 o_colored_level border col-lg-4" style="border-width: 15px !important; border-color: rgb(255, 255, 255) !important;">
+                    <h4 class="text-uppercase h5 fw-bold mt-0">Management Advisory</h4>
+                    <div class="s_hr pt4 pb16 o_colored_level" data-name="Trennlinie">
+                        <hr class="w-100 mx-auto" style="border-top-color: rgb(111, 66, 193); border-top-style: double;">
+                    </div>
+                    <nav class="nav flex-column">
+                        <a href="/services/strategie-u-transformation" class="nav-link px-0" data-name="Menu Item">IT Strategie und Transformation</a>
+                        <a href="/services/strategie-u-transformation" class="nav-link px-0" data-name="Menu Item">IT Programm- &amp; Projekt-Management</a>
+                        <a href="/services/strategie-u-transformation" class="nav-link px-0" data-name="Menu Item">Change Management</a>
+                        <a href="/services/strategie-u-transformation" class="nav-link px-0" data-name="Menu Item">Krisen-Handling &amp; Projekt-Rettung</a>
+                        <a href="/services/strategie-u-transformation" class="nav-link px-0" data-name="Menu Item">IT Service Management</a><a href="/services/strategie-u-transformation" class="nav-link px-0" data-name="Menu Item">Digitale Transformation</a><a href="/services/strategie-u-transformation" class="nav-link px-0" data-name="Menu Item">ERP Consulting (Vendor agnostic, AI featured)</a><a href="/services/strategie-u-transformation" class="nav-link px-0" data-name="Menu Item">Künstliche Intelligenz &amp; Cognitive Twins</a><a href="/services/strategie-u-transformation" class="nav-link px-0" data-name="Menu Item">Industrie 4.0 &amp; Internet of Things</a><a href="/services/strategie-u-transformation" class="nav-link px-0" data-name="Menu Item">Cyber Security</a><a href="/services/strategie-u-transformation" class="nav-link px-0" data-name="Menu Item">Data Science &amp; Data Mining</a></nav>
+                </div>
+                
+            </div>
+        </div>
+        <div class="container-fluid border-top s_mega_menu_odoo_menu_footer">
+            <div class="row">
+                <div class="col-12 pt8 pb8 o_colored_level">
+                    <div class="s_social_media o_not_editable text-center" data-snippet="s_social_media" data-name="Social Media">
+                        <h5 class="s_social_media_title d-none">Folgen Sie uns</h5>
+<a href="/website/social/linkedin" class="s_social_media_linkedin me-3 ms-3" target="_blank" aria-label="LinkedIn">
+                            <i class="fa fa-2x fa-linkedin m-1 o_editable_media"></i>
+                        </a>
+<a href="/website/social/github" class="s_social_media_github me-3 ms-3" target="_blank" aria-label="GitHub">
+                            <i class="fa fa-2x fa-github m-1 o_editable_media"></i>
+                        </a>
+<a href="/website/social/youtube" class="s_social_media_youtube me-3 ms-3" target="_blank" aria-label="YouTube">
+                            <i class="fa fa-2x fa-youtube m-1 o_editable_media"></i>
+                        </a>
+</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+
+
+
+</div>
+    </li>
+    <li role="presentation" class="nav-item dropdown position-static">
+        <a data-bs-toggle="dropdown" href="#" role="menuitem" class="nav-link dropdown-toggle o_mega_menu_toggle  " data-bs-display="static">
+            <span>Über uns</span>
+        </a>
+            <div data-name="Mega Menu" role="menuitem" class="dropdown-menu o_mega_menu "><section class="s_mega_menu_odoo_menu pt16 o_colored_level o_cc o_cc1">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 pt16 pb24 o_colored_level col-lg-6 border" style="border-width: 15px !important; border-color: rgb(255, 255, 255) !important;">
+                    <h4 class="text-uppercase h5 fw-bold mt-0">Unternehmen</h4>
+                    <div class="s_hr pt4 pb16" data-name="Separator">
+                        <hr class="w-100 mx-auto" style="border-top-width: 2px; border-top-color: var(--primary);">
+                    </div>
+                    <nav class="nav flex-column">
+                        <a href="/hintergrund" class="nav-link px-0" data-name="Menu Item">Warum voltAIc</a>
+                        <a href="/problemlosung" class="nav-link px-0" data-name="Menu Item">Problemlösung</a>
+                        <a href="/neue-art-von-ki" class="nav-link px-0" data-name="Menu Item">Die neue Art von KI Bewegung</a>
+                        <a href="#" class="nav-link px-0" data-name="Menu Item"><br></a>
+                        <a href="/agendaundteam" class="nav-link px-0" data-name="Menu Item">Agenda &amp; Team</a><a href="/jobs" class="nav-link px-0" data-name="Menu Item">Jobs</a>
+                        
+                    </nav>
+                </div>
+                <div class="col-12 pt16 pb24 o_colored_level col-lg-6 border" style="border-width: 15px !important; border-color: rgb(255, 255, 255) !important;">
+                    <h4 class="text-uppercase h5 fw-bold mt-0">Community</h4>
+                    <div class="s_hr pt4 pb16" data-name="Separator">
+                        <hr class="w-100 mx-auto" style="border-top-width: 2px; border-top-color: var(--secondary);">
+                    </div>
+                    <nav class="nav flex-column">
+                        <a href="/parse" class="nav-link px-0" data-name="Menu Item">PARSE Alliance</a>
+                        <a href="/partners" class="nav-link px-0" data-name="Menu Item">Partner Programm</a>
+                        <a href="/community" class="nav-link px-0" data-name="Menu Item" aria-describedby="popover635768">Netzwerke und Community</a>
+                    </nav>
+                </div>
+                
+                
+            </div>
+        </div>
+        <div class="container-fluid border-top s_mega_menu_odoo_menu_footer">
+            <div class="row">
+                <div class="col-12 pt8 pb8 o_colored_level">
+                    <div class="s_social_media text-center o_not_editable" data-snippet="s_social_media" data-name="Social Media">
+                        <h5 class="s_social_media_title d-none">Folgen Sie uns</h5>
+                        <a href="/website/social/facebook" class="s_social_media_facebook me-3 ms-3" target="_blank" aria-label="Facebook">
+                            <i class="fa fa-2x fa-facebook m-1 o_editable_media"></i>
+                        </a>
+                        <a href="/website/social/twitter" class="s_social_media_twitter me-3 ms-3" target="_blank" aria-label="X">
+                            <i class="fa fa-2x fa-twitter m-1 o_editable_media"></i>
+                        </a>
+                        <a href="/website/social/linkedin" class="s_social_media_linkedin me-3 ms-3" target="_blank" aria-label="LinkedIn">
+                            <i class="fa fa-2x fa-linkedin m-1 o_editable_media"></i>
+                        </a>
+                        <a href="/website/social/github" class="s_social_media_github me-3 ms-3" target="_blank" aria-label="GitHub">
+                            <i class="fa fa-2x fa-github m-1 o_editable_media"></i>
+                        </a>
+                        <a href="/website/social/youtube" class="s_social_media_youtube me-3 ms-3" target="_blank" aria-label="YouTube">
+                            <i class="fa fa-2x fa-youtube m-1 o_editable_media"></i>
+                        </a>
+                        <a href="/website/social/instagram" class="s_social_media_instagram me-3 ms-3" target="_blank" aria-label="Instagram">
+                            <i class="fa fa-2x fa-instagram m-1 o_editable_media"></i>
+                        </a>
+                        <a href="/website/social/tiktok" class="s_social_media_tiktok me-3 ms-3" target="_blank" aria-label="TikTok">
+                            <i class="fa fa-2x fa-tiktok m-1 o_editable_media"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+</div>
+    </li>
+    <li role="presentation" class="nav-item">
+        <a role="menuitem" href="/ki-aus-it-perspektive" class="nav-link ">
+            <span>Entwickler</span>
+        </a>
+    </li>
+                
+    </ul>
+                
+                <ul class="navbar-nav align-items-center gap-2 flex-shrink-0 justify-content-end ps-3">
+                    
+        <li class="">
+                <div class="modal fade css_editable_mode_hidden" id="o_search_modal" aria-hidden="true" tabindex="-1">
+                    <div class="modal-dialog modal-lg pt-5">
+                        <div class="modal-content mt-5">
+    <form method="get" class="o_searchbar_form s_searchbar_input " action="/website/search" data-snippet="s_searchbar_input">
+            <div role="search" class="input-group ">
+        <input type="search" name="search" class="search-query form-control oe_search_box  border-0 bg-light" placeholder="Suchen ..." data-limit="5" data-display-image="true" data-display-description="true" data-display-extra-link="true" data-display-detail="true" data-order-by="name asc"/>
+        <button type="submit" aria-label="Suchen" title="Suchen" class="btn oe_search_button btn-light">
+            <i class="oi oi-search"></i>
+        </button>
+    </div>
+
+            <input name="order" type="hidden" class="o_search_order_by" value="name asc"/>
+            
+    
+        </form>
+                        </div>
+                    </div>
+                </div>
+                <a data-bs-target="#o_search_modal" data-bs-toggle="modal" role="button" title="Suchen" href="#" class="btn rounded-circle p-1 lh-1 o_navlink_background text-reset o_not_editable">
+                    <i class="oi oi-search fa-stack lh-lg" contenteditable="false"></i>
+                </a>
+        </li>
+                    
+                    
+                    
+                    
+                    
+        
+        
+                    
+        <li class="">
+            <div class="oe_structure oe_structure_solo ">
+            <section class="oe_unremovable oe_unmovable s_text_block o_colored_level" data-snippet="s_text_block" data-name="Text">
+                <div class="container">
+                        <a href="/kontakt-1" class="oe_unremovable btn_cta w-100 btn btn-primary w-100"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Kontakt</font></font></a></div>
+                    </section>
+                </div>
+        </li>
+                </ul>
+            </div>
+        
+    </nav>
+    <nav data-name="Navbar" aria-label="Mobile" class="navbar  navbar-light o_colored_level o_cc o_header_mobile d-block d-lg-none shadow-sm ">
+        
+
+        <div class="o_main_nav container flex-wrap justify-content-between">
+            
+    <a data-name="Navbar Logo" href="/" class="navbar-brand logo ">
+            
+            <span role="img" aria-label="Logo of voltaic.systems | Enterprise AI Agents and Semantic Data Management" title="voltaic.systems | Enterprise AI Agents and Semantic Data Management"><img src="/web/image/website/1/logo/voltaic.systems%20%7C%20Enterprise%20AI%20Agents%20and%20Semantic%20Data%20Management?unique=28cf50b" class="img img-fluid" width="95" height="40" alt="voltaic.systems | Enterprise AI Agents and Semantic Data Management" loading="lazy"/></span>
+        </a>
+    
+            <ul class="o_header_mobile_buttons_wrap navbar-nav flex-row align-items-center gap-2 mb-0">
+            <li class="o_not_editable">
+                    <button class="nav-link btn me-auto p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#top_menu_collapse_mobile" aria-controls="top_menu_collapse_mobile" aria-expanded="false" aria-label="navigation on/off">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </li>
+                </ul>
+            <div id="top_menu_collapse_mobile" class="offcanvas offcanvas-end o_navbar_mobile">
+                <div class="offcanvas-header justify-content-end o_not_editable">
+                    <button type="button" class="nav-link btn-close" data-bs-dismiss="offcanvas" aria-label="Schließen"></button>
+                </div>
+                <div class="offcanvas-body d-flex flex-column justify-content-between h-100 w-100">
+                    <ul class="navbar-nav">
+                        
+        <li class="">
+    <form method="get" class="o_searchbar_form s_searchbar_input " action="/website/search" data-snippet="s_searchbar_input">
+            <div role="search" class="input-group ">
+        <input type="search" name="search" class="search-query form-control oe_search_box  border-0 bg-light" placeholder="Suchen ..." data-limit="5" data-display-image="true" data-display-description="true" data-display-extra-link="true" data-display-detail="true" data-order-by="name asc"/>
+        <button type="submit" aria-label="Suchen" title="Suchen" class="btn oe_search_button btn-light">
+            <i class="oi oi-search"></i>
+        </button>
+    </div>
+
+            <input name="order" type="hidden" class="o_search_order_by" value="name asc"/>
+            
+    
+        </form>
+        </li>
+                        
+    <ul role="menu" class="nav navbar-nav top_menu  ">
+        
+
+                            
+    <li role="presentation" class="nav-item dropdown position-static">
+        <a data-bs-toggle="dropdown" href="#" role="menuitem" class="nav-link dropdown-toggle o_mega_menu_toggle  d-flex justify-content-between align-items-center" data-bs-display="static">
+            <span>Software</span>
+        </a>
+    </li>
+    <li role="presentation" class="nav-item dropdown position-static">
+        <a data-bs-toggle="dropdown" href="#" role="menuitem" class="nav-link dropdown-toggle o_mega_menu_toggle  d-flex justify-content-between align-items-center" data-bs-display="static">
+            <span>Services</span>
+        </a>
+    </li>
+    <li role="presentation" class="nav-item dropdown position-static">
+        <a data-bs-toggle="dropdown" href="#" role="menuitem" class="nav-link dropdown-toggle o_mega_menu_toggle  d-flex justify-content-between align-items-center" data-bs-display="static">
+            <span>Über uns</span>
+        </a>
+    </li>
+    <li role="presentation" class="nav-item">
+        <a role="menuitem" href="/ki-aus-it-perspektive" class="nav-link ">
+            <span>Entwickler</span>
+        </a>
+    </li>
+                        
+    </ul>
+                        
+                        
+                    </ul>
+                    <ul class="navbar-nav gap-2 mt-3 w-100">
+                        
+                        
+                        
+        
+        
+                        
+        <li class="">
+            <div class="oe_structure oe_structure_solo ">
+            <section class="oe_unremovable oe_unmovable s_text_block o_colored_level" data-snippet="s_text_block" data-name="Text">
+                <div class="container">
+                        <a href="/kontakt-1" class="oe_unremovable btn_cta w-100 btn btn-primary w-100 w-100"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Kontakt</font></font></a></div>
+                    </section>
+                </div>
+        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    
+    </nav>
+    
+        </header>
+                <main>
+                    
+            <div id="wrap">
+                
+                <div class="oe_structure oe_empty">
+                    <section class="s_text_image pt104 pb104" data-snippet="s_image_text" data-name="Image - Text">
+                        <div class="container">
+                            <div class="row align-items-center">
+                                <div class="col-lg-4 pb32">
+                                    <img class="img img-fluid mx-auto" src="/web_editor/shape/http_routing/404.svg?c2=o-color-2" alt="" loading="lazy"/>
+                                </div>
+                                <div class="col-lg-8 text-lg-start text-center my-auto">
+                                    <h1 class="visually-hidden">Fehler 404</h1>
+                                    <h2>Wir konnten die von Ihnen gesuchte Seite nicht finden!</h2>
+                                    <p></p>
+                                    <p><b>Kein Grund zur Panik.</b> Wenn Sie glauben, dass es sich um einen Fehler unsererseits handelt, senden Sie uns bitte eine Nachricht an <a href="/contactus">diese Seite</a>.</p>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="s_hr pt32 pb48" data-snippet="s_hr" data-name="Separator">
+                                        <hr class="w-100 mx-auto" style="border-top-width: 1px; border-top-style: solid; border-top-color: var(--400);"/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <p class="text-center">Vielleicht haben Sie nach einem dieser <b>meistbesuchten Seiten</b> gesucht?</p>
+                                    <ul class="list-inline text-center">
+                                        <li class="list-inline-item mb-2"><a href="/" class="btn btn-primary">Home</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        
+        <div id="o_shared_blocks" class="oe_unremovable"></div>
+                </main>
+                <footer id="bottom" data-anchor="true" data-name="Footer" class="o_footer o_colored_level o_cc ">
+                    <div id="footer" class="oe_structure oe_structure_solo">
+            <section class="s_text_block pt48 pb16" data-snippet="s_text_block" data-name="Text">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-2 pb16 o_colored_level">
+                            <h5>Entdecken</h5>
+                            <ul class="list-unstyled">
+                                <li class="list-item py-1"><a href="/">Home</a></li>
+                                <li class="list-item py-1"><a href="/hintergrund">Unser Unternehmen</a></li>
+                                <li class="list-item py-1"><a href="/software/branchenloesungen/fintech">Fallbeispiele</a></li>
+                                <li class="list-item py-1"><a href="/community">Blog</a></li>
+                                
+                            </ul>
+                        </div>
+                        <div class="col-lg-2 pb16 o_colored_level">
+                            <h5>Dienstleistungen</h5>
+                            <ul class="list-unstyled">
+                                <li class="py-1"><a href="/services/strategie-u-transformation">Integrierte IT Beratung für das KI Zeitalter</a></li></ul><p style="margin-bottom: 0px;"><a href="/model-finetuning">Model Finetuning</a></p><p style="margin-bottom: 0px;"><br/></p><p style="margin-bottom: 0px;"><a href="/datenstrukturierung-u-pipelines">Datenstrukturierung &amp; Pipelines</a></p><p style="margin-bottom: 0px;"><br/></p><p style="margin-bottom: 0px;"><a href="/kl-roadmap">Strategie &amp; Transformation</a></p></div><div class="pb16 o_colored_level col-lg-3">
+                            <h5>Produkte &amp; Lösungen</h5>
+                            <ul class="list-unstyled">
+                                <li class="py-1"><a href="/software/produkte/dos-standard">DOS – Data Operating System</a></li></ul><p style="margin-bottom: 0px;"><a href="/produkte/ai-data-mapper">MAPPER</a></p><p style="margin-bottom: 0px;"><br/></p><p style="margin-bottom: 0px;"><a href="/software/komponenten/vector-space">Data Drivers</a></p><p style="margin-bottom: 0px;"><br/></p><p style="margin-bottom: 0px;"><a href="/software/komponenten/models">Agents</a></p></div>
+                        
+                        
+                        <div class="pb16 o_colored_level col-lg-2">
+                            <h5>Technologie</h5>
+                            <p class="text-muted"><a href="/software/komponenten/models">Enterprise Language Models</a></p><p class="text-muted"><a href="/ki-prozessautomatisierung">Semantic Datamanagement</a></p><p class="text-muted"><a href="/software/produkte/datenversprechen">Security</a></p><p class="text-muted"><a href="/entwickler">API, Microservices und SDK</a></p><p class="text-muted"><a href="https://re-cloud.io/">Private, autonomous Clouds</a></p>
+                        </div><div class="col-lg-3 pb16 o_colored_level rounded o_cc o_cc3" style="background-color: rgb(237, 227, 255); border-radius: 10px !important;">
+                            <h5><br/></h5><h5>Kontakt aufnehmen</h5>
+                            <ul class="list-unstyled">
+                                <li class="py-1"><i class="fa fa-1x fa-fw fa-envelope me-2"></i><a href="mailto:datadriven@voltaic.systems">datadriven@voltaic.systems</a></li>
+                                <li class="py-1"><i class="fa fa-1x fa-fw fa-phone me-2"></i><span class="o_force_ltr">+49 711 7947 2394</span></li>
+                            </ul><p style="margin-bottom: 0px;"><strong>voltAIc | Wapsol GmbH</strong></p><p style="margin-bottom: 0px;"><br/></p><p style="margin-bottom: 0px;">Industriestrasse 15, D-70565 Stuttgart<br/>Tiroler Strasse 36, D-60596 Frankfurt</p></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    <div id="o_footer_scrolltop_wrapper" class="container h-0 d-flex align-items-center justify-content-center">
+            <a id="o_footer_scrolltop" role="button" href="#top" title="Scroll up" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center">
+                <span class="oi fa-1x oi-chevron-up" contenteditable="false"></span>
+            </a>
+        </div>
+                </footer>
+            </div>
+        
+        </body>
+</html>

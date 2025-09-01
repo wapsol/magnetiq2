@@ -11,7 +11,15 @@ from app.database import init_db, close_db
 from app.api.v1.auth.auth import router as auth_router
 from app.api.v1.content.pages import router as pages_router
 from app.api.v1.business.webinars import router as webinars_router
+from app.api.v1.business.consultation_bookings import router as consultation_bookings_router
 from app.api.v1.communication.email import router as email_router
+from app.api.v1.translations_simple import router as translations_router
+from app.api.v1.consultants.consultants import router as consultants_router
+from app.api.v1.consultants.kyc import router as kyc_router
+from app.api.v1.consultants.analytics import router as analytics_router
+from app.api.v1.consultants.enrichment import router as enrichment_router
+from app.api.v1.admin import admin_router
+from app.middleware.language_detection import LanguageDetectionMiddleware
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -45,6 +53,9 @@ app = FastAPI(
     redoc_url="/redoc" if settings.debug else None,
     lifespan=lifespan
 )
+
+# Language detection middleware
+app.add_middleware(LanguageDetectionMiddleware, default_language='en', supported_languages=['en', 'de'])
 
 # CORS middleware
 app.add_middleware(
@@ -188,9 +199,50 @@ app.include_router(
 )
 
 app.include_router(
+    consultation_bookings_router,
+    prefix="/api/v1/consultations",
+    tags=["Business - Consultation Bookings"]
+)
+
+app.include_router(
     email_router,
     prefix="/api/v1/communication/email",
     tags=["Communication - Email"]
+)
+
+app.include_router(
+    translations_router,
+    prefix="/api/v1/translations",
+    tags=["Translations"]
+)
+
+app.include_router(
+    consultants_router,
+    prefix="/api/v1/consultants",
+    tags=["Consultants"]
+)
+
+app.include_router(
+    kyc_router,
+    prefix="/api/v1/consultants/kyc",
+    tags=["Consultants - KYC"]
+)
+
+app.include_router(
+    analytics_router,
+    prefix="/api/v1/consultants/analytics",
+    tags=["Consultants - Analytics"]
+)
+
+app.include_router(
+    enrichment_router,
+    prefix="/api/v1/consultants/enrichment",
+    tags=["Consultants - Data Enrichment"]
+)
+
+app.include_router(
+    admin_router,
+    tags=["Admin Panel"]
 )
 
 

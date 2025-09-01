@@ -113,6 +113,65 @@ class ImageBlock(ContentBlock):
     aspect_ratio: Optional[str] = None  # "16:9", "4:3", "1:1", etc.
     object_fit: Optional[Literal["cover", "contain", "fill"]] = "cover"
     alignment: Optional[Literal["left", "center", "right", "full"]] = "center"
+    _meta: Optional[Dict[str, Any]] = None  # Metadata from migration/processing
+
+
+class GalleryImageItem(BaseModel):
+    """Individual image item in a gallery"""
+    src: str
+    alt: str
+    caption: Optional[str] = None
+    title: Optional[str] = None
+    width: Optional[int] = None
+    height: Optional[int] = None
+    thumbnail_src: Optional[str] = None
+    _meta: Optional[Dict[str, Any]] = None
+
+
+class GalleryBlock(ContentBlock):
+    """Image gallery block with multiple layout options"""
+    block_type: Literal["gallery"] = "gallery"
+    title: Optional[str] = None
+    description: Optional[str] = None
+    images: List[GalleryImageItem]
+    layout: Optional[Literal["grid", "masonry", "carousel", "lightbox"]] = "grid"
+    columns: Optional[int] = 3
+    gap: Optional[Literal["none", "small", "medium", "large"]] = "medium"
+    aspect_ratio: Optional[str] = None  # Applied to all images in grid layout
+    show_captions: Optional[bool] = True
+    enable_lightbox: Optional[bool] = True
+    lazy_loading: Optional[bool] = True
+
+
+class HeroImageBlock(ContentBlock):
+    """Enhanced hero block with advanced image capabilities"""
+    block_type: Literal["hero_image"] = "hero_image"
+    title: str
+    subtitle: Optional[str] = None
+    description: Optional[str] = None
+    primary_action: Optional[Dict[str, Any]] = None
+    secondary_action: Optional[Dict[str, Any]] = None
+    
+    # Image configuration
+    background_image: str
+    background_image_alt: str
+    mobile_image: Optional[str] = None  # Alternative image for mobile
+    overlay_opacity: Optional[float] = Field(0.4, ge=0, le=1)
+    overlay_color: Optional[str] = "#000000"
+    
+    # Layout and presentation
+    text_alignment: Optional[Literal["left", "center", "right"]] = "center"
+    text_position: Optional[Literal["top", "center", "bottom"]] = "center"
+    content_width: Optional[Literal["narrow", "medium", "wide", "full"]] = "medium"
+    height: Optional[Literal["small", "medium", "large", "viewport", "auto"]] = "large"
+    
+    # Advanced image settings
+    focal_point: Optional[Dict[str, float]] = None  # {x: 0.5, y: 0.5} for image positioning
+    parallax_enabled: Optional[bool] = False
+    blur_background: Optional[bool] = False
+    
+    # Responsive configuration  
+    _meta: Optional[Dict[str, Any]] = None
 
 
 class VideoBlock(ContentBlock):
@@ -147,6 +206,8 @@ ContentBlockType = Union[
     FAQBlock,
     PricingBlock,
     ImageBlock,
+    GalleryBlock,
+    HeroImageBlock,
     VideoBlock,
     SectionBlock
 ]
@@ -208,6 +269,10 @@ def validate_content_blocks(blocks: List[Dict[str, Any]]) -> List[ContentBlockTy
             validated_blocks.append(PricingBlock(**block_data))
         elif block_type == 'image':
             validated_blocks.append(ImageBlock(**block_data))
+        elif block_type == 'gallery':
+            validated_blocks.append(GalleryBlock(**block_data))
+        elif block_type == 'hero_image':
+            validated_blocks.append(HeroImageBlock(**block_data))
         elif block_type == 'video':
             validated_blocks.append(VideoBlock(**block_data))
         elif block_type == 'section':

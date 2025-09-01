@@ -14,7 +14,7 @@ The Magnetiq v2 backend is a streamlined, production-ready API built with Python
 - **Database**: SQLite (all environments)
 - **Content Format**: PortableText for structured content
 - **Validation**: Pydantic v2 with JSON Schema + PortableText validation
-- **Authentication**: JWT with HS256 algorithm
+- **Authentication**: JWT with RS256 algorithm
 - **Documentation**: Auto-generated OpenAPI 3.0
 
 ### Port Configuration
@@ -636,9 +636,10 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 
-# HS256 algorithm for simplicity
-SECRET_KEY = "your-secret-key-here"  # From environment
-ALGORITHM = "HS256"
+# RS256 algorithm for better security
+PRIVATE_KEY_PATH = "/secrets/jwt_private_key.pem"  # RSA private key
+PUBLIC_KEY_PATH = "/secrets/jwt_public_key.pem"   # RSA public key
+ALGORITHM = "RS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 15
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
@@ -3150,7 +3151,7 @@ For teams migrating from the previous complex v2 architecture:
 - **Database**: PostgreSQL → SQLite (single file)
 - **Caching**: Redis removed → In-memory caching only
 - **Background Tasks**: Celery removed → Synchronous operations
-- **Authentication**: RS256 → HS256 (simpler secret management)
+- **Authentication**: RS256 (enhanced key pair security)
 - **Complexity**: Microservices → Monolithic API
 
 ### Migration Benefits

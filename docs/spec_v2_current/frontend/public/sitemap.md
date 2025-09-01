@@ -38,8 +38,9 @@ This sitemap defines the complete URL structure and navigation hierarchy for the
 /services/ → /de/dienstleistungen/
 ├── /services/ai-consulting/ → /de/dienstleistungen/ki-beratung/
 ├── /services/digital-transformation/ → /de/dienstleistungen/digitale-transformation/
-├── /services/automation/ → /de/dienstleistungen/automatisierung/
-└── /services/development/ → /de/dienstleistungen/entwicklung/
+│   ├── /services/development/ → /de/dienstleistungen/entwicklung/
+│   └── /services/automation/ → /de/dienstleistungen/automatisierung/
+└── /services/data-management/ → /de/dienstleistungen/datenmanagement/
 ```
 
 **AI Consulting** (`/services/ai-consulting/`)
@@ -53,18 +54,42 @@ This sitemap defines the complete URL structure and navigation hierarchy for the
 - Legacy system modernization
 - Change management
 - Digital culture transformation
+- **Sub-services:**
+  - **Custom Development** (`/services/development/`) - AI/ML application development, API development and integration, Custom software solutions, Proof of concept development
+  - **Automation Solutions** (`/services/automation/`) - Robotic Process Automation (RPA), Workflow optimization, Integration solutions, Monitoring and maintenance
 
-**Automation Solutions** (`/services/automation/`)
-- Robotic Process Automation (RPA)
-- Workflow optimization
-- Integration solutions
-- Monitoring and maintenance
+**Data Management** (`/services/data-management/`)
+- Data strategy and governance
+- Data architecture design
+- Data quality and cleansing
+- Master data management
+- Data integration and migration
+- Analytics and reporting infrastructure
 
-**Custom Development** (`/services/development/`)
-- AI/ML application development
-- API development and integration
-- Custom software solutions
-- Proof of concept development
+---
+
+### 🚀 Products Section
+```
+/products/ → /de/produkte/
+├── /products/data-operating-system/ → /de/produkte/daten-betriebssystem/
+└── /products/private-cloud/ → /de/produkte/private-cloud/
+```
+
+**Data Operating System** (`/products/data-operating-system/`)
+- Unified data management platform
+- Real-time data processing and analytics
+- AI-powered data insights and automation
+- Enterprise-grade security and compliance
+- Multi-cloud and hybrid deployment options
+- Integration with existing enterprise systems
+
+**Private Cloud** (`/products/private-cloud/`)
+- Secure, dedicated cloud infrastructure
+- GDPR-compliant data hosting
+- Custom AI model deployment
+- Scalable compute resources
+- 24/7 monitoring and support
+- Hybrid cloud integration capabilities
 
 ---
 
@@ -130,10 +155,6 @@ This sitemap defines the complete URL structure and navigation hierarchy for the
 │   └── [Dynamic Pages] /resources/whitepapers/[slug]/ → /de/ressourcen/whitepapers/[slug]/
 │       ├── /resources/whitepapers/[slug]/download/ → /de/ressourcen/whitepapers/[slug]/download/
 │       └── /resources/whitepapers/[slug]/downloaded/ → /de/ressourcen/whitepapers/[slug]/heruntergeladen/
-├── /resources/blog/ → /de/ressourcen/blog/
-│   ├── /resources/blog/categories/ → /de/ressourcen/blog/kategorien/
-│   ├── /resources/blog/tags/ → /de/ressourcen/blog/schlagwoerter/
-│   └── [Dynamic Pages] /resources/blog/[slug]/ → /de/ressourcen/blog/[slug]/
 └── /resources/tools/ → /de/ressourcen/tools/
     ├── /resources/tools/roi-calculator/ → /de/ressourcen/tools/roi-rechner/
     ├── /resources/tools/readiness-assessment/ → /de/ressourcen/tools/bereitschaftsbewertung/
@@ -152,12 +173,6 @@ This sitemap defines the complete URL structure and navigation hierarchy for the
 - **Download Flow**: Lead capture with progressive profiling
 - **Thank You Pages**: Additional resource recommendations
 - **Content Gating**: Email capture for premium content
-
-**Blog** (SEO & Thought Leadership)
-- **Categories**: AI trends, implementation tips, industry insights
-- **Tags**: Cross-referenced content organization
-- **Author Pages**: Consultant expertise showcase
-- **Social Sharing**: LinkedIn, Twitter integration
 
 **Tools & Calculators** (Interactive Lead Generation)
 - **ROI Calculator**: AI implementation return calculation
@@ -414,9 +429,22 @@ const primaryNavigation: NavItem[] = [
     label: { en: "Services", de: "Dienstleistungen" },
     children: [
       { label: { en: "AI Consulting", de: "KI-Beratung" }, href: "/services/ai-consulting/" },
-      { label: { en: "Digital Transformation", de: "Digitale Transformation" }, href: "/services/digital-transformation/" },
-      { label: { en: "Automation", de: "Automatisierung" }, href: "/services/automation/" },
-      { label: { en: "Development", de: "Entwicklung" }, href: "/services/development/" }
+      { 
+        label: { en: "Digital Transformation", de: "Digitale Transformation" }, 
+        href: "/services/digital-transformation/",
+        children: [
+          { label: { en: "Custom Development", de: "Entwicklung" }, href: "/services/development/" },
+          { label: { en: "Automation", de: "Automatisierung" }, href: "/services/automation/" }
+        ]
+      },
+      { label: { en: "Data Management", de: "Datenmanagement" }, href: "/services/data-management/" }
+    ]
+  },
+  {
+    label: { en: "Products", de: "Produkte" },
+    children: [
+      { label: { en: "Data Operating System", de: "Daten-Betriebssystem" }, href: "/products/data-operating-system/" },
+      { label: { en: "Private Cloud", de: "Private Cloud" }, href: "/products/private-cloud/" }
     ]
   },
   {
@@ -432,7 +460,6 @@ const primaryNavigation: NavItem[] = [
     children: [
       { label: { en: "Webinars", de: "Webinare" }, href: "/resources/webinars/" },
       { label: { en: "Whitepapers", de: "Whitepapers" }, href: "/resources/whitepapers/" },
-      { label: { en: "Blog", de: "Blog" }, href: "/resources/blog/" },
       { label: { en: "Tools", de: "Tools" }, href: "/resources/tools/" }
     ]
   }

@@ -973,16 +973,19 @@ async def sync_leads_to_odoo(
     }
 ```
 
-## Background Task Integration
+## Synchronous Integration Operations
 
-### Celery Tasks for Integrations
+**Note**: Magnetiq v2 uses synchronous operations instead of background task queues to maintain simplicity and eliminate external dependencies like Celery/Redis.
+
+### Manual and Cron-triggered Operations
 ```python
-from celery import Celery
 from services.integrations import IntegrationManager
+from datetime import datetime, timedelta
+import logging
 
-@celery_app.task(bind=True, max_retries=3)
-def sync_leads_to_odoo_task(self):
-    """Background task to sync leads to Odoo."""
+def sync_leads_to_odoo():
+    """Synchronous operation to sync leads to Odoo."""
+    logger = logging.getLogger(__name__)
     try:
         manager = IntegrationManager()
         config = await manager.get_integration_config('odoo')
@@ -998,10 +1001,11 @@ def sync_leads_to_odoo_task(self):
                 'failed': result['failed']
             }
     except Exception as exc:
-        raise self.retry(exc=exc, countdown=60 * (2 ** self.request.retries))
+        logger.error(f"Failed to sync leads to Odoo: {exc}")
+        # In v2, we handle errors synchronously without retries
+        raise exc
 
-@celery_app.task
-def send_webinar_reminders_task():
+def send_webinar_reminders():
     """Send webinar reminder emails."""
     # Get webinars starting in 2 and 7 days
     for days_ahead in [2, 7]:
@@ -1015,8 +1019,7 @@ def send_webinar_reminders_task():
                     days_ahead
                 )
 
-@celery_app.task
-def health_check_integrations_task():
+def health_check_integrations():
     """Monitor integration health and send alerts."""
     manager = IntegrationManager()
     status = await manager.get_integration_status()
@@ -1027,8 +1030,50 @@ def health_check_integrations_task():
     ]
     
     if unhealthy_services:
-        # Send alert email to administrators
-        EmailService.send_integration_alert.delay(unhealthy_services)
+        # Send alert email to administrators (synchronously)
+        from services.email_service import EmailService
+        email_service = EmailService()
+        email_service.send_integration_alert(unhealthy_services)
+```
+
+### Cron-based Scheduling
+
+Instead of Celery, use standard cron jobs to trigger operations:
+
+```bash
+# /etc/cron.d/magnetiq-integrations
+# Sync leads to Odoo every 4 hours
+0 */4 * * * www-data /usr/bin/python3 /app/scripts/sync_leads.py
+
+# Send webinar reminders daily at 9 AM
+0 9 * * * www-data /usr/bin/python3 /app/scripts/send_reminders.py
+
+# Health check every 15 minutes
+*/15 * * * * www-data /usr/bin/python3 /app/scripts/health_check.py
+```
+
+```python
+# /app/scripts/sync_leads.py
+#!/usr/bin/env python3
+import asyncio
+import sys
+import os
+
+# Add the app directory to Python path
+sys.path.append('/app')
+
+from integrations.integrations import sync_leads_to_odoo
+
+async def main():
+    try:
+        result = sync_leads_to_odoo()
+        print(f"Sync completed: {result}")
+    except Exception as e:
+        print(f"Sync failed: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
 ## Security Considerations

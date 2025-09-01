@@ -5,7 +5,7 @@ from sqlalchemy import select
 from typing import Optional
 from app.database import get_db
 from app.core.security import verify_token
-from app.core.permissions import UserRole, Permission, has_permission
+from app.core.permissions import UserRole, Permission, has_permission, can_manage_users, can_manage_role
 from app.models.user import AdminUser
 
 security = HTTPBearer()
@@ -96,6 +96,77 @@ def require_editor():
 def require_viewer():
     """Require viewer, editor or admin role"""
     return require_permission(Permission.READ)
+
+
+def require_super_admin():
+    """Require super admin role"""
+    def super_admin_checker(
+        current_user: AdminUser = Depends(get_current_active_user)
+    ) -> AdminUser:
+        if current_user.role != UserRole.SUPER_ADMIN:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Super admin privileges required"
+            )
+        return current_user
+    
+    return super_admin_checker
+
+
+def require_user_management():
+    """Require user management permissions"""
+    return require_permission(Permission.USER_MANAGEMENT)
+
+
+def require_system_settings():
+    """Require system settings permissions"""
+    return require_permission(Permission.SYSTEM_SETTINGS)
+
+
+def require_audit_logs():
+    """Require audit logs permissions"""
+    return require_permission(Permission.AUDIT_LOGS)
+
+
+def require_role_or_higher(minimum_role: UserRole):
+    """Require specific role or higher"""
+    def role_checker(
+        current_user: AdminUser = Depends(get_current_active_user)
+    ) -> AdminUser:
+        from app.core.permissions import is_higher_role
+        
+        user_role = UserRole(current_user.role)
+        
+        # Check if current role is the minimum role or higher
+        if user_role == minimum_role or is_higher_role(user_role, minimum_role):
+            return current_user
+        
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Minimum role required: {minimum_role.value}"
+        )
+    
+    return role_checker
+
+
+def can_manage_target_user():
+    """Check if current user can manage operations on target users"""
+    def manager_checker(
+        target_user_id: int,
+        current_user: AdminUser = Depends(get_current_active_user),
+        db: AsyncSession = Depends(get_db)
+    ):
+        """
+        This dependency is used in user management endpoints to ensure
+        the current user has permissions to manage the target user
+        """
+        return {
+            'current_user': current_user,
+            'target_user_id': target_user_id,
+            'db': db
+        }
+    
+    return manager_checker
 
 
 class CommonQueryParams:

@@ -29,7 +29,7 @@ This specification serves as the architectural overview and entry point to speci
 - **Drag & Drop**: dnd-kit for PortableText block arrangement
 
 ### Access Configuration
-- **URL**: `http://localhost:8088` (development)
+- **URL**: `http://localhost:8036/admin` (development)
 - **Production URL**: `https://admin.voltAIc.systems`
 - **Authentication**: JWT-based with role-based access control
 - **Session Management**: Auto-logout after inactivity
@@ -391,7 +391,7 @@ The admin panel follows comprehensive testing practices to ensure reliability an
 ```tsx
 interface AdminBuildConfig {
   outDir: 'dist-admin';
-  port: 8088;
+  port: 8036;
   sessionTimeout: 1800000; // 30 minutes
   features: {
     consultantManagement: boolean;
@@ -405,7 +405,7 @@ interface AdminBuildConfig {
 ```env
 # Admin Panel Configuration
 VITE_ADMIN_API_URL=http://localhost:8000
-VITE_ADMIN_PORT=8088
+VITE_ADMIN_PORT=8036
 VITE_SESSION_TIMEOUT=1800000
 VITE_AUTO_LOGOUT_WARNING=300000
 
@@ -2031,7 +2031,7 @@ interface AuditLog {
 ```env
 # Admin Panel Configuration
 VITE_ADMIN_API_URL=http://localhost:8000
-VITE_ADMIN_PORT=8088
+VITE_ADMIN_PORT=8036
 VITE_SESSION_TIMEOUT=1800000
 VITE_AUTO_LOGOUT_WARNING=300000
 

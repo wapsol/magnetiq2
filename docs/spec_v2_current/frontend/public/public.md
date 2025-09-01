@@ -20,7 +20,8 @@ The public frontend is a responsive, multilingual website that serves as the pri
 - **Package Manager**: npm
 
 ### Development Environment
-- **Port**: 3000 (development)
+- **Port**: 8038 (development), 8036 (production)
+- **Backend API**: Proxied to port 3036 via Vite proxy
 - **Hot Reload**: Vite HMR
 - **TypeScript**: Strict mode enabled
 - **ESLint**: Airbnb configuration with custom rules
@@ -94,29 +95,75 @@ interface LogoProps {
 
 Menu Structure:
 ```
-Home
-Services ▼
-  ├── AI Consulting
-  ├── Digital Transformation  
-  └── Automation Solutions
-Solutions ▼
-  ├── Industry Solutions
-  └── Custom Development
-Resources ▼
-  ├── Webinars
-  ├── Whitepapers
-  └── Case Studies
-About ▼
-  ├── Our Team
-  ├── Company Story
-  └── Careers
-Contact
+Home (/)
+Services (/services) ▼
+  ├── AI Consulting (/services/ai-consulting)
+  ├── Digital Transformation (/services/digital-transformation)
+  ├── Automation (/services/automation)
+  └── Development (/services/development)
+Solutions (/solutions) ▼
+  ├── Industries (/solutions/industries)
+  ├── Technology (/solutions/technology)
+  └── Case Studies (/solutions/case-studies)
+Resources (/resources) ▼
+  ├── Webinars (/resources/webinars)
+  ├── Whitepapers (/resources/whitepapers)
+  ├── Blog (/resources/blog)
+  └── Tools (/resources/tools)
+About (/about) ▼
+  ├── About Overview (/about) - Landing page with sub-section cards
+  ├── Our Story (/about/story)
+  ├── Team (/about/team)
+  ├── Mission (/about/mission)
+  ├── Careers (/about/careers)
+  ├── Partners (/about/partners)
+  └── News (/about/news)
+Contact (/contact) ▼
+  ├── Contact Overview (/contact) - Landing page with contact option cards
+  ├── Booking (/contact/booking) - BookAMeetingPage
+  ├── General (/contact/general)
+  ├── Support (/contact/support)
+  └── Locations (/contact/locations)
+```
+
+**German Routes (with /de prefix):**
+```
+Startseite (/de)
+Dienstleistungen (/de/dienstleistungen) ▼
+  ├── KI-Beratung (/de/dienstleistungen/ki-beratung)
+  ├── Digitale Transformation (/de/dienstleistungen/digitale-transformation)
+  ├── Automatisierung (/de/dienstleistungen/automatisierung)
+  └── Entwicklung (/de/dienstleistungen/entwicklung)
+Lösungen (/de/loesungen) ▼
+  ├── Branchen (/de/loesungen/branchen)
+  ├── Technologie (/de/loesungen/technologie)
+  └── Fallstudien (/de/loesungen/fallstudien)
+Ressourcen (/de/ressourcen) ▼
+  ├── Webinare (/de/ressourcen/webinare)
+  ├── Whitepapers (/de/ressourcen/whitepapers)
+  ├── Blog (/de/ressourcen/blog)
+  └── Tools (/de/ressourcen/tools)
+Über uns (/de/ueber-uns) ▼
+  ├── Übersicht (/de/ueber-uns) - Landing page with sub-section cards
+  ├── Geschichte (/de/ueber-uns/geschichte)
+  ├── Team (/de/ueber-uns/team)
+  ├── Mission (/de/ueber-uns/mission)
+  ├── Karriere (/de/ueber-uns/karriere)
+  ├── Partner (/de/ueber-uns/partner)
+  └── Presse (/de/ueber-uns/presse)
+Kontakt (/de/kontakt) ▼
+  ├── Kontakt Übersicht (/de/kontakt) - Landing page with contact option cards
+  ├── Terminbuchung (/de/kontakt/terminbuchung)
+  ├── Allgemein (/de/kontakt/allgemein)
+  ├── Support (/de/kontakt/support)
+  └── Standorte (/de/kontakt/standorte)
 ```
 
 #### Call-to-Action
-- **Primary CTA**: "Book Consultation"
-- **Secondary CTA**: Language switcher (DE/EN)
+- **Primary CTA**: "Book Meeting" → `/contact/booking`
+- **Secondary CTA**: Language switcher (DE/EN)  
 - **Utility**: Theme toggle (Light/Dark)
+- **Admin Access**: Login link in mobile menu → `/auth/login`
 
 ### 2. Theme System
 

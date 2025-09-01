@@ -24,8 +24,8 @@ interface AuthState {
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
-  accessToken: localStorage.getItem('accessToken'),
-  refreshToken: localStorage.getItem('refreshToken'),
+  accessToken: localStorage.getItem('access_token'),
+  refreshToken: localStorage.getItem('refresh_token'),
   isLoading: false,
   error: null,
 }
@@ -56,8 +56,8 @@ const authSlice = createSlice({
       state.error = null
       
       // Store tokens in localStorage
-      localStorage.setItem('accessToken', action.payload.access_token)
-      localStorage.setItem('refreshToken', action.payload.refresh_token)
+      localStorage.setItem('access_token', action.payload.access_token)
+      localStorage.setItem('refresh_token', action.payload.refresh_token)
     },
     loginFailure: (state, action: PayloadAction<string>) => {
       state.isAuthenticated = false
@@ -68,8 +68,8 @@ const authSlice = createSlice({
       state.error = action.payload
       
       // Remove tokens from localStorage
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
     },
     logout: (state) => {
       state.isAuthenticated = false
@@ -80,8 +80,8 @@ const authSlice = createSlice({
       state.error = null
       
       // Remove tokens from localStorage
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
     },
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload
@@ -97,8 +97,8 @@ const authSlice = createSlice({
       state.refreshToken = action.payload.refresh_token
       
       // Update tokens in localStorage
-      localStorage.setItem('accessToken', action.payload.access_token)
-      localStorage.setItem('refreshToken', action.payload.refresh_token)
+      localStorage.setItem('access_token', action.payload.access_token)
+      localStorage.setItem('refresh_token', action.payload.refresh_token)
     },
   },
 })

@@ -1264,10 +1264,9 @@ interface WebinarTasks {
 }
 ```
 
-#### Scheduled Tasks
+#### Scheduled Operations (Manual or Cron-triggered)
 ```python
-# Daily at 9:00 AM - Send reminders for sessions 7 days out
-@celery_app.task
+# Daily at 9:00 AM - Send reminders for sessions 7 days out (triggered by cron)
 def send_7_day_reminders():
     sessions = get_sessions_starting_in_days(7)
     for session in sessions:
@@ -1278,8 +1277,7 @@ def send_7_day_reminders():
                 template='7_day_reminder'
             )
 
-# Daily at 10:00 AM - Send reminders for sessions 2 days out
-@celery_app.task
+# Daily at 10:00 AM - Send reminders for sessions 2 days out (triggered by cron)
 def send_2_day_reminders():
     sessions = get_sessions_starting_in_days(2)
     for session in sessions:
@@ -1303,8 +1301,7 @@ def send_2_day_reminders():
             get_webinar_program_manager_id()
         )
 
-# Every 2 hours - Process waitlist for sessions with cancellations
-@celery_app.task
+# Every 2 hours - Process waitlist for sessions with cancellations (triggered by cron)
 def process_waitlists():
     sessions_with_availability = get_sessions_with_new_availability()
     for session in sessions_with_availability:

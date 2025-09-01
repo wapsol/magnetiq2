@@ -4,10 +4,10 @@ import { Bars3Icon, XMarkIcon, BoltIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 
 const navigation = [
-  { name: 'Software', href: '/webinars' },
-  { name: 'Services', href: '/whitepapers' },
-  { name: 'Über uns', href: '/templates' },
-  { name: 'Entwickler', href: '/book-consultation' },
+  { name: 'Services', href: '/services' },
+  { name: 'Solutions', href: '/solutions' },
+  { name: 'About', href: '/about' },
+  { name: 'Contact', href: '/contact' },
 ]
 
 interface HeaderProps {
@@ -97,10 +97,10 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
               {/* Desktop Actions */}
               <div className="hidden lg:flex lg:items-center">
                 <Link
-                  to="/book-consultation"
+                  to="/contact/booking"
                   className="btn-primary btn-sm"
                 >
-                  Kontakt
+                  Book Meeting
                 </Link>
               </div>
               

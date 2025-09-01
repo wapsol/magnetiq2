@@ -29,6 +29,12 @@ Magnetiq v2 deployment focuses on simplicity and rapid deployment using SQLite d
 - **SSL certificate** (Let's Encrypt recommended)
 - **Domain name** configured with proper DNS records
 
+#### Performance Expectations
+- **Optimal User Load**: Up to 100 concurrent users
+- **Write Operations**: <50 writes/second for optimal performance
+- **Storage Growth**: Plan for database file size <100GB
+- **Backup Requirements**: Daily full database backups recommended
+
 ## Docker Configuration
 
 ### Container Architecture
@@ -258,7 +264,7 @@ Understanding failure cascades helps identify root causes and implement appropri
 ### Future Architecture Considerations
 When upgrading to Magnetiq v3 with Enterprise Service Bus capabilities:
 - **Database transition**: SQLite to PostgreSQL with Redis caching
-- **Message queuing**: Integration of Celery with Redis broker
+- **Message queuing**: Integration of background task systems (v3 only)
 - **Service architecture**: Monolithic to microservices approach
 - **Integration patterns**: HTTP clients to ESB-based communication
 - **Deployment complexity**: Single container to multi-service orchestration

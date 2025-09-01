@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     # Server
     host: str = "0.0.0.0"
     port: int = 3036
+    frontend_url: str = "http://localhost:8036"
     
     # Database
     database_url: str = "sqlite+aiosqlite:////Users/ashant/magnetiq2/data/magnetiq.db"
@@ -65,9 +66,22 @@ class Settings(BaseSettings):
     media_cache_dir: str = "./data/cache/media"
     temp_processing_dir: str = "./data/temp/processing"
     
-    # External APIs (placeholders)
+    # LinkedIn OAuth
     linkedin_client_id: Optional[str] = None
     linkedin_client_secret: Optional[str] = None
+    linkedin_redirect_uri: str = "http://localhost:8037/auth/linkedin/callback"
+    
+    # OpenAI API
+    openai_api_key: Optional[str] = None
+    
+    # Consultant Settings
+    kyc_upload_dir: str = "./data/kyc_documents"
+    
+    # Scoopp LinkedIn Scraping API
+    scoopp_api_key: Optional[str] = None
+    scoopp_base_url: str = "https://api.scoopp.ai"
+    
+    # External APIs (placeholders)
     twitter_api_key: Optional[str] = None
     twitter_api_secret: Optional[str] = None
     twitter_access_token: Optional[str] = None

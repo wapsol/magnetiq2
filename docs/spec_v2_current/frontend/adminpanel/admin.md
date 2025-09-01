@@ -34,7 +34,7 @@ This specification serves as the architectural overview and entry point to speci
 - **Drag & Drop**: dnd-kit for PortableText block arrangement
 
 ### Access Configuration
-- **URL**: `http://localhost:8088` (development)
+- **URL**: `http://localhost:8036/admin` (development)
 - **Production URL**: `https://admin.voltAIc.systems`
 - **Authentication**: JWT-based with role-based access control
 - **Session Management**: Auto-logout after inactivity
@@ -82,18 +82,22 @@ interface Permission {
 ### Main Layout Structure
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        Top Bar                               │
-│  Logo    |    Breadcrumb    |    User Menu    |    Notifications │
-├─────────────────────────────────────────────────────────────┤
-│        │                                                     │
-│  Side  │                Main Content Area                    │
-│  Nav   │                                                     │
-│        │                                                     │
-│        │                                                     │
-├─────────────────────────────────────────────────────────────┤
-│                     Status Bar                               │
-│  System Health  |  Version: 2.0.0  |  Last Updated: timestamp │
-└─────────────────────────────────────────────────────────────┘
+│                        Header Bar                           │
+│       Search Bar        |  🔔  ⚙️  👤  |                   │
+├──────────────┬──────────────────────────────────────────────┤
+│              │                                              │
+│   Sidebar    │                Main Content Area             │
+│   Navigation │                                              │
+│              │                                              │
+│  • Dashboard │                                              │
+│  • Content   │                                              │
+│  • Business  │                                              │
+│  • Users     │                                              │
+│              │                                              │
+├──────────────┼──────────────────────────────────────────────┤
+│  User Info   │                Footer/Status                 │
+│  + Sign out  │     System Health  |  Version: 2.0.0        │
+└──────────────┴──────────────────────────────────────────────┘
 ```
 
 ### Collapsible Sidebar Navigation
@@ -106,102 +110,189 @@ interface Permission {
 ### Top Bar Features
 
 #### Left Section
-- **Logo**: voltAIc Systems branding
-- **Breadcrumb navigation**: Current page hierarchy
-- **Page title**: Dynamic based on current route
+- **Search Bar**: Global search functionality for content, webinars, users, and system data
+- **Dynamic placeholder**: Context-aware search suggestions based on current section
+- **Search scope**: Intelligent filtering based on current admin section
 
 #### Right Section
-- **Notifications**: Bell icon with unread count
-- **User profile**: Avatar + name dropdown
-- **Settings**: Quick access to user preferences
-- **Logout**: Secure session termination
-
-#### System Information (Bottom Right)
-- **Date**: Current date and time
-- **Version**: Software version number (v2.0.0)
-- **System status**: Health indicator
-- **Environment**: Development/Staging/Production badge
+- **Notifications**: Bell icon with unread count and dropdown panel
+  - Real-time notification feed with unread indicators
+  - Categorized notifications (system alerts, user actions, business events)
+  - "View all notifications" link for comprehensive notification management
+- **Settings**: Gear icon dropdown with system configuration options
+  - **System Configuration**: Core system settings and parameters
+  - **User Preferences**: Personal admin interface customization
+  - **Notification Settings**: Alert preferences and communication settings
+- **User Profile**: Avatar + name dropdown with user management
+  - **Your Profile**: Personal account management and preferences
+  - **Sign out**: Secure session termination with logout confirmation
 
 ## Navigation Menu Structure
 
-### Primary Menu Items
+### Simplified Left Sidebar Navigation
+
+The left sidebar navigation has been streamlined to focus on the four core administrative areas:
+
 ```
 Dashboard
 ├── Analytics Overview → [Analytics Dashboard](./analytics-dashboard.md#overview)
 ├── System Health → [Analytics Dashboard](./analytics-dashboard.md#system-health)
-└── Quick Actions
+├── Quick Actions
+└── Performance Metrics
 
-Content Management → [Content Management](./content-management.md)
+Content → [Content Management](./content-management.md)
 ├── Pages → [Content Management](./content-management.md#page-management)
 ├── Page Builder → [Content Management](./content-management.md#page-builder)
 ├── Media Library → [Content Management](./content-management.md#media-library)
-└── SEO Settings → [Content Management](./content-management.md#seo-management)
+├── SEO Settings → [Content Management](./content-management.md#seo-management)
+├── Email Campaigns → [Content Management](./content-management.md#email-campaigns)
+├── Social Media → [Content Management](./content-management.md#social-media)
+└── Multilingual → [Content Management](./content-management.md#multilingual-settings)
 
-Business Management
-├── Consultants Management → [Consultant Management](./consultant-management.md)
+Business → Business Operations Management
+├── Webinars → [Webinar Management](./business/webinar.md)
+├── Bookings → [Book-a-Meeting Management](./business/book-a-meeting.md)
+├── Consultants → [Consultant Management](./consultant-management.md)
 │   ├── Consultant Profiles → [Consultant Management](./consultant-management.md#profile-management)
-│   ├── Scraping Jobs → [Consultant Management](./consultant-management.md#linkedin-scraping)
+│   ├── LinkedIn Scraping → [Consultant Management](./consultant-management.md#linkedin-scraping)
 │   ├── Payments & Payouts → [Payment Management](./business/payment.md#consultant-payouts)
 │   └── Performance Analytics → [Analytics Dashboard](./analytics-dashboard.md#consultant-analytics)
-├── Webinars → [Webinar Management](./business/webinar.md)
 ├── Whitepapers → [Whitepaper Management](./business/whitepapers.md)
 ├── Coupons & Discounts → [Coupon Management](./business/coupon.md)
 │   ├── Coupon Creation → [Coupon Management](./business/coupon.md#coupon-creation--editing)
 │   ├── Usage Analytics → [Coupon Management](./business/coupon.md#analytics-dashboard)
 │   ├── Fraud Prevention → [Coupon Management](./business/coupon.md#security--fraud-prevention)
 │   └── Campaign Management → [Coupon Management](./business/coupon.md#bulk-operations--campaign-management)
-└── Bookings → [Book-a-Meeting Management](./business/book-a-meeting.md)
+├── Financial Management → [Payment Management](./business/payment.md)
+│   ├── Transactions → [Payment Management](./business/payment.md#transaction-management)
+│   ├── Consultant Payouts → [Payment Management](./business/payment.md#payout-management)
+│   ├── KYC Processing → [Payment Management](./business/payment.md#kyc-management)
+│   └── Financial Reports → [Analytics Dashboard](./analytics-dashboard.md#financial-analytics)
+└── Integrations → [Integration Management](./integration-management.md)
+    ├── Integration Dashboard → [Integration Management](./integration-management.md#integration-dashboard)
+    ├── Service Configuration → [Integration Management](./integration-management.md#configuration-management)
+    ├── Connection Testing → [Integration Management](./integration-management.md#connection-testing--diagnostics)
+    ├── Credential Management → [Integration Management](./integration-management.md#credential-management)
+    ├── Usage Analytics → [Integration Management](./integration-management.md#usage-analytics--monitoring)
+    ├── Error Logs → [Integration Management](./integration-management.md#error-logging--troubleshooting)
+    └── Health Monitoring → [Integration Management](./integration-management.md#integration-health-monitoring)
 
-Communication Services → [Content Management](./content-management.md#communication-services)
-├── Email Campaigns → [Content Management](./content-management.md#email-campaigns)
-├── LinkedIn Management → [Consultant Management](./consultant-management.md#linkedin-integration)
-├── Twitter Management → [Content Management](./content-management.md#social-media)
-└── Analytics & Engagement → [Analytics Dashboard](./analytics-dashboard.md#engagement-metrics)
-
-Financial Management → [Payment Management](./business/payment.md)
-├── Transactions → [Payment Management](./business/payment.md#transaction-management)
-├── Consultant Payouts → [Payment Management](./business/payment.md#payout-management)
-├── KYC Processing → [Payment Management](./business/payment.md#kyc-management)
-└── Financial Reports → [Analytics Dashboard](./analytics-dashboard.md#financial-analytics)
-
-User Management
+Users → User Management
 ├── Admin Users → [Authentication](./authentication.md#admin-users)
 ├── User Roles → [Authentication](./authentication.md#role-management)
 ├── Activity Logs → [Analytics Dashboard](./analytics-dashboard.md#audit-logs)
 └── Sessions → [Authentication](./authentication.md#session-management)
-
-Integrations → [Integration Management](./integration-management.md)
-├── Integration Dashboard → [Integration Management](./integration-management.md#integration-dashboard)
-├── Service Configuration → [Integration Management](./integration-management.md#configuration-management)
-├── Connection Testing → [Integration Management](./integration-management.md#connection-testing--diagnostics)
-├── Credential Management → [Integration Management](./integration-management.md#credential-management)
-├── Usage Analytics → [Integration Management](./integration-management.md#usage-analytics--monitoring)
-├── Error Logs → [Integration Management](./integration-management.md#error-logging--troubleshooting)
-└── Health Monitoring → [Integration Management](./integration-management.md#integration-health-monitoring)
-
-System Settings
-├── Contact Information → [System Settings](./system-settings.md#contact-information-management)
-├── General Configuration → [System Settings](./system-settings.md#general-configuration)
-├── Site Configuration → [System Settings](./system-settings.md#site-configuration)
-├── Email Configuration → [System Settings](./system-settings.md#email-configuration)
-├── Security Settings → [System Settings](./system-settings.md#security-settings)
-├── Backup & Recovery → [System Settings](./system-settings.md#backup-recovery)
-├── System Maintenance → [System Settings](./system-settings.md#system-maintenance)
-├── Multilingual → [Content Management](./content-management.md#multilingual-settings)
-└── Logs → [Analytics Dashboard](./analytics-dashboard.md#system-logs)
 ```
+
+### Header-Based Settings Access
+
+Settings functionality has been moved from the left sidebar to a gear icon dropdown in the top right header, providing quick access to system configuration without cluttering the main navigation:
+
+**Settings Dropdown (Gear Icon) →** Accessed via top right header
+├── **System Configuration** → [System Settings](./system-settings.md#general-configuration)
+│   ├── General Configuration → [System Settings](./system-settings.md#general-configuration)
+│   ├── Site Configuration → [System Settings](./system-settings.md#site-configuration)
+│   ├── Email Configuration → [System Settings](./system-settings.md#email-configuration)
+│   ├── Security Settings → [System Settings](./system-settings.md#security-settings)
+│   ├── Backup & Recovery → [System Settings](./system-settings.md#backup-recovery)
+│   └── System Maintenance → [System Settings](./system-settings.md#system-maintenance)
+├── **User Preferences** → Personal admin interface settings
+│   ├── Interface Customization
+│   ├── Theme Preferences
+│   ├── Language Settings
+│   └── Dashboard Layout
+└── **Notification Settings** → Communication and alert preferences
+    ├── Email Notifications
+    ├── System Alerts
+    ├── Performance Warnings
+    └── Activity Notifications
+
+### Removed Navigation Elements
+
+**Analytics** has been **removed from the left sidebar navigation** as it's now integrated into the Dashboard and accessible through individual feature areas. This streamlines the navigation while maintaining full analytics functionality through:
+- Dashboard overview analytics
+- Feature-specific analytics within each section
+- Comprehensive reporting accessible via Settings > System Configuration > Reports
 
 ### Navigation Implementation
 ```tsx
 interface MenuItem {
   id: string;
-  label: TranslatedText;
+  name: string; // Display name
+  href: string; // Route path
   icon: IconComponent;
-  path?: string;
-  children?: MenuItem[];
+  description: string; // Subtitle description
+  children?: SubMenuItem[]; // Sub-navigation items
   badge?: number; // Notification count
   permission?: Permission;
 }
+
+interface SubMenuItem {
+  name: string;
+  href: string;
+  permission?: Permission;
+}
+
+// Current navigation structure
+const navigation: MenuItem[] = [
+  {
+    name: 'Dashboard',
+    href: '/admin',
+    icon: HomeIcon,
+    description: 'Overview and analytics'
+  },
+  {
+    name: 'Content',
+    href: '/admin/content',
+    icon: DocumentTextIcon,
+    description: 'Manage pages and content',
+    children: [
+      { name: 'Pages', href: '/admin/content/pages' }
+    ]
+  },
+  {
+    name: 'Business',
+    href: '/admin/business',
+    icon: VideoCameraIcon,
+    description: 'Webinars and bookings',
+    children: [
+      { name: 'Webinars', href: '/admin/business/webinars' },
+      { name: 'Bookings', href: '/admin/business/bookings' }
+    ]
+  },
+  {
+    name: 'Users',
+    href: '/admin/users',
+    icon: UsersIcon,
+    description: 'User management'
+  }
+];
+
+// Settings dropdown structure (accessed via gear icon)
+interface SettingsMenuItem {
+  name: string;
+  href: string;
+  icon: IconComponent;
+  permission?: Permission;
+}
+
+const settingsMenu: SettingsMenuItem[] = [
+  {
+    name: 'System Configuration',
+    href: '/admin/settings/system',
+    icon: Cog6ToothIcon
+  },
+  {
+    name: 'User Preferences', 
+    href: '/admin/settings/preferences',
+    icon: UserCircleIcon
+  },
+  {
+    name: 'Notification Settings',
+    href: '/admin/settings/notifications', 
+    icon: BellIcon
+  }
+];
 ```
 
 ## Core Dashboard Features
@@ -416,7 +507,7 @@ The admin panel follows comprehensive testing practices to ensure reliability an
 ```tsx
 interface AdminBuildConfig {
   outDir: 'dist-admin';
-  port: 8088;
+  port: 8036;
   sessionTimeout: 1800000; // 30 minutes
   features: {
     consultantManagement: boolean;
@@ -431,7 +522,7 @@ interface AdminBuildConfig {
 ```env
 # Admin Panel Configuration
 VITE_ADMIN_API_URL=http://localhost:8000
-VITE_ADMIN_PORT=8088
+VITE_ADMIN_PORT=8036
 VITE_SESSION_TIMEOUT=1800000
 VITE_AUTO_LOGOUT_WARNING=300000
 

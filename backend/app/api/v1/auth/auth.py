@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from datetime import datetime, timedelta
+import secrets
 from app.database import get_db
 from app.models.user import AdminUser
 from app.schemas.auth import (
@@ -14,6 +15,7 @@ from app.core.security import (
 )
 from app.dependencies import get_current_user, require_admin
 from app.config import settings
+from app.services.email_service import email_service
 
 router = APIRouter()
 
@@ -169,14 +171,41 @@ async def get_current_user_info(current_user: AdminUser = Depends(get_current_us
 @router.post("/forgot-password")
 async def forgot_password(
     request: ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db)
 ):
-    """Request password reset (placeholder implementation)"""
-    # In a real implementation, you would:
-    # 1. Verify user exists
-    # 2. Generate a secure reset token
-    # 3. Send email with reset link
-    # 4. Store token with expiration
+    """Request password reset"""
+    # Check if user exists
+    result = await db.execute(
+        select(AdminUser).where(
+            AdminUser.email == request.email,
+            AdminUser.is_active == True,
+            AdminUser.deleted_at.is_(None)
+        )
+    )
+    user = result.scalar_one_or_none()
+    
+    # Always return same message for security (prevent email enumeration)
+    if user:
+        # Generate secure reset token
+        reset_token = secrets.token_urlsafe(32)
+        reset_expires = datetime.utcnow() + timedelta(hours=1)  # Token valid for 1 hour
+        
+        # Store token in database
+        user.reset_token = reset_token
+        user.reset_token_expires = reset_expires
+        await db.commit()
+        
+        # Send password reset email
+        reset_url = f"{settings.frontend_url}/admin/reset-password?token={reset_token}"
+        
+        background_tasks.add_task(
+            email_service.send_password_reset_email,
+            recipient_email=user.email,
+            admin_name=user.full_name,
+            reset_url=reset_url,
+            language="en"
+        )
     
     return {"message": "If the email exists, a password reset link has been sent"}
 
@@ -186,14 +215,46 @@ async def reset_password(
     request: ResetPasswordRequest,
     db: AsyncSession = Depends(get_db)
 ):
-    """Reset password using reset token (placeholder implementation)"""
-    # In a real implementation, you would:
-    # 1. Verify reset token
-    # 2. Check token expiration
-    # 3. Update user password
-    # 4. Invalidate reset token
-    
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Password reset not implemented yet"
+    """Reset password using reset token"""
+    # Find user with matching reset token
+    result = await db.execute(
+        select(AdminUser).where(
+            AdminUser.reset_token == request.token,
+            AdminUser.is_active == True,
+            AdminUser.deleted_at.is_(None)
+        )
     )
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid reset token"
+        )
+    
+    # Check if token has expired
+    if not user.reset_token_expires or user.reset_token_expires < datetime.utcnow():
+        # Clear expired token
+        user.reset_token = None
+        user.reset_token_expires = None
+        await db.commit()
+        
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Reset token has expired"
+        )
+    
+    # Update password
+    user.hashed_password = get_password_hash(request.new_password)
+    
+    # Clear reset token
+    user.reset_token = None
+    user.reset_token_expires = None
+    
+    # Reset failed login attempts
+    user.failed_login_attempts = 0
+    user.locked_until = None
+    
+    await db.commit()
+    
+    return {"message": "Password has been reset successfully"}

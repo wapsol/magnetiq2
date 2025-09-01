@@ -9,6 +9,8 @@ import FAQTemplate from '../templates/FAQTemplate'
 import PricingTemplate from '../templates/PricingTemplate'
 import RichTextRenderer from './RichTextRenderer'
 import ImageRenderer from './ImageRenderer'
+import GalleryRenderer from './GalleryRenderer'
+import HeroImageRenderer from './HeroImageRenderer'
 import VideoRenderer from './VideoRenderer'
 import SectionRenderer from './SectionRenderer'
 
@@ -124,6 +126,22 @@ const BlockRenderer: React.FC<BlockRendererProps> = ({
       case 'image':
         return (
           <ImageRenderer
+            block={block as any}
+            language={language}
+          />
+        )
+
+      case 'gallery':
+        return (
+          <GalleryRenderer
+            block={block as any}
+            language={language}
+          />
+        )
+
+      case 'hero_image':
+        return (
+          <HeroImageRenderer
             block={block as any}
             language={language}
           />

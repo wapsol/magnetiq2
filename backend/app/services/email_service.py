@@ -853,6 +853,116 @@ This email contains sensitive information. Please handle with care and do not fo
             logger.error(f"Error sending internal booking notification: {type(e).__name__}: {str(e)}")
             return False
 
+    async def send_password_reset_email(
+        self,
+        recipient_email: str,
+        admin_name: str,
+        reset_url: str,
+        language: str = "en"
+    ) -> bool:
+        """
+        Send password reset email to admin user
+        
+        Args:
+            recipient_email: Admin's email address
+            admin_name: Admin's full name
+            reset_url: Password reset URL with token
+            language: Email language (en/de)
+        
+        Returns:
+            bool: Success status
+        """
+        try:
+            if language == "de":
+                subject = "Password zurücksetzen - voltAIc Systems AdminPanel"
+                html_content = f"""
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>Password Reset</title>
+                    <style>
+                        body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }}
+                        .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
+                        .header {{ text-align: center; border-bottom: 2px solid #007bff; padding-bottom: 20px; margin-bottom: 30px; }}
+                        .header h1 {{ color: #007bff; margin: 0; font-size: 28px; }}
+                        .content {{ line-height: 1.6; }}
+                        .button {{ display: inline-block; padding: 12px 30px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }}
+                        .footer {{ margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px; }}
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>voltAIc Systems</h1>
+                            <p>AdminPanel Password Reset</p>
+                        </div>
+                        <div class="content">
+                            <p>Hallo {admin_name},</p>
+                            <p>Sie haben eine Anfrage zum Zurücksetzen Ihres Passworts für das voltAIc Systems AdminPanel gestellt.</p>
+                            <p>Klicken Sie auf den folgenden Button, um Ihr Passwort zurückzusetzen:</p>
+                            <p><a href="{reset_url}" class="button">Passwort zurücksetzen</a></p>
+                            <p><strong>Wichtig:</strong> Dieser Link ist nur 1 Stunde gültig.</p>
+                            <p>Falls Sie diese Anfrage nicht gestellt haben, ignorieren Sie diese E-Mail bitte.</p>
+                        </div>
+                        <div class="footer">
+                            <p>voltAIc Systems - AdminPanel</p>
+                            <p>Falls Sie Probleme haben, kontaktieren Sie uns unter support@voltaic.systems</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+            else:
+                subject = "Password Reset - voltAIc Systems AdminPanel"
+                html_content = f"""
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>Password Reset</title>
+                    <style>
+                        body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }}
+                        .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
+                        .header {{ text-align: center; border-bottom: 2px solid #007bff; padding-bottom: 20px; margin-bottom: 30px; }}
+                        .header h1 {{ color: #007bff; margin: 0; font-size: 28px; }}
+                        .content {{ line-height: 1.6; }}
+                        .button {{ display: inline-block; padding: 12px 30px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }}
+                        .footer {{ margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px; }}
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>voltAIc Systems</h1>
+                            <p>AdminPanel Password Reset</p>
+                        </div>
+                        <div class="content">
+                            <p>Hello {admin_name},</p>
+                            <p>You requested a password reset for your voltAIc Systems AdminPanel account.</p>
+                            <p>Click the button below to reset your password:</p>
+                            <p><a href="{reset_url}" class="button">Reset Password</a></p>
+                            <p><strong>Important:</strong> This link is only valid for 1 hour.</p>
+                            <p>If you did not request this password reset, please ignore this email.</p>
+                        </div>
+                        <div class="footer">
+                            <p>voltAIc Systems - AdminPanel</p>
+                            <p>If you have any issues, contact us at support@voltaic.systems</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+            
+            # Send email
+            return await self.send_email(
+                to=[recipient_email],
+                subject=subject,
+                html_content=html_content
+            )
+            
+        except Exception as e:
+            logger.error(f"Failed to send password reset email: {e}")
+            return False
+
 
 # Global service instance
 email_service = SMTPEmailService()

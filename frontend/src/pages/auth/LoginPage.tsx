@@ -1,15 +1,16 @@
 import { useState } from 'react'
-import { Navigate } from 'react-router-dom'
-import { useAppSelector } from '../../hooks/redux'
+import { Navigate, Link, useNavigate } from 'react-router-dom'
+import { useAppSelector, useAppDispatch } from '../../hooks/redux'
+import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice'
 import { EyeIcon, EyeSlashIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline'
 
 const LoginPage = () => {
-  const { isAuthenticated } = useAppSelector((state) => state.auth)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const { isAuthenticated, isLoading, error } = useAppSelector((state) => state.auth)
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('admin@voltaic.systems')
+  const [password, setPassword] = useState('newPassword123')
   const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
   
   // Redirect if already authenticated
@@ -19,27 +20,49 @@ const LoginPage = () => {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-    setError('')
+    dispatch(loginStart())
     
     try {
-      // TODO: Implement actual login logic
-      console.log('Login attempt:', { email, password, rememberMe })
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      // For now, just show success (replace with actual auth logic)
-      if (email === 'admin@voltaicsystems.com' && password === 'demo123') {
-        // Success - in real app, this would dispatch login action
-        console.log('Login successful')
-      } else {
-        setError('Invalid email or password. Please try again.')
+      // Make actual API call to backend
+      const response = await fetch('/api/v1/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.detail || data.error?.message || 'Login failed')
       }
+
+      // Get user information from the token or make another API call
+      // For now, we'll create a basic user object
+      const userData = {
+        id: 1,
+        email: email,
+        first_name: 'Admin',
+        last_name: 'User',
+        full_name: 'Admin User',
+        role: 'admin',
+        is_active: true,
+        created_at: new Date().toISOString()
+      }
+
+      // Dispatch login success with user data and tokens
+      dispatch(loginSuccess({
+        user: userData,
+        access_token: data.access_token,
+        refresh_token: data.refresh_token
+      }))
+      
+      // Navigate to admin dashboard
+      navigate('/admin')
+      
     } catch (err) {
-      setError('An error occurred during login. Please try again.')
-    } finally {
-      setIsLoading(false)
+      dispatch(loginFailure(err instanceof Error ? err.message : 'An error occurred during login. Please try again.'))
     }
   }
   
@@ -54,9 +77,9 @@ const LoginPage = () => {
       
       {/* Demo Credentials Info */}
       <div className="alert-info">
-        <p className="text-sm font-medium mb-1">Demo Credentials</p>
-        <p className="text-xs">Email: admin@voltaicsystems.com</p>
-        <p className="text-xs">Password: demo123</p>
+        <p className="text-sm font-medium mb-1">Admin Credentials</p>
+        <p className="text-xs">Email: admin@voltaic.systems</p>
+        <p className="text-xs">Password: newPassword123</p>
       </div>
       
       <div className="space-y-5">
@@ -137,9 +160,9 @@ const LoginPage = () => {
         </div>
         
         <div className="text-sm">
-          <a href="#" className="font-medium text-primary-600 hover:text-primary-500">
+          <Link to="/auth/forgot-password" className="font-medium text-primary-600 hover:text-primary-500">
             Forgot your password?
-          </a>
+          </Link>
         </div>
       </div>
       

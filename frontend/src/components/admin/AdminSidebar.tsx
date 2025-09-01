@@ -5,8 +5,6 @@ import {
   DocumentTextIcon, 
   VideoCameraIcon, 
   CalendarDaysIcon,
-  ChartBarIcon,
-  CogIcon,
   UsersIcon,
   BoltIcon,
   ArrowRightOnRectangleIcon
@@ -39,22 +37,10 @@ const navigation = [
     ]
   },
   { 
-    name: 'Analytics', 
-    href: '/admin/analytics', 
-    icon: ChartBarIcon,
-    description: 'Performance insights'
-  },
-  { 
     name: 'Users', 
     href: '/admin/users', 
     icon: UsersIcon,
     description: 'User management'
-  },
-  { 
-    name: 'Settings', 
-    href: '/admin/settings', 
-    icon: CogIcon,
-    description: 'System configuration'
   },
 ]
 
