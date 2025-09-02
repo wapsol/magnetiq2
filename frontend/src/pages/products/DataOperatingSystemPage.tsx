@@ -11,6 +11,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useLanguage } from '../../contexts/LanguageContext';
 import SEOHead from '../../components/common/SEOHead';
+import { backgrounds, textColors, getCardClasses, getSectionClasses } from '../../utils/styling';
 
 const DataOperatingSystemPage: React.FC = () => {
   const { language } = useLanguage();
@@ -122,12 +123,12 @@ const DataOperatingSystemPage: React.FC = () => {
         canonical={language === 'de' ? '/de/produkte/daten-betriebssystem' : '/products/data-operating-system'}
       />
 
-      <div className="bg-white">
+      <div className={backgrounds.page}>
         {/* Hero Section */}
         <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
             <div className="text-center">
-              <div className="inline-flex items-center space-x-2 bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium mb-8">
+              <div className="inline-flex items-center space-x-2 backgrounds.page/20 text-white px-4 py-2 rounded-full text-sm font-medium mb-8">
                 <CircleStackIcon className="w-4 h-4" />
                 <span>
                   {language === 'de' ? 'Enterprise Data Platform' : 'Enterprise Data Platform'}
@@ -154,10 +155,10 @@ const DataOperatingSystemPage: React.FC = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="bg-white text-indigo-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-lg">
+                <button className="backgrounds.page text-indigo-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-lg">
                   {language === 'de' ? 'Demo anfordern' : 'Request Demo'}
                 </button>
-                <button className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/10 transition-colors text-lg">
+                <button className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:backgrounds.page/10 transition-colors text-lg">
                   {language === 'de' ? 'Mehr erfahren' : 'Learn More'}
                 </button>
               </div>
@@ -166,20 +167,20 @@ const DataOperatingSystemPage: React.FC = () => {
         </div>
 
         {/* Overview Section */}
-        <div className="py-20 bg-white">
+        <div className={`py-20 ${backgrounds.page}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${textColors.primary}`}>
                   {language === 'de' ? 'DOS 1.0 - Determinismus-Standard' : 'DOS 1.0 - Determinism Standard'}
                 </h2>
-                <p className="text-lg text-gray-600 mb-6">
+                <p className={`text-lg mb-6 ${textColors.secondary}`}>
                   {language === 'de' 
                     ? 'Das DOS verwaltet das "Effizienz-Dreieck" aus Daten, Komplexität und Dynamik. In Umgebungen mit über 90% Technologienutzung und 80% unstrukturierten Daten bewältigt es die schnell wachsenden Datenintegrationsanforderungen.'
                     : 'The DOS manages the "Efficiency Triangle" of data, complexity, and dynamics. In environments with over 90% technology usage and 80% unstructured data, it manages rapidly increasing data integration needs.'
                   }
                 </p>
-                <p className="text-lg text-gray-600 mb-8">
+                <p className={`text-lg mb-8 ${textColors.secondary}`}>
                   {language === 'de' 
                     ? 'Mit Schnittstellen zu ERP-, CRM- und Datenbanksystemen sowie Deployment-Optionen (On-Premise, Hybrid oder Cloud) verarbeitet DOS bis zu 10 Petabyte Daten und bietet anpassbare Implementierungen für bis zu 20% Wertschöpfung.'
                     : 'With interfaces to ERP, CRM, and database systems and deployment options (on-premise, hybrid, or cloud), DOS processes up to 10 petabytes of data and offers customizable implementations for up to 20% value creation.'
@@ -224,13 +225,13 @@ const DataOperatingSystemPage: React.FC = () => {
         </div>
 
         {/* Components Section */}
-        <div className="py-20 bg-gray-50">
+        <div className={`py-20 ${backgrounds.sectionAlt}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${textColors.primary}`}>
                 {language === 'de' ? 'Komponenten' : 'Components'}
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className={`text-xl max-w-3xl mx-auto ${textColors.secondary}`}>
                 {language === 'de' 
                   ? 'Eine umfassende Umgebung, die es Unternehmen ermöglicht, KI-Anwendungen schnell zu entwickeln, implementieren und skalieren.'
                   : 'A comprehensive environment that enables companies to quickly develop, implement, and scale AI applications tailored to their specific business requirements.'
@@ -240,20 +241,20 @@ const DataOperatingSystemPage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* AI Data Mapper */}
-              <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className={`rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${backgrounds.card}`}>
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl mb-6">
                   <CircleStackIcon className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                <h3 className={`text-2xl font-semibold mb-4 ${textColors.primary}`}>
                   {language === 'de' ? 'AI Data Mapper' : 'AI Data Mapper'}
                 </h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">
+                <p className={`mb-6 leading-relaxed ${textColors.secondary}`}>
                   {language === 'de' 
                     ? 'Konsolidiert, strukturiert und harmonisiert Daten aus verschiedenen Unternehmens-Datenquellen. Transformiert Daten aus verschiedenen Systemen in ein einheitliches, KI-bereites Format. Eliminiert Datensilos und reduziert die Datenaufbereitungszeit um bis zu 60%.'
                     : 'Consolidates, structures, and harmonizes data from diverse corporate data sources. Transforms data from various systems into a consistent, AI-ready format. Eliminates data silos and reduces data preparation time by up to 60%.'
                   }
                 </p>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <ul className={`space-y-2 text-sm ${textColors.secondary}`}>
                   <li className="flex items-center space-x-2">
                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
                     <span>{language === 'de' ? 'AWS S3, Google Cloud Storage, Microsoft Azure (bis zu 10 GB/s)' : 'AWS S3, Google Cloud Storage, Microsoft Azure (up to 10 GB/s)'}</span>
@@ -274,20 +275,20 @@ const DataOperatingSystemPage: React.FC = () => {
               </div>
 
               {/* Models */}
-              <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className={`rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${backgrounds.card}`}>
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-violet-500 rounded-xl mb-6">
                   <CpuChipIcon className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                <h3 className={`text-2xl font-semibold mb-4 ${textColors.primary}`}>
                   {language === 'de' ? 'Models' : 'Models'}
                 </h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">
+                <p className={`mb-6 leading-relaxed ${textColors.secondary}`}>
                   {language === 'de' 
                     ? 'Vertikale Integration von Sprachmodellen mit spezialisierten GPU- und TPU-basierten Inference-Servern. Unterstützt sowohl Large Language Models (LLMs) als auch Small Language Models (SLMs) für effiziente Inferenz-Operationen und reduziert Verarbeitungszeit um bis zu 40%.'
                     : 'Vertical integration of language models with specialized GPU and TPU-based inference servers. Supports both Large Language Models (LLMs) and Small Language Models (SLMs) for efficient inference operations and reduces processing time by up to 40%.'
                   }
                 </p>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <ul className={`space-y-2 text-sm ${textColors.secondary}`}>
                   <li className="flex items-center space-x-2">
                     <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
                     <span>{language === 'de' ? 'Skalierbare Hosting-Lösungen für verschiedene Modellgrößen' : 'Scalable hosting solutions for different model sizes'}</span>
@@ -304,20 +305,20 @@ const DataOperatingSystemPage: React.FC = () => {
               </div>
 
               {/* Vector Space */}
-              <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className={`rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${backgrounds.card}`}>
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl mb-6">
                   <GlobeAltIcon className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                <h3 className={`text-2xl font-semibold mb-4 ${textColors.primary}`}>
                   {language === 'de' ? 'Vector Space' : 'Vector Space'}
                 </h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">
+                <p className={`mb-6 leading-relaxed ${textColors.secondary}`}>
                   {language === 'de' 
                     ? 'Ideale Lösung für Unternehmen, die schnelle und präzise Analysen in KI-unterstützten Prozessen benötigen. Ermöglicht Umwandlung von Skalardaten zu Vektordaten für maschinelles Lernen und steigert die Rechenleistung um bis zu 35% bei 25% Kostenreduzierung.'
                     : 'Ideal solution for companies needing fast and precise analyses in AI-supported processes. Enables conversion of scalar data to vector data for machine learning and increases computational performance by up to 35% with 25% cost reduction.'
                   }
                 </p>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <ul className={`space-y-2 text-sm ${textColors.secondary}`}>
                   <li className="flex items-center space-x-2">
                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
                     <span>{language === 'de' ? 'Multidimensionale Datenstrukturen für erweiterte Berechnungen' : 'Multidimensional data structures for advanced calculations'}</span>
@@ -334,20 +335,20 @@ const DataOperatingSystemPage: React.FC = () => {
               </div>
 
               {/* User Interfaces */}
-              <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className={`rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${backgrounds.card}`}>
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl mb-6">
                   <ShieldCheckIcon className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                <h3 className={`text-2xl font-semibold mb-4 ${textColors.primary}`}>
                   {language === 'de' ? 'User Interfaces & APIs' : 'User Interfaces & APIs'}
                 </h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">
+                <p className={`mb-6 leading-relaxed ${textColors.secondary}`}>
                   {language === 'de' 
                     ? 'Ermöglicht effiziente Interaktion zwischen Benutzern und verschiedenen Systemen. Bietet benutzerfreundliche Tools für nahtlose Systemintegration und unterstützt sowohl Maschine-zu-Maschine- als auch Mensch-Maschine-Kommunikation. Steigert Systemeffizienz um bis zu 40%.'
                     : 'Enables efficient interaction between users and different systems. Provides user-friendly tools for seamless system integration and supports both machine-to-machine and human-machine communication. Increases system efficiency by up to 40%.'
                   }
                 </p>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <ul className={`space-y-2 text-sm ${textColors.secondary}`}>
                   <li className="flex items-center space-x-2">
                     <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
                     <span>{language === 'de' ? 'Vielfältige Autorisierungsmechanismen für Zugriffskontrolle' : 'Diverse authorization mechanisms for access control'}</span>
@@ -367,13 +368,13 @@ const DataOperatingSystemPage: React.FC = () => {
         </div>
 
         {/* Features Section */}
-        <div className="py-20 bg-white">
+        <div className={`py-20 ${backgrounds.page}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${textColors.primary}`}>
                 {language === 'de' ? 'Kernfunktionen' : 'Core Features'}
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className={`text-xl max-w-3xl mx-auto ${textColors.secondary}`}>
                 {language === 'de' 
                   ? 'Eine vollständige Plattform, die alle Aspekte Ihres Datenlebenszyklus abdeckt'
                   : 'A complete platform that covers all aspects of your data lifecycle'
@@ -383,14 +384,14 @@ const DataOperatingSystemPage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {features.map((feature, index) => (
-                <div key={index} className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div key={index} className={`rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${backgrounds.card}`}>
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-xl mb-6">
                     <feature.icon className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  <h3 className="text-xl font-semibold textColors.primary mb-4">
                     {feature.title[language as keyof typeof feature.title]}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="textColors.secondary leading-relaxed">
                     {feature.description[language as keyof typeof feature.description]}
                   </p>
                 </div>
@@ -403,10 +404,10 @@ const DataOperatingSystemPage: React.FC = () => {
         <div className="py-20 bg-indigo-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${textColors.primary}`}>
                 {language === 'de' ? 'Systemfähigkeiten' : 'System Capabilities'}
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className={`text-xl max-w-3xl mx-auto ${textColors.secondary}`}>
                 {language === 'de' 
                   ? 'DOS deckt sechs organisatorische Perspektiven ab und ist mit ERP-, CRM- und Datenbanksystemen kompatibel.'
                   : 'DOS covers six organizational perspectives and is compatible with ERP, CRM, and database systems.'
@@ -441,11 +442,11 @@ const DataOperatingSystemPage: React.FC = () => {
                   description: { en: 'Enhanced customer insights through AI analytics and real-time data synchronization for improved distribution networks', de: 'Verbesserte Kundeneinblicke durch KI-Analytics und Echtzeit-Datensynchronisation für verbesserte Vertriebsnetzwerke' }
                 }
               ].map((capability, index) => (
-                <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <div key={index} className="backgrounds.page rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <h3 className="text-lg font-semibold textColors.primary mb-3">
                     {capability.title[language as keyof typeof capability.title]}
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <p className="textColors.secondary text-sm leading-relaxed">
                     {capability.description[language as keyof typeof capability.description]}
                   </p>
                 </div>
@@ -453,26 +454,26 @@ const DataOperatingSystemPage: React.FC = () => {
             </div>
 
             <div className="mt-16 text-center">
-              <div className="bg-white rounded-2xl p-8 shadow-lg max-w-2xl mx-auto">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <div className="backgrounds.page rounded-2xl p-8 shadow-lg max-w-2xl mx-auto">
+                <h3 className="text-2xl font-bold textColors.primary mb-4">
                   {language === 'de' ? 'Technische Spezifikationen' : 'Technical Specifications'}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                   <div>
                     <div className="text-3xl font-bold text-indigo-600 mb-2">10 PB</div>
-                    <div className="text-gray-600 text-sm">
+                    <div className="textColors.secondary text-sm">
                       {language === 'de' ? 'Datenverarbeitungskapazität (Skalierbar 1 TB - 10 PB)' : 'Data Processing Capacity (Scalable 1 TB - 10 PB)'}
                     </div>
                   </div>
                   <div>
                     <div className="text-3xl font-bold text-indigo-600 mb-2">300 ZB</div>
-                    <div className="text-gray-600 text-sm">
+                    <div className="textColors.secondary text-sm">
                       {language === 'de' ? 'Prognostizierte Datenmenge bis 2027' : 'Projected Data Volume by 2027'}
                     </div>
                   </div>
                   <div>
                     <div className="text-3xl font-bold text-indigo-600 mb-2">90%+</div>
-                    <div className="text-gray-600 text-sm">
+                    <div className="textColors.secondary text-sm">
                       {language === 'de' ? 'Technologienutzung in Zielumgebungen' : 'Technology Usage in Target Environments'}
                     </div>
                   </div>
@@ -483,14 +484,14 @@ const DataOperatingSystemPage: React.FC = () => {
         </div>
 
         {/* Architecture Section */}
-        <div className="py-20 bg-white">
+        <div className={`py-20 ${backgrounds.page}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${textColors.primary}`}>
                   {language === 'de' ? 'Moderne Datenarchitektur' : 'Modern Data Architecture'}
                 </h2>
-                <p className="text-lg text-gray-600 mb-8">
+                <p className={`text-lg mb-8 ${textColors.secondary}`}>
                   {language === 'de' 
                     ? 'Aufgebaut auf modernsten Cloud-Native-Technologien für maximale Leistung, Skalierbarkeit und Zuverlässigkeit.'
                     : 'Built on cutting-edge cloud-native technologies for maximum performance, scalability, and reliability.'
@@ -526,10 +527,10 @@ const DataOperatingSystemPage: React.FC = () => {
                     }
                   </p>
                   <div className="space-y-3">
-                    <button className="w-full bg-white text-indigo-600 font-bold py-3 px-6 rounded-lg hover:bg-gray-100 transition-colors">
+                    <button className="w-full backgrounds.page text-indigo-600 font-bold py-3 px-6 rounded-lg hover:bg-gray-100 transition-colors">
                       {language === 'de' ? 'Live Demo buchen' : 'Book Live Demo'}
                     </button>
-                    <button className="w-full border-2 border-white text-white font-medium py-3 px-6 rounded-lg hover:bg-white/10 transition-colors">
+                    <button className="w-full border-2 border-white text-white font-medium py-3 px-6 rounded-lg hover:backgrounds.page/10 transition-colors">
                       {language === 'de' ? 'Preise anfragen' : 'Get Pricing'}
                     </button>
                   </div>
@@ -540,13 +541,13 @@ const DataOperatingSystemPage: React.FC = () => {
         </div>
 
         {/* DOS Versions Section */}
-        <div className="py-20 bg-gray-50">
+        <div className={`py-20 ${backgrounds.sectionAlt}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${textColors.primary}`}>
                 {language === 'de' ? 'DOS Versionen' : 'DOS Versions'}
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className={`text-xl max-w-3xl mx-auto ${textColors.secondary}`}>
                 {language === 'de' 
                   ? 'Wählen Sie die richtige DOS-Version für Ihre Unternehmensanforderungen'
                   : 'Choose the right DOS version for your enterprise requirements'
@@ -556,14 +557,14 @@ const DataOperatingSystemPage: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* DOS Basic */}
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="backgrounds.page rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900">DOS 1.0 Basic</h3>
+                  <h3 className="text-2xl font-bold textColors.primary">DOS 1.0 Basic</h3>
                   <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
                     {language === 'de' ? 'Kostenlos' : 'Free'}
                   </span>
                 </div>
-                <p className="text-gray-600 mb-6">
+                <p className="textColors.secondary mb-6">
                   {language === 'de' 
                     ? 'Das Daten-Betriebssystem für Unternehmen - effizient, sicher, skalierbar. Zentralisiertes Datenmanagement mit verbesserter Datensicherheit, skalierbarer Infrastruktur und benutzerfreundlicher Oberfläche.'
                     : 'The Data Operating System for enterprises - efficient, secure, scalable. Centralized data management with enhanced data security, scalable infrastructure, and user-friendly interface.'
@@ -612,7 +613,7 @@ const DataOperatingSystemPage: React.FC = () => {
               <div className="bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl p-8 text-white shadow-lg hover:shadow-xl transition-all duration-300">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-2xl font-bold">DOS 1.0 Standard</h3>
-                  <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  <span className="backgrounds.page/20 text-white px-3 py-1 rounded-full text-sm font-medium">
                     {language === 'de' ? 'Enterprise' : 'Enterprise'}
                   </span>
                 </div>
@@ -624,7 +625,7 @@ const DataOperatingSystemPage: React.FC = () => {
                 </p>
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center space-x-3">
-                    <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center">
+                    <div className="w-5 h-5 backgrounds.page/20 rounded-full flex items-center justify-center">
                       <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
@@ -632,7 +633,7 @@ const DataOperatingSystemPage: React.FC = () => {
                     <span className="text-white/90">{language === 'de' ? 'Alle DOS Basic Funktionen' : 'All DOS Basic Features'}</span>
                   </li>
                   <li className="flex items-center space-x-3">
-                    <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center">
+                    <div className="w-5 h-5 backgrounds.page/20 rounded-full flex items-center justify-center">
                       <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
@@ -640,7 +641,7 @@ const DataOperatingSystemPage: React.FC = () => {
                     <span className="text-white/90">{language === 'de' ? 'Vollständige Komponentensuite: Mapper, Vector, Matrix, Interface' : 'Complete component suite: Mapper, Vector, Matrix, Interface'}</span>
                   </li>
                   <li className="flex items-center space-x-3">
-                    <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center">
+                    <div className="w-5 h-5 backgrounds.page/20 rounded-full flex items-center justify-center">
                       <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
@@ -648,7 +649,7 @@ const DataOperatingSystemPage: React.FC = () => {
                     <span className="text-white/90">{language === 'de' ? 'Bis zu 10 Petabyte Datenverarbeitung' : 'Up to 10 Petabyte Data Processing'}</span>
                   </li>
                   <li className="flex items-center space-x-3">
-                    <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center">
+                    <div className="w-5 h-5 backgrounds.page/20 rounded-full flex items-center justify-center">
                       <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
@@ -656,7 +657,7 @@ const DataOperatingSystemPage: React.FC = () => {
                     <span className="text-white/90">{language === 'de' ? 'Business, Technologie, Menschen, GRC, Operations & Vertrieb' : 'Business, Technology, People, GRC, Operations & Sales'}</span>
                   </li>
                 </ul>
-                <button className="w-full bg-white text-indigo-600 py-3 px-6 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                <button className="w-full backgrounds.page text-indigo-600 py-3 px-6 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
                   {language === 'de' ? 'DOS Standard anfragen' : 'Request DOS Standard'}
                 </button>
               </div>
@@ -667,10 +668,10 @@ const DataOperatingSystemPage: React.FC = () => {
         {/* Benefits Section */}
         <div className="py-20 bg-indigo-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold textColors.primary mb-4">
               {language === 'de' ? 'Warum unser Data OS?' : 'Why Our Data OS?'}
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-16">
+            <p className="text-xl textColors.secondary max-w-3xl mx-auto mb-16">
               {language === 'de' 
                 ? 'Transformieren Sie Ihre Dateninfrastruktur mit einer Plattform, die für die Zukunft gebaut ist'
                 : 'Transform your data infrastructure with a platform built for the future'
@@ -692,7 +693,7 @@ const DataOperatingSystemPage: React.FC = () => {
                   label: { en: 'Return on Investment', de: 'Return on Investment' }
                 }
               ].map((stat, index) => (
-                <div key={index} className="bg-white rounded-xl p-8 shadow-lg">
+                <div key={index} className="backgrounds.page rounded-xl p-8 shadow-lg">
                   <div className="text-4xl md:text-5xl font-bold text-indigo-600 mb-2">
                     {stat.value}
                   </div>
@@ -718,10 +719,10 @@ const DataOperatingSystemPage: React.FC = () => {
               }
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-indigo-600 font-bold text-lg px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors">
+              <button className="backgrounds.page text-indigo-600 font-bold text-lg px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors">
                 {language === 'de' ? 'Kostenlose Demo starten' : 'Start Free Demo'}
               </button>
-              <button className="border-2 border-white text-white font-bold text-lg px-8 py-4 rounded-lg hover:bg-white/10 transition-colors">
+              <button className="border-2 border-white text-white font-bold text-lg px-8 py-4 rounded-lg hover:backgrounds.page/10 transition-colors">
                 {language === 'de' ? 'Vertrieb kontaktieren' : 'Contact Sales'}
               </button>
             </div>

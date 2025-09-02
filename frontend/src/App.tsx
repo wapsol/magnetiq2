@@ -58,7 +58,7 @@ import PagesManager from './pages/admin/content/PagesManager'
 import IndustriesManager from './pages/admin/content/IndustriesManager'
 import TranslationManager from './pages/admin/content/TranslationManager'
 import BusinessOverview from './pages/admin/business/BusinessOverview'
-import WebinarsManager from './pages/admin/business/WebinarsManager'
+import WebinarManagement from './pages/admin/webinars/WebinarManagement'
 import UsersManager from './pages/admin/users/UsersManager'
 import { ConsultantManagement } from './pages/admin/consultants/ConsultantManagement'
 import { ConsultantAnalytics } from './pages/admin/consultants/ConsultantAnalytics'
@@ -265,7 +265,7 @@ function App() {
           {/* Business Operations */}
           <Route path="business">
             <Route index element={<BusinessOverview />} />
-            <Route path="webinars" element={<WebinarsManager />} />
+            <Route path="webinars" element={<WebinarManagement />} />
           </Route>
         </Route>
 

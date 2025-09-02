@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { backgrounds, textColors, getCardClasses, getSectionClasses } from '../../utils/styling'
+import { backgrounds, textColors, getCardClasses, getSectionClasses, gradients, responsive, shadows, borders } from '../../utils/styling'
 import { 
   DocumentTextIcon, 
   EyeIcon,
@@ -198,9 +198,9 @@ const WhitepapersPage = () => {
   return (
     <div className={`${backgrounds.pageAlt} min-h-screen`}>
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-secondary-900 via-secondary-800 to-primary-900 text-white overflow-hidden">
+      <div className={`relative ${gradients.heroPurple} text-white overflow-hidden`}>
         <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
-        <div className="relative container section-sm">
+        <div className={`relative ${responsive.container} py-16 lg:py-20`}>
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex items-center justify-center space-x-2 mb-6">
               <DocumentTextIcon className="h-12 w-12 text-primary-300" />
@@ -212,6 +212,33 @@ const WhitepapersPage = () => {
               Download our comprehensive whitepapers, case studies, and research reports 
               to stay ahead in the digital transformation journey.
             </p>
+
+            {/* Stats in Hero */}
+            <div className={`${responsive.gridCols4} mb-8 ${backgrounds.overlay} backdrop-blur-sm rounded-2xl p-8 border border-white/20`}>
+              <div className="text-center">
+                <div className="text-3xl lg:text-4xl font-bold text-white mb-1">{whitepapers.length}</div>
+                <div className={`text-sm ${textColors.invertedSecondary}`}>Resources Available</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl lg:text-4xl font-bold text-white mb-1">
+                  {whitepapers.reduce((sum, wp) => sum + wp.downloads, 0).toLocaleString()}
+                </div>
+                <div className={`text-sm ${textColors.invertedSecondary}`}>Total Downloads</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl lg:text-4xl font-bold text-white mb-1">
+                  {whitepapers.reduce((sum, wp) => sum + wp.views, 0).toLocaleString()}
+                </div>
+                <div className={`text-sm ${textColors.invertedSecondary}`}>Total Views</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl lg:text-4xl font-bold text-white mb-1">
+                  {Math.round(whitepapers.reduce((sum, wp) => sum + wp.pages, 0) / whitepapers.length)}
+                </div>
+                <div className={`text-sm ${textColors.invertedSecondary}`}>Avg. Pages</div>
+              </div>
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a href="#featured" className="btn-xl bg-primary-600 text-white hover:bg-primary-700 shadow-lg">
                 Browse Featured Content
@@ -224,49 +251,19 @@ const WhitepapersPage = () => {
         </div>
       </div>
 
-      {/* Stats Section */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="container py-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-3xl font-bold text-primary-600">{whitepapers.length}</div>
-              <div className="text-sm text-gray-600">Resources Available</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-success-600">
-                {whitepapers.reduce((sum, wp) => sum + wp.downloads, 0).toLocaleString()}
-              </div>
-              <div className="text-sm text-gray-600">Total Downloads</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-accent-600">
-                {whitepapers.reduce((sum, wp) => sum + wp.views, 0).toLocaleString()}
-              </div>
-              <div className="text-sm text-gray-600">Total Views</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-warning-600">
-                {Math.round(whitepapers.reduce((sum, wp) => sum + wp.pages, 0) / whitepapers.length)}
-              </div>
-              <div className="text-sm text-gray-600">Avg. Pages</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Featured Section */}
-      <div id="featured" className="bg-white">
-        <div className="container section">
+      <div id="featured" className={backgrounds.section}>
+        <div className={`${responsive.container} py-16 lg:py-20`}>
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className={`text-3xl font-bold ${textColors.primary} mb-4`}>
               Featured Resources
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className={`text-xl ${textColors.secondary}`}>
               Our most popular and recently published content
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          <div className={`${responsive.gridCols3} mb-16`}>
             {featuredWhitepapers.map((whitepaper, index) => {
               const TypeIcon = getTypeIcon(whitepaper.type)
               return (
@@ -363,19 +360,19 @@ const WhitepapersPage = () => {
       </div>
 
       {/* All Resources Section */}
-      <div id="all" className="bg-gray-50">
-        <div className="container section">
+      <div id="all" className={backgrounds.sectionAlt}>
+        <div className={`${responsive.container} py-16 lg:py-20`}>
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className={`text-3xl font-bold ${textColors.primary} mb-4`}>
               All Resources
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className={`text-xl ${textColors.secondary}`}>
               Explore our complete library of knowledge resources
             </p>
           </div>
 
           {/* Filters */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
+          <div className={`${backgrounds.card} p-6 rounded-xl ${shadows.sm} border ${borders.default} mb-8`}>
             <div className="flex flex-col lg:flex-row lg:items-center gap-6">
               <div className="flex-1">
                 <div className="relative">
@@ -422,7 +419,7 @@ const WhitepapersPage = () => {
           </div>
 
           {/* Resources Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className={responsive.gridCols3}>
             {filteredWhitepapers.map((whitepaper, index) => {
               const TypeIcon = getTypeIcon(whitepaper.type)
               return (

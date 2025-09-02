@@ -25,6 +25,7 @@ class LinkedInCallbackRequest(BaseModel):
 
 
 class ConsultantUpdateRequest(BaseModel):
+    email: Optional[EmailStr] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     headline: Optional[str] = None
@@ -38,6 +39,8 @@ class ConsultantUpdateRequest(BaseModel):
     currency: Optional[str] = None
     availability_status: Optional[str] = None
     languages_spoken: Optional[List[str]] = None
+    is_featured: Optional[bool] = None
+    is_verified: Optional[bool] = None
 
 
 class ConsultantStatusUpdateRequest(BaseModel):
@@ -227,6 +230,40 @@ async def get_consultant_profile(
 
 
 # Admin endpoints for consultant management
+@router.post("/admin/consultants")
+async def create_consultant_admin(
+    request: ConsultantUpdateRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """Create a new consultant (admin only)"""
+    
+    try:
+        service = ConsultantService(db)
+        
+        # Convert request to dict, excluding None values
+        consultant_data = request.dict(exclude_unset=True)
+        
+        # Add required fields for new consultant
+        if 'email' not in consultant_data or not consultant_data['email']:
+            raise HTTPException(status_code=400, detail="Email is required")
+        
+        result = await service.create_consultant(
+            consultant_data=consultant_data,
+            created_by=None  # Will add admin user tracking later
+        )
+        
+        if not result['success']:
+            raise HTTPException(status_code=400, detail=result['error'])
+        
+        return result
+        
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Create consultant error: {e}")
+        raise HTTPException(status_code=500, detail="Creation failed")
+
+
 @router.get("/admin/consultants")
 async def get_all_consultants_admin(
     q: Optional[str] = Query(None),
@@ -354,6 +391,33 @@ async def update_consultant_status(
     except Exception as e:
         logger.error(f"Status update error: {e}")
         raise HTTPException(status_code=500, detail="Status update failed")
+
+
+@router.delete("/admin/consultants/{consultant_id}")
+async def delete_consultant_admin(
+    consultant_id: str,
+    db: AsyncSession = Depends(get_db)
+):
+    """Delete consultant (admin only)"""
+    
+    try:
+        service = ConsultantService(db)
+        
+        result = await service.delete_consultant(
+            consultant_id=consultant_id,
+            deleted_by=None  # Will add admin user tracking later
+        )
+        
+        if not result['success']:
+            raise HTTPException(status_code=400, detail=result['error'])
+        
+        return result
+        
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Delete consultant error: {e}")
+        raise HTTPException(status_code=500, detail="Deletion failed")
 
 
 @router.post("/admin/consultants/{consultant_id}/generate-ai-profile")

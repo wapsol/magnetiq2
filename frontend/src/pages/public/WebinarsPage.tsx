@@ -18,6 +18,7 @@ const WebinarsPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedStatus, setSelectedStatus] = useState('all')
+  const [selectedLevel, setSelectedLevel] = useState(null)
 
   const categories = [
     { id: 'all', name: 'All Topics' },
@@ -109,11 +110,13 @@ const WebinarsPage = () => {
   const filteredWebinars = webinars.filter(webinar => {
     const matchesSearch = webinar.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          webinar.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         webinar.presenter.toLowerCase().includes(searchTerm.toLowerCase())
+                         webinar.presenter.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         webinar.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesCategory = selectedCategory === 'all' || webinar.category === selectedCategory
     const matchesStatus = selectedStatus === 'all' || webinar.status === selectedStatus
+    const matchesLevel = !selectedLevel || webinar.level === selectedLevel
     
-    return matchesSearch && matchesCategory && matchesStatus
+    return matchesSearch && matchesCategory && matchesStatus && matchesLevel
   })
 
   const getStatusBadge = (status: string) => {
@@ -159,68 +162,107 @@ const WebinarsPage = () => {
               Join our live webinars and recorded sessions featuring industry experts sharing 
               the latest trends, best practices, and innovative solutions.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="btn-xl bg-white text-primary-600 hover:bg-primary-50 shadow-lg">
-                Browse Live Webinars
-              </button>
-              <button className="btn-xl border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm">
-                View Recorded Sessions
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+            
+            {/* Search and Filters in Hero */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8 max-w-4xl mx-auto">
+              <div className="flex flex-col lg:flex-row gap-4">
+                {/* Enhanced Search */}
+                <div className="flex-1">
+                  <div className="relative">
+                    <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search webinars by topic, presenter, or keyword..."
+                      className="w-full pl-12 pr-4 py-3 rounded-xl border-0 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-white/50 text-lg"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+                
+                {/* Filters Row */}
+                <div className="flex flex-wrap gap-3 lg:flex-nowrap">
+                  <div className="flex items-center space-x-2">
+                    <FunnelIcon className="h-5 w-5 text-white/70" />
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="rounded-lg border-0 bg-white/20 text-white backdrop-blur-sm py-2 px-3 focus:ring-2 focus:ring-white/50"
+                    >
+                      {categories.map(category => (
+                        <option key={category.id} value={category.id} className="text-gray-900">
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-      {/* Filters Section */}
-      <div className="bg-white border-b border-gray-200 sticky top-16 z-30">
-        <div className="container py-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            {/* Search */}
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search webinars..."
-                  className="form-input pl-10 w-full"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+                  <select
+                    value={selectedStatus}
+                    onChange={(e) => setSelectedStatus(e.target.value)}
+                    className="rounded-lg border-0 bg-white/20 text-white backdrop-blur-sm py-2 px-3 focus:ring-2 focus:ring-white/50"
+                  >
+                    {statuses.map(status => (
+                      <option key={status.id} value={status.id} className="text-gray-900">
+                        {status.name}
+                      </option>
+                    ))}
+                  </select>
+                  
+                  {/* Level Filter */}
+                  <select
+                    value={selectedLevel || 'all'}
+                    onChange={(e) => setSelectedLevel(e.target.value === 'all' ? null : e.target.value)}
+                    className="rounded-lg border-0 bg-white/20 text-white backdrop-blur-sm py-2 px-3 focus:ring-2 focus:ring-white/50"
+                  >
+                    <option value="all" className="text-gray-900">All Levels</option>
+                    <option value="Beginner" className="text-gray-900">Beginner</option>
+                    <option value="Intermediate" className="text-gray-900">Intermediate</option>
+                    <option value="Advanced" className="text-gray-900">Advanced</option>
+                  </select>
+                </div>
               </div>
-            </div>
-
-            {/* Filters */}
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center space-x-2">
-                <FunnelIcon className="h-5 w-5 text-gray-400" />
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="form-select"
-                >
-                  {categories.map(category => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="form-select"
-              >
-                {statuses.map(status => (
-                  <option key={status.id} value={status.id}>
-                    {status.name}
-                  </option>
+              
+              {/* Quick Filter Tags */}
+              <div className="flex flex-wrap gap-2 mt-6">
+                <span className="text-white/90 text-lg font-semibold mr-4">Quick Filters:</span>
+                {[{ id: 'live', name: '🔴 Live Now', type: 'status' }, { id: 'upcoming', name: '📅 Upcoming', type: 'status' }, { id: 'recorded', name: '🎬 Recorded', type: 'status' }, { id: 'ai', name: '🤖 AI & ML', type: 'category' }, { id: 'react', name: '⚛️ React', type: 'category' }, { id: 'backend', name: '⚙️ Backend', type: 'category' }, { id: 'business', name: '📊 Business', type: 'category' }].map(tag => (
+                  <button
+                    key={tag.id}
+                    onClick={() => {
+                      if (tag.type === 'status') {
+                        setSelectedStatus(tag.id)
+                      } else {
+                        setSelectedCategory(tag.id)
+                      }
+                    }}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors backdrop-blur-sm ${
+                      (tag.type === 'status' && selectedStatus === tag.id) || 
+                      (tag.type === 'category' && selectedCategory === tag.id) 
+                        ? 'bg-white text-primary-600 shadow-lg' 
+                        : 'bg-white/20 text-white/90 hover:bg-white/30'
+                    }`}
+                  >
+                    {tag.name}
+                  </button>
                 ))}
-              </select>
+                <button
+                  onClick={() => {
+                    setSearchTerm('')
+                    setSelectedCategory('all')
+                    setSelectedStatus('all')
+                    setSelectedLevel(null)
+                  }}
+                  className="px-4 py-2 rounded-full bg-red-500/20 text-white/90 text-sm font-medium hover:bg-red-500/30 transition-colors backdrop-blur-sm"
+                >
+                  ✕ Clear All
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
 
       {/* Webinars Grid */}
       <div className="container section">

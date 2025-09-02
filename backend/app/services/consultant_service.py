@@ -54,6 +54,101 @@ class ConsultantService:
         
         return await self._format_consultant_data(consultant)
 
+    async def create_consultant(
+        self,
+        consultant_data: Dict[str, Any],
+        created_by: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Create a new consultant"""
+        
+        try:
+            # Check if email already exists
+            existing_result = await self.db.execute(
+                select(Consultant).where(Consultant.email == consultant_data.get('email'))
+            )
+            existing_consultant = existing_result.scalar_one_or_none()
+            
+            if existing_consultant:
+                return {
+                    'success': False,
+                    'error': 'A consultant with this email already exists'
+                }
+            
+            # Create new consultant
+            consultant_data_with_defaults = {
+                'linkedin_url': consultant_data.get('linkedin_url', f'https://linkedin.com/in/temp-{uuid.uuid4()}'),
+                **consultant_data
+            }
+            
+            consultant = Consultant(
+                id=str(uuid.uuid4()),
+                status=ConsultantStatus.PENDING,
+                kyc_status=KYCStatus.NOT_STARTED,
+                created_at=datetime.utcnow(),
+                **consultant_data_with_defaults
+            )
+            
+            self.db.add(consultant)
+            await self.db.commit()
+            await self.db.refresh(consultant)
+            
+            logger.info(f"New consultant created with ID {consultant.id} by {created_by or 'system'}")
+            
+            return {
+                'success': True,
+                'message': 'Consultant created successfully',
+                'consultant': await self._format_consultant_data(consultant)
+            }
+            
+        except Exception as e:
+            await self.db.rollback()
+            logger.error(f"Consultant creation failed: {e}")
+            return {
+                'success': False,
+                'error': f'Creation failed: {str(e)}'
+            }
+
+    async def delete_consultant(
+        self,
+        consultant_id: str,
+        deleted_by: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Delete a consultant (soft delete by archiving)"""
+        
+        result = await self.db.execute(
+            select(Consultant).where(Consultant.id == consultant_id)
+        )
+        consultant = result.scalar_one_or_none()
+        
+        if not consultant:
+            return {
+                'success': False,
+                'error': 'Consultant not found'
+            }
+        
+        try:
+            # Soft delete by archiving
+            consultant.status = ConsultantStatus.ARCHIVED
+            consultant.archived_at = datetime.utcnow()
+            consultant.updated_at = datetime.utcnow()
+            
+            await self.db.commit()
+            
+            logger.info(f"Consultant {consultant_id} deleted/archived by {deleted_by or 'system'}")
+            
+            return {
+                'success': True,
+                'message': 'Consultant deleted successfully'
+            }
+            
+        except Exception as e:
+            await self.db.rollback()
+            logger.error(f"Consultant deletion failed for {consultant_id}: {e}")
+            return {
+                'success': False,
+                'error': f'Deletion failed: {str(e)}'
+            }
+
     async def search_consultants(
         self,
         query: Optional[str] = None,
