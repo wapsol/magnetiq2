@@ -9,14 +9,13 @@ import {
   ArrowRightOnRectangleIcon,
   ChevronDownIcon
 } from '@heroicons/react/24/outline'
-import { Menu, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
-import clsx from 'clsx'
 
 const AdminHeader = () => {
   const dispatch = useAppDispatch()
   const { user } = useAppSelector((state) => state.auth)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false)
   
   const handleLogout = () => {
     dispatch(logout())
@@ -41,7 +40,7 @@ const AdminHeader = () => {
             </div>
             <input
               type="text"
-              className="form-input pl-10 w-full bg-gray-50 border-gray-200 focus:bg-white"
+              className="form-input pl-10 w-full bg-gray-50 border-gray-200 focus:bg-white border rounded-lg px-4 py-2"
               placeholder="Search content, webinars, users..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -52,131 +51,59 @@ const AdminHeader = () => {
         {/* Actions */}
         <div className="flex items-center space-x-4 ml-6">
           {/* Notifications */}
-          <Menu as="div" className="relative">
-            <Menu.Button className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+          <div className="relative">
+            <button 
+              className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              onClick={() => setShowNotifications(!showNotifications)}
+            >
               <BellIcon className="h-6 w-6" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 bg-error-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
+                <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
                   {unreadCount}
                 </span>
               )}
-            </Menu.Button>
+            </button>
             
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-200"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
-              <Menu.Panel className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            {showNotifications && (
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 z-50">
                 <div className="px-4 py-3 border-b border-gray-100">
                   <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
                 </div>
                 <div className="max-h-64 overflow-y-auto">
                   {notifications.map((notification) => (
-                    <Menu.Item key={notification.id}>
-                      {({ active }) => (
-                        <div className={clsx(
-                          'px-4 py-3 border-b border-gray-50 last:border-0',
-                          active ? 'bg-gray-50' : '',
-                          notification.unread ? 'bg-blue-50' : ''
-                        )}>
-                          <div className="flex justify-between items-start">
-                            <p className="text-sm text-gray-900">{notification.message}</p>
-                            {notification.unread && (
-                              <div className="h-2 w-2 bg-primary-500 rounded-full flex-shrink-0 ml-2 mt-1"></div>
-                            )}
-                          </div>
-                          <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
-                        </div>
-                      )}
-                    </Menu.Item>
+                    <div key={notification.id} className={`px-4 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 ${notification.unread ? 'bg-blue-50' : ''}`}>
+                      <div className="flex justify-between items-start">
+                        <p className="text-sm text-gray-900">{notification.message}</p>
+                        {notification.unread && (
+                          <div className="h-2 w-2 bg-blue-500 rounded-full flex-shrink-0 ml-2 mt-1"></div>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
+                    </div>
                   ))}
                 </div>
                 <div className="px-4 py-3 border-t border-gray-100">
-                  <button className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                  <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                     View all notifications
                   </button>
                 </div>
-              </Menu.Panel>
-            </Transition>
-          </Menu>
+              </div>
+            )}
+          </div>
           
           {/* Settings */}
-          <Menu as="div" className="relative">
-            <Menu.Button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200">
-              <Cog6ToothIcon className="h-6 w-6" />
-            </Menu.Button>
-            
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-200"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
-              <Menu.Panel className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <h3 className="text-sm font-semibold text-gray-900">Settings</h3>
-                </div>
-                <div className="py-1">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <a
-                        href="#"
-                        className={clsx(
-                          'flex items-center px-4 py-2 text-sm',
-                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                        )}
-                      >
-                        <Cog6ToothIcon className="mr-3 h-5 w-5 text-gray-400" />
-                        System Configuration
-                      </a>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <a
-                        href="#"
-                        className={clsx(
-                          'flex items-center px-4 py-2 text-sm',
-                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                        )}
-                      >
-                        <UserCircleIcon className="mr-3 h-5 w-5 text-gray-400" />
-                        User Preferences
-                      </a>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <a
-                        href="#"
-                        className={clsx(
-                          'flex items-center px-4 py-2 text-sm',
-                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                        )}
-                      >
-                        <BellIcon className="mr-3 h-5 w-5 text-gray-400" />
-                        Notification Settings
-                      </a>
-                    )}
-                  </Menu.Item>
-                </div>
-              </Menu.Panel>
-            </Transition>
-          </Menu>
+          <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+            <Cog6ToothIcon className="h-6 w-6" />
+          </button>
           
           {/* User Menu */}
-          <Menu as="div" className="relative">
-            <Menu.Button className="flex items-center space-x-3 p-2 text-sm rounded-lg hover:bg-gray-100 transition-colors duration-200 group">
+          <div className="relative">
+            <button 
+              className="flex items-center space-x-3 p-2 text-sm rounded-lg hover:bg-gray-100 transition-colors duration-200 group"
+              onClick={() => setShowUserMenu(!showUserMenu)}
+            >
               <div className="flex items-center space-x-2">
-                <div className="h-8 w-8 bg-primary-600 rounded-full flex items-center justify-center">
+                <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-sm font-medium text-white">
                     {(user?.full_name || 'Admin').charAt(0).toUpperCase()}
                   </span>
@@ -191,52 +118,27 @@ const AdminHeader = () => {
                 </div>
               </div>
               <ChevronDownIcon className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
-            </Menu.Button>
+            </button>
             
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-200"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
-              <Menu.Panel className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            {showUserMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 z-50">
                 <div className="py-1">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <a
-                        href="#"
-                        className={clsx(
-                          'flex items-center px-4 py-2 text-sm',
-                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                        )}
-                      >
-                        <UserCircleIcon className="mr-3 h-5 w-5 text-gray-400" />
-                        Your Profile
-                      </a>
-                    )}
-                  </Menu.Item>
+                  <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <UserCircleIcon className="mr-3 h-5 w-5 text-gray-400" />
+                    Your Profile
+                  </a>
                   <hr className="my-1" />
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        onClick={handleLogout}
-                        className={clsx(
-                          'flex items-center w-full px-4 py-2 text-sm text-left',
-                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                        )}
-                      >
-                        <ArrowRightOnRectangleIcon className="mr-3 h-5 w-5 text-gray-400" />
-                        Sign out
-                      </button>
-                    )}
-                  </Menu.Item>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
+                  >
+                    <ArrowRightOnRectangleIcon className="mr-3 h-5 w-5 text-gray-400" />
+                    Sign out
+                  </button>
                 </div>
-              </Menu.Panel>
-            </Transition>
-          </Menu>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>

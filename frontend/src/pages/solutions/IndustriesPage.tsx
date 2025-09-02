@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
+import { backgrounds, textColors, getCardClasses, getSectionClasses } from '../../utils/styling'
 import { 
   BuildingOfficeIcon,
   HeartIcon,
@@ -133,14 +134,14 @@ const IndustriesPage = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className={`min-h-screen ${backgrounds.pageAlt}`}>
       <div className="container py-16">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className={`text-4xl font-bold ${textColors.primary} mb-4`}>
             {t('solutions.industries')}
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className={`text-xl ${textColors.secondary} max-w-3xl mx-auto`}>
             {isGerman 
               ? 'Maßgeschneiderte Datenoptimierungslösungen für verschiedene Branchen'
               : 'Tailored data optimization solutions for various industries'}
@@ -153,7 +154,7 @@ const IndustriesPage = () => {
             <Link
               key={industry.id}
               to={industry.path}
-              className="bg-white dark:bg-gray-800 rounded-lg p-8 shadow-lg hover:shadow-xl transition-all duration-300 group hover:scale-105"
+              className={`${backgrounds.card} rounded-lg p-8 shadow-lg hover:shadow-xl transition-all duration-300 group hover:scale-105`}
             >
               <div className="flex flex-col h-full">
                 {/* Icon and Market Info */}
@@ -163,19 +164,19 @@ const IndustriesPage = () => {
                     <div className="text-sm font-semibold text-primary-600 dark:text-primary-400">
                       {industry.marketSize}
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className={`text-xs ${textColors.muted}`}>
                       {industry.growth} {isGerman ? 'Wachstum' : 'growth'}
                     </div>
                   </div>
                 </div>
 
                 {/* Title */}
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                <h3 className={`text-xl font-semibold ${textColors.primary} mb-3 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors`}>
                   {industry.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-gray-600 dark:text-gray-300 flex-grow mb-4">
+                <p className={`${textColors.secondary} flex-grow mb-4`}>
                   {industry.description}
                 </p>
 
@@ -193,12 +194,12 @@ const IndustriesPage = () => {
 
         {/* Bottom CTA Section */}
         <div className="mt-16 text-center p-8 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+          <h2 className={`text-2xl font-semibold ${textColors.primary} mb-4`}>
             {isGerman 
               ? 'Ihre Branche nicht dabei?' 
               : 'Don\'t see your industry?'}
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
+          <p className={`text-lg ${textColors.secondary} mb-6`}>
             {isGerman 
               ? 'Wir entwickeln maßgeschneiderte Lösungen für jede Branche. Lassen Sie uns über Ihre spezifischen Anforderungen sprechen.'
               : 'We develop customized solutions for every industry. Let\'s discuss your specific requirements.'}

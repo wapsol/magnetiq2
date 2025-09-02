@@ -1,6 +1,7 @@
 import React from 'react'
 import { useLanguage } from '../../contexts/LanguageContext'
 import SEOHead from '../../components/common/SEOHead'
+import { backgrounds, textColors, getCardClasses, getSectionClasses } from '../../utils/styling'
 import { 
   UserGroupIcon,
   AcademicCapIcon,
@@ -10,7 +11,11 @@ import {
   ArrowPathIcon,
   ExclamationTriangleIcon,
   CloudIcon,
-  BuildingOfficeIcon
+  BuildingOfficeIcon,
+  CpuChipIcon,
+  GlobeAltIcon,
+  ChartPieIcon,
+  LockClosedIcon
 } from '@heroicons/react/24/outline'
 
 const ManagementAdvisoryPage: React.FC = () => {
@@ -86,12 +91,56 @@ const ManagementAdvisoryPage: React.FC = () => {
     {
       icon: <BuildingOfficeIcon className="h-8 w-8" />,
       title: {
-        en: 'ERP Consulting (AI-Enhanced)',
-        de: 'ERP-Beratung (KI-Enhanced)'
+        en: 'ERP Consulting (AI-Featured)',
+        de: 'ERP-Beratung (Herstellerneutral, KI-gestützt)'
       },
       description: {
         en: 'Harmonize business areas with vendor-agnostic, AI-featured ERP solutions for comprehensive business optimization.',
         de: 'Harmonisierung von Geschäftsbereichen mit herstellerneutralen, KI-gestützten ERP-Lösungen für umfassende Geschäftsoptimierung.'
+      }
+    },
+    {
+      icon: <CpuChipIcon className="h-8 w-8" />,
+      title: {
+        en: 'Artificial Intelligence & Cognitive Twins',
+        de: 'Künstliche Intelligenz & Cognitive Twins'
+      },
+      description: {
+        en: 'Implementation of AI solutions and cognitive twins for intelligent process automation and decision support systems.',
+        de: 'Implementierung von KI-Lösungen und Cognitive Twins für intelligente Prozessautomation und Entscheidungsunterstützungssysteme.'
+      }
+    },
+    {
+      icon: <GlobeAltIcon className="h-8 w-8" />,
+      title: {
+        en: 'Industry 4.0 & Internet of Things',
+        de: 'Industrie 4.0 & Internet of Things'
+      },
+      description: {
+        en: 'Connected manufacturing solutions and IoT implementations for smart factory transformation and operational efficiency.',
+        de: 'Vernetzte Fertigungslösungen und IoT-Implementierungen für Smart Factory Transformation und operative Effizienz.'
+      }
+    },
+    {
+      icon: <LockClosedIcon className="h-8 w-8" />,
+      title: {
+        en: 'Cyber Security',
+        de: 'Cyber Security'
+      },
+      description: {
+        en: 'Comprehensive security strategies and implementations to protect digital assets and ensure business continuity.',
+        de: 'Umfassende Sicherheitsstrategien und -implementierungen zum Schutz digitaler Assets und zur Gewährleistung der Geschäftskontinuität.'
+      }
+    },
+    {
+      icon: <ChartPieIcon className="h-8 w-8" />,
+      title: {
+        en: 'Data Science & Data Mining',
+        de: 'Data Science & Data Mining'
+      },
+      description: {
+        en: 'Advanced analytics and data mining techniques to unlock business insights and drive data-driven decision making.',
+        de: 'Fortgeschrittene Analytik und Data Mining Techniken zur Erschließung von Geschäftseinblicken und datengetriebener Entscheidungsfindung.'
       }
     }
   ]
@@ -99,32 +148,32 @@ const ManagementAdvisoryPage: React.FC = () => {
   const keyPrinciples = [
     {
       title: {
-        en: 'Senior Expertise',
-        de: 'Senior-Expertise'
+        en: 'The Silverbacks Are Back',
+        de: 'Die Silverbacks sind zurück'
       },
       description: {
-        en: 'Each consultant has at least 20 years of experience in national and international projects.',
-        de: 'Jeder Berater verfügt über mindestens 20 Jahre Erfahrung in nationalen und internationalen Projekten.'
+        en: 'Every consultant brings at least 20 years of experience in national and international projects, ensuring senior-level expertise across all engagements.',
+        de: 'Jeder Berater bringt mindestens 20 Jahre Erfahrung in nationalen und internationalen Projekten mit und gewährleistet Senior-Level-Expertise in allen Bereichen.'
       }
     },
     {
       title: {
-        en: 'Collective Intelligence',
-        de: 'Kollektive Intelligenz'
+        en: 'Swarm Knowledge',
+        de: 'Schwarmwissen'
       },
       description: {
-        en: 'Continuous exchange with international IT experts leveraging collective "swarm knowledge".',
-        de: 'Kontinuierlicher Austausch mit internationalen IT-Experten unter Nutzung des kollektiven "Schwarmwissens".'
+        en: 'Continuous iterative exchange with international IT experts enables us to bundle collective intelligence precisely for partner project requirements.',
+        de: 'Kontinuierlicher iterativer Austausch mit internationalen IT-Experten ermöglicht es uns, Schwarmwissen punktgenau auf die Anforderungen der Partnerprojekte zu bündeln.'
       }
     },
     {
       title: {
-        en: 'Holistic Approach',
-        de: 'Ganzheitlicher Ansatz'
+        en: 'Holistic Solutions',
+        de: 'Ganzheitliche Lösungen'
       },
       description: {
-        en: 'Comprehensive problem-solving approach focused on delivering results in time and budget.',
-        de: 'Umfassender Problemlösungsansatz mit Fokus auf termingerechte und budgetgerechte Ergebnisse.'
+        en: 'Looking beyond the plate - comprehensive problem-solving approach combining diverse expertise for optimal results within time and budget.',
+        de: 'Über den Tellerrand hinausblicken - ganzheitlicher Problemlösungsansatz durch Kombination vielfältiger Expertise für optimale Ergebnisse in Zeit und Budget.'
       }
     }
   ]
@@ -139,7 +188,7 @@ const ManagementAdvisoryPage: React.FC = () => {
         }
       />
 
-      <div className="bg-white">
+      <div className={backgrounds.page}>
         {/* Hero Section */}
         <section className="relative py-20 bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white overflow-hidden">
           <div className="absolute inset-0 bg-black/20"></div>
@@ -186,27 +235,27 @@ const ManagementAdvisoryPage: React.FC = () => {
         </section>
 
         {/* Key Principles Section */}
-        <section className="py-16 bg-gray-50">
+        <section className={getSectionClasses('alt')}>
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <h2 className={`text-3xl font-bold ${textColors.primary} mb-4`}>
                 {language === 'de' ? 'Unsere Grundprinzipien' : 'Our Core Principles'}
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className={`text-xl ${textColors.secondary} max-w-3xl mx-auto`}>
                 {language === 'de' 
-                  ? 'Kontinuierlicher Austausch und Feedback mit internationalen IT-Experten für bestmögliche Projektergebnisse'
-                  : 'Continuous exchange and feedback with international IT experts for optimal project results'
+                  ? 'Kombinieren unsere Expertise unter einem Management-Beratungsverbund, um Schwarmwissen für die bestmöglichen Ergebnisse zu bündeln'
+                  : 'Combining our expertise under a management consulting alliance to bundle swarm knowledge for optimal results'
                 }
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {keyPrinciples.map((principle, index) => (
-                <div key={index} className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">
+                <div key={index} className={`${getCardClasses()} rounded-xl shadow-lg hover:shadow-xl duration-300`}>
+                  <h3 className={`text-xl font-bold ${textColors.primary} mb-4`}>
                     {principle.title[language]}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className={`${textColors.secondary} leading-relaxed`}>
                     {principle.description[language]}
                   </p>
                 </div>
@@ -216,13 +265,13 @@ const ManagementAdvisoryPage: React.FC = () => {
         </section>
 
         {/* Services Section */}
-        <section className="py-16">
+        <section className={getSectionClasses()}>
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <h2 className={`text-3xl font-bold ${textColors.primary} mb-4`}>
                 {language === 'de' ? 'Unser Service-Portfolio' : 'Our Service Portfolio'}
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className={`text-xl ${textColors.secondary} max-w-3xl mx-auto`}>
                 {language === 'de' 
                   ? 'Umfassende Beratungsdienstleistungen für strategische IT-Transformation und Projektmanagement'
                   : 'Comprehensive consulting services for strategic IT transformation and project management'
@@ -232,7 +281,7 @@ const ManagementAdvisoryPage: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {services.map((service, index) => (
-                <div key={index} className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200">
+                <div key={index} className={`${getCardClasses()} rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200`}>
                   <div className="flex items-start space-x-4">
                     <div className="flex-shrink-0 p-3 bg-blue-50 rounded-lg text-blue-600">
                       {service.icon}
@@ -241,7 +290,7 @@ const ManagementAdvisoryPage: React.FC = () => {
                       <h3 className="text-xl font-bold text-gray-900 mb-3">
                         {service.title[language]}
                       </h3>
-                      <p className="text-gray-600 leading-relaxed">
+                      <p className={`${textColors.secondary} leading-relaxed`}>
                         {service.description[language]}
                       </p>
                     </div>

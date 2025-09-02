@@ -9,6 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useLanguage } from '../../contexts/LanguageContext';
 import SEOHead from '../../components/common/SEOHead';
+import { backgrounds, textColors, getCardClasses, getSectionClasses } from '../../utils/styling';
 
 const DataManagementPage: React.FC = () => {
   const { language } = useLanguage();
@@ -120,7 +121,7 @@ const DataManagementPage: React.FC = () => {
         canonical={language === 'de' ? '/de/dienstleistungen/datenmanagement' : '/services/data-management'}
       />
 
-      <div className="bg-white">
+      <div className={backgrounds.page}>
         {/* Hero Section */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -147,13 +148,13 @@ const DataManagementPage: React.FC = () => {
         </div>
 
         {/* Features Section */}
-        <div className="py-16 bg-gray-50">
+        <div className={getSectionClasses('alt')}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <h2 className={`text-3xl font-bold ${textColors.primary} mb-4`}>
                 {language === 'de' ? 'Unsere Services' : 'Our Services'}
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className={`text-xl ${textColors.secondary} max-w-3xl mx-auto`}>
                 {language === 'de' 
                   ? 'Wir bieten Ende-zu-Ende Datenmanagement-Lösungen, die Ihre Daten in wertvolle Geschäftseinsichten verwandeln'
                   : 'We provide end-to-end data management solutions that turn your data into valuable business insights'
@@ -163,14 +164,14 @@ const DataManagementPage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {features.map((feature, index) => (
-                <div key={index} className="bg-white rounded-lg p-8 shadow-lg hover:shadow-xl transition-shadow">
+                <div key={index} className={`${getCardClasses()} shadow-lg hover:shadow-xl`}>
                   <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-6">
                     <feature.icon className="w-6 h-6 text-blue-600" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  <h3 className={`text-xl font-semibold ${textColors.primary} mb-4`}>
                     {feature.title[language as keyof typeof feature.title]}
                   </h3>
-                  <p className="text-gray-600">
+                  <p className={textColors.secondary}>
                     {feature.description[language as keyof typeof feature.description]}
                   </p>
                 </div>
@@ -180,14 +181,14 @@ const DataManagementPage: React.FC = () => {
         </div>
 
         {/* Benefits Section */}
-        <div className="py-16 bg-white">
+        <div className={getSectionClasses()}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                <h2 className={`text-3xl font-bold ${textColors.primary} mb-6`}>
                   {language === 'de' ? 'Warum Datenmanagement?' : 'Why Data Management?'}
                 </h2>
-                <p className="text-lg text-gray-600 mb-8">
+                <p className={`text-lg ${textColors.secondary} mb-8`}>
                   {language === 'de' 
                     ? 'Effektives Datenmanagement ist der Grundstein für datengetriebene Entscheidungsfindung und digitale Transformation.'
                     : 'Effective data management is the foundation for data-driven decision making and digital transformation.'
@@ -197,7 +198,7 @@ const DataManagementPage: React.FC = () => {
                   {benefits.map((benefit, index) => (
                     <div key={index} className="flex items-center space-x-3">
                       <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                      <span className="text-gray-700">
+                      <span className={textColors.primary}>
                         {benefit[language as keyof typeof benefit]}
                       </span>
                     </div>
@@ -228,12 +229,12 @@ const DataManagementPage: React.FC = () => {
         </div>
 
         {/* Process Section */}
-        <div className="py-16 bg-gray-50">
+        <div className={getSectionClasses('alt')}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className={`text-3xl font-bold ${textColors.primary} mb-4`}>
               {language === 'de' ? 'Unser Ansatz' : 'Our Approach'}
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
+            <p className={`text-xl ${textColors.secondary} max-w-3xl mx-auto mb-12`}>
               {language === 'de' 
                 ? 'Wir folgen einem bewährten, methodischen Ansatz für das Datenmanagement'
                 : 'We follow a proven, methodical approach to data management'
@@ -267,10 +268,10 @@ const DataManagementPage: React.FC = () => {
                   <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full text-xl font-bold mb-4">
                     {item.step}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className={`text-lg font-semibold ${textColors.primary} mb-2`}>
                     {item.title[language as keyof typeof item.title]}
                   </h3>
-                  <p className="text-gray-600">
+                  <p className={textColors.secondary}>
                     {item.description[language as keyof typeof item.description]}
                   </p>
                 </div>

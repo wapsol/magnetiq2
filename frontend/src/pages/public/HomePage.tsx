@@ -24,6 +24,7 @@ import {
 import HeroImageRenderer from '../../components/content/HeroImageRenderer'
 import GalleryRenderer from '../../components/content/GalleryRenderer'
 import ImageRenderer from '../../components/content/ImageRenderer'
+import { backgrounds, textColors, borders, getCardClasses, getSectionClasses } from '../../utils/styling'
 
 const HomePage = () => {
   const features = [
@@ -69,7 +70,7 @@ const HomePage = () => {
   ]
 
   return (
-    <ContentTemplate className="bg-white">
+    <ContentTemplate className={backgrounds.page}>
       {/* Hero Image Section with Professional Background */}
       <HeroImageRenderer
         block={{
@@ -109,8 +110,8 @@ const HomePage = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 py-8">
           {stats.map((stat, index) => (
             <div key={index} className="text-center">
-              <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">{stat.value}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-300 mt-2">{stat.label}</div>
+              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">{stat.value}</div>
+              <div className={`text-sm mt-2 ${textColors.secondary}`}>{stat.label}</div>
             </div>
           ))}
         </div>
@@ -125,35 +126,35 @@ const HomePage = () => {
         background="white"
       >
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-          <div className="text-center p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+          <div className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()}`}>
             <div className="text-4xl mb-3">🏦</div>
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Financial Services</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-200">Risikomanagement, Compliance und Fraud Detection</p>
+            <h4 className={`font-semibold mb-1 ${textColors.primary}`}>Financial Services</h4>
+            <p className={`text-sm ${textColors.secondary}`}>Risikomanagement, Compliance und Fraud Detection</p>
           </div>
-          <div className="text-center p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+          <div className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()}`}>
             <div className="text-4xl mb-3">🏥</div>
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Healthcare</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-200">Patientendaten-Management und Diagnostik-Unterstützung</p>
+            <h4 className={`font-semibold mb-1 ${textColors.primary}`}>Healthcare</h4>
+            <p className={`text-sm ${textColors.secondary}`}>Patientendaten-Management und Diagnostik-Unterstützung</p>
           </div>
-          <div className="text-center p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+          <div className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()}`}>
             <div className="text-4xl mb-3">🏭</div>
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Manufacturing</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-200">Produktionsoptimierung und Qualitätskontrolle</p>
+            <h4 className={`font-semibold mb-1 ${textColors.primary}`}>Manufacturing</h4>
+            <p className={`text-sm ${textColors.secondary}`}>Produktionsoptimierung und Qualitätskontrolle</p>
           </div>
-          <div className="text-center p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+          <div className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()}`}>
             <div className="text-4xl mb-3">⚡</div>
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Energy & Utilities</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-200">Smart Grid Optimierung und Predictive Maintenance</p>
+            <h4 className={`font-semibold mb-1 ${textColors.primary}`}>Energy & Utilities</h4>
+            <p className={`text-sm ${textColors.secondary}`}>Smart Grid Optimierung und Predictive Maintenance</p>
           </div>
-          <div className="text-center p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+          <div className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()}`}>
             <div className="text-4xl mb-3">🏢</div>
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Retail</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-200">Customer Experience Enhancement und Inventory Management</p>
+            <h4 className={`font-semibold mb-1 ${textColors.primary}`}>Retail</h4>
+            <p className={`text-sm ${textColors.secondary}`}>Customer Experience Enhancement und Inventory Management</p>
           </div>
-          <div className="text-center p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+          <div className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()}`}>
             <div className="text-4xl mb-3">🤝</div>
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Sales & Customer Service</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-200">CRM Enhancement und automatisierte Kundenbetreuung</p>
+            <h4 className={`font-semibold mb-1 ${textColors.primary}`}>Sales & Customer Service</h4>
+            <p className={`text-sm ${textColors.secondary}`}>CRM Enhancement und automatisierte Kundenbetreuung</p>
           </div>
         </div>
       </SectionTemplate>
@@ -184,31 +185,31 @@ const HomePage = () => {
         background="primary"
         alignment="center"
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-gray-900">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
-              <CpuChipIcon className="h-8 w-8 text-primary-600" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full mb-4">
+              <CpuChipIcon className="h-8 w-8 text-purple-600 dark:text-purple-400" />
             </div>
-            <h3 className="text-xl font-semibold mb-2 dark:text-gray-100">Autonomie</h3>
-            <p className="text-gray-600 dark:text-gray-200">
+            <h3 className={`text-xl font-semibold mb-2 ${textColors.primary}`}>Autonomie</h3>
+            <p className={textColors.secondary}>
               Vollständige Kontrolle über Ihre Daten und KI-Systeme ohne Abhängigkeiten von externen Anbietern
             </p>
           </div>
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
-              <ShieldCheckIcon className="h-8 w-8 text-primary-600" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full mb-4">
+              <ShieldCheckIcon className="h-8 w-8 text-purple-600 dark:text-purple-400" />
             </div>
-            <h3 className="text-xl font-semibold mb-2 dark:text-gray-100">Souveränität</h3>
-            <p className="text-gray-600 dark:text-gray-200">
+            <h3 className={`text-xl font-semibold mb-2 ${textColors.primary}`}>Souveränität</h3>
+            <p className={textColors.secondary}>
               Datensouveränität und Unabhängigkeit in Ihrer IT-Infrastruktur mit deutscher Ingenieursqualität
             </p>
           </div>
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
-              <ChartBarIcon className="h-8 w-8 text-primary-600" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full mb-4">
+              <ChartBarIcon className="h-8 w-8 text-purple-600 dark:text-purple-400" />
             </div>
-            <h3 className="text-xl font-semibold mb-2 dark:text-gray-100">Innovation</h3>
-            <p className="text-gray-600 dark:text-gray-200">
+            <h3 className={`text-xl font-semibold mb-2 ${textColors.primary}`}>Innovation</h3>
+            <p className={textColors.secondary}>
               Modernste KI-Technologien und Semantic Data Engineering für nachhaltige Enterprise-Lösungen
             </p>
           </div>
@@ -228,36 +229,36 @@ const HomePage = () => {
             <ul className="space-y-4">
               {benefits.map((benefit, index) => (
                 <li key={index} className="flex items-center space-x-3">
-                  <CheckCircleIcon className="h-6 w-6 text-success-600 dark:text-success-400 flex-shrink-0" />
-                  <span className="text-gray-700 dark:text-gray-200">{benefit}</span>
+                  <CheckCircleIcon className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0" />
+                  <span className={textColors.secondary}>{benefit}</span>
                 </li>
               ))}
             </ul>
           </div>
           
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-accent-100 dark:from-primary-900/20 dark:to-accent-900/20 rounded-2xl transform rotate-3"></div>
-            <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-100 to-orange-100 dark:from-purple-900/20 dark:to-orange-900/20 rounded-2xl transform rotate-3"></div>
+            <div className={`relative rounded-2xl shadow-xl p-8 ${backgrounds.card} ${borders.default} border`}>
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 dark:bg-primary-900/20 rounded-full mb-4">
-                  <BoltIcon className="h-8 w-8 text-primary-600 dark:text-primary-400" />
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full mb-4">
+                  <BoltIcon className="h-8 w-8 text-purple-600 dark:text-purple-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">KI-Experten</h3>
-                <p className="text-gray-600 dark:text-gray-200 mb-6">
+                <h3 className={`text-xl font-semibold mb-2 ${textColors.primary}`}>KI-Experten</h3>
+                <p className={`mb-6 ${textColors.secondary}`}>
                   Führend in der Entwicklung von KI-Lösungen mit Fokus auf Datensouveränität.
                 </p>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
-                    <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">100+</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-300">AI Lösungen</div>
+                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">100+</div>
+                    <div className={`text-xs ${textColors.muted}`}>AI Lösungen</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-success-600 dark:text-success-400">24/7</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-300">Support</div>
+                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">24/7</div>
+                    <div className={`text-xs ${textColors.muted}`}>Support</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-accent-600 dark:text-accent-400">DE</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-300">Made</div>
+                    <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">DE</div>
+                    <div className={`text-xs ${textColors.muted}`}>Made</div>
                   </div>
                 </div>
               </div>
@@ -395,7 +396,7 @@ const HomePage = () => {
         background="gradient"
         size="large"
         pattern={true}
-        icon={<BoltIcon className="h-12 w-12 text-primary-400" />}
+        icon={<BoltIcon className="h-12 w-12 text-purple-400" />}
       />
     </ContentTemplate>
   )

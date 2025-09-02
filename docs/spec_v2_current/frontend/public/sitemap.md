@@ -45,10 +45,14 @@ This sitemap defines the complete URL structure and navigation hierarchy for the
 ```
 
 **AI Consulting** (`/services/ai-consulting/`)
-- AI strategy development
-- Technology assessment
-- Implementation roadmaps
-- ROI analysis and business case development
+- **6-Stage Implementation Roadmap**: Analysis & Orientation, Possibilities & Goals, Technology & Architecture, Rollout & Piloting, Evaluation & Scaling, Operation & Optimization
+- **Comprehensive Training Programs**: 
+  - AI from IT Perspective (8-hour technical training covering AI models, enterprise integration, data pipelines, and machine learning)
+  - AI from Business Perspective (customized strategic training for leaders focusing on integration, legal implications, and practical applications)
+- **Technical Capabilities**: Container-based architecture, private cloud optimization, AI-driven automation, multi-language support
+- **Key Principles**: Vendor-neutral approach, holistic integration, 15+ years practical experience
+- **Implementation Timeline**: 3-12 months with customizable approach for companies of all sizes
+- **Success Measurement**: KPI tracking, milestone achievement, soft factors like employee satisfaction
 
 **Digital Transformation** (`/services/digital-transformation/`)
 - Process digitization
@@ -68,19 +72,27 @@ This sitemap defines the complete URL structure and navigation hierarchy for the
 - Analytics and reporting infrastructure
 
 **Management Advisory** (`/services/management-advisory/`)
-- **IT Strategy & Transformation**: Comprehensive IT concepts ensuring future-proof architecture with strategic infrastructure alignment and digital process optimization
-- **Program & Project Management**: Successful project realization within quality, time, and budget constraints through systematic conceptualization and implementation
-- **Change Management & Organizational Transformation**: Strategic implementation of organizational changes, addressing resistance and creating flexible, resilient structures
-- **Crisis Handling & Project Rescue**: Stabilize and secure endangered projects through root cause analysis and realignment with project goals
-- **IT Service Management Optimization**: Efficient IT service design and continuous improvement with standardized methodologies and infrastructure resilience
-- **Digital Transformation Roadmaps**: Enhance organizational performance through digital technologies with strategic roadmaps and cloud-based integration
-- **ERP Consulting with AI Enhancements**: Harmonize business areas with vendor-agnostic, AI-featured ERP solutions for comprehensive business optimization
+- **Unique Positioning**: "The Silverbacks Are Back" - Every consultant brings minimum 20 years experience in national and international projects
+- **Core Philosophy**: Leveraging "Schwarmwissen" (swarm knowledge) through continuous iterative exchange with international IT experts
+- **Complete Service Portfolio**:
+  - **IT Strategy & Transformation**: Comprehensive IT concepts ensuring future-proof architecture with strategic infrastructure alignment and digital process optimization
+  - **Program & Project Management**: Successful project realization within quality, time, and budget constraints through systematic conceptualization and implementation
+  - **Change Management**: Strategic implementation of organizational changes, addressing resistance and creating flexible, resilient structures
+  - **Crisis Handling & Project Rescue**: Stabilize and secure endangered projects through root cause analysis and realignment with project goals
+  - **IT Service Management**: Efficient IT service design and continuous improvement with standardized methodologies and infrastructure resilience
+  - **Digital Transformation**: Enhance organizational performance through digital technologies with strategic roadmaps and cloud-based integration
+  - **ERP Consulting (AI-Featured)**: Harmonize business areas with vendor-agnostic, AI-featured ERP solutions for comprehensive business optimization
+  - **Artificial Intelligence & Cognitive Twins**: Implementation of AI solutions and cognitive twins for intelligent process automation and decision support systems
+  - **Industry 4.0 & Internet of Things**: Connected manufacturing solutions and IoT implementations for smart factory transformation and operational efficiency
+  - **Cyber Security**: Comprehensive security strategies and implementations to protect digital assets and ensure business continuity
+  - **Data Science & Data Mining**: Advanced analytics and data mining techniques to unlock business insights and drive data-driven decision making
 
 **Page Content Features**:
-- Hero section with comprehensive service overview and key value propositions
-- Detailed service cards with icons, descriptions, and benefits for each advisory area
-- Key consulting principles section highlighting voltAIc's methodology and approach
-- Success metrics and measurable outcomes for management advisory engagements
+- Hero section with "The Silverbacks Are Back" messaging and comprehensive service overview
+- Enhanced service portfolio with 11 specialized consulting areas including AI, IoT, and Cyber Security
+- Three core principles section: "The Silverbacks Are Back", "Swarm Knowledge", and "Holistic Solutions" 
+- Authentic voltAIc messaging emphasizing 20+ years experience and collective intelligence approach
+- Detailed service cards with appropriate icons for each specialized area (IT, AI, Security, Data Science)
 - Integration with consultation booking system for direct lead conversion
 - Multilingual content support (English/German) with semantic URL translation
 - SEO-optimized content structure with proper meta tags and hreflang attributes

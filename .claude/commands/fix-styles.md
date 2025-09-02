@@ -1,0 +1,3 @@
+- Fix the styling in all pages of the public frontend of all pages listed in the sitemap.
+- Check both languages.
+- Check dark and light modes.

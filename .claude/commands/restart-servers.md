@@ -1,0 +1,5 @@
+- Force kill all React frontend dev servers of the current application on all ports.
+- Stop the Python backend service.
+- Wait 2 seconds and echo to the UI.
+- Start the React frontend server on the standard port specified in site.conf.
+- Start the Python backend server on the standard port specified in site.conf.

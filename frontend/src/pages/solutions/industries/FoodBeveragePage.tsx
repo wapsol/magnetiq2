@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../../../contexts/LanguageContext'
+import { backgrounds, textColors, getCardClasses, getSectionClasses } from '../../../utils/styling'
 import { 
   CakeIcon,
   HomeIcon,
@@ -12,7 +13,7 @@ const FoodBeveragePage = () => {
   const isGerman = language === 'de'
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className={`min-h-screen ${backgrounds.pageAlt}`}>
       <div className="container py-16">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 mb-8">

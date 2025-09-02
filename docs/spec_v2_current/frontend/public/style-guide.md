@@ -1,0 +1,3 @@
+- Use light shades for banner and hero areas, with subtle contrast. 
+- Avoid strong background colours. 
+- Strong foreground colours are OK.

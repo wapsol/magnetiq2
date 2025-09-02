@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { backgrounds, textColors, getCardClasses, getSectionClasses } from '../../utils/styling'
 import { 
   VideoCameraIcon, 
   CalendarDaysIcon, 
@@ -142,7 +143,7 @@ const WebinarsPage = () => {
   }
 
   return (
-    <div className="bg-gray-25 min-h-screen">
+    <div className={`${backgrounds.pageAlt} min-h-screen`}>
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-accent-600 text-white overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>

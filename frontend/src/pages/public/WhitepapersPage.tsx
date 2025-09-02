@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { backgrounds, textColors, getCardClasses, getSectionClasses } from '../../utils/styling'
 import { 
   DocumentTextIcon, 
   EyeIcon,
@@ -195,7 +196,7 @@ const WhitepapersPage = () => {
   }
 
   return (
-    <div className="bg-gray-25 min-h-screen">
+    <div className={`${backgrounds.pageAlt} min-h-screen`}>
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-secondary-900 via-secondary-800 to-primary-900 text-white overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>

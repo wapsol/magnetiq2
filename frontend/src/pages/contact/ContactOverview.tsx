@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
+import { backgrounds, textColors, getCardClasses, getSectionClasses } from '../../utils/styling'
 import { 
   CalendarIcon,
   ChatBubbleLeftRightIcon,
@@ -47,7 +48,7 @@ const ContactOverview = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className={`min-h-screen ${backgrounds.pageAlt}`}>
       <div className="container py-16">
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
           {t('nav.contact')}

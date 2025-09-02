@@ -16,6 +16,7 @@ import ManagementAdvisoryPage from './pages/services/ManagementAdvisoryPage'
 
 // Pages - Solutions
 import SolutionsOverview from './pages/solutions/SolutionsOverview'
+import TechnologyPage from './pages/solutions/TechnologyPage'
 import IndustriesPage from './pages/solutions/IndustriesPage'
 import FintechPage from './pages/solutions/industries/FintechPage'
 import HealthcarePage from './pages/solutions/industries/HealthcarePage'  
@@ -29,6 +30,9 @@ import FoodBeveragePage from './pages/solutions/industries/FoodBeveragePage'
 // Pages - About
 import AboutPage from './pages/about/AboutPage'
 import AboutOverview from './pages/about/AboutOverview'
+
+// Pages - Products
+import DataOperatingSystemPage from './pages/products/DataOperatingSystemPage'
 
 // Pages - Contact
 import ContactOverview from './pages/contact/ContactOverview'
@@ -95,8 +99,13 @@ function App() {
             <Route path="industries/sales" element={<SalesPage />} />
             <Route path="industries/service-provider" element={<ServiceProviderPage />} />
             <Route path="industries/food-beverage" element={<FoodBeveragePage />} />
-            <Route path="technology" element={<SolutionsOverview />} />
+            <Route path="technology" element={<TechnologyPage />} />
             <Route path="case-studies" element={<SolutionsOverview />} />
+          </Route>
+          
+          {/* Products */}
+          <Route path="products">
+            <Route path="data-operating-system" element={<DataOperatingSystemPage />} />
           </Route>
           
           {/* Resources */}
@@ -164,8 +173,13 @@ function App() {
             <Route path="branchen/vertrieb" element={<SalesPage />} />
             <Route path="branchen/dienstleister" element={<ServiceProviderPage />} />
             <Route path="branchen/lebensmittel" element={<FoodBeveragePage />} />
-            <Route path="technologie" element={<SolutionsOverview />} />
+            <Route path="technologie" element={<TechnologyPage />} />
             <Route path="fallstudien" element={<SolutionsOverview />} />
+          </Route>
+          
+          {/* Produkte (Products) */}
+          <Route path="produkte">
+            <Route path="daten-betriebssystem" element={<DataOperatingSystemPage />} />
           </Route>
           
           {/* Ressourcen (Resources) */}

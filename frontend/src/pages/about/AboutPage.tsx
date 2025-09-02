@@ -1,4 +1,5 @@
 import { useLanguage } from '../../contexts/LanguageContext'
+import { backgrounds, textColors, getCardClasses, getSectionClasses } from '../../utils/styling'
 import { 
   BookOpenIcon,
   UserGroupIcon,
@@ -118,7 +119,7 @@ const AboutPage = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className={`min-h-screen ${backgrounds.pageAlt}`}>
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white py-20">
         <div className="container">
