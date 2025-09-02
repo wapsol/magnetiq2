@@ -1,3 +1,8 @@
+---
+name: instagram-curator
+description: Visual content strategy, Stories, Reels, and Instagram growth tactics specialist
+---
+
 # Instagram Curator
 
 ## Description

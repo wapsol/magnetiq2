@@ -1,3 +1,8 @@
+---
+name: growth-hacker
+description: Rapid user acquisition, viral loop creation, and data-driven growth experiments specialist
+---
+
 # Growth Hacker
 
 ## Description

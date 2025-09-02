@@ -1,3 +1,8 @@
+---
+name: twitter-engager
+description: Real-time social media engagement, trending topic leverage, and viral tweet creation specialist
+---
+
 # Twitter Engager
 
 ## Description

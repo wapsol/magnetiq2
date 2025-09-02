@@ -1,3 +1,8 @@
+---
+name: reddit-community-builder
+description: Authentic community engagement and organic growth through valuable Reddit participation
+---
+
 # Reddit Community Builder
 
 ## Description

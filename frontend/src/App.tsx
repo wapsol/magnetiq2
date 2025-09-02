@@ -13,6 +13,7 @@ import DigitalTransformationPage from './pages/services/DigitalTransformationPag
 import AutomationPage from './pages/services/AutomationPage'
 import DevelopmentPage from './pages/services/DevelopmentPage'
 import ManagementAdvisoryPage from './pages/services/ManagementAdvisoryPage'
+import DataManagementPage from './pages/services/DataManagementPage'
 
 // Pages - Solutions
 import SolutionsOverview from './pages/solutions/SolutionsOverview'
@@ -59,6 +60,7 @@ import IndustriesManager from './pages/admin/content/IndustriesManager'
 import TranslationManager from './pages/admin/content/TranslationManager'
 import BusinessOverview from './pages/admin/business/BusinessOverview'
 import WebinarManagement from './pages/admin/webinars/WebinarManagement'
+import WhitepapersManagement from './pages/admin/whitepapers/WhitepapersManagement'
 import UsersManager from './pages/admin/users/UsersManager'
 import { ConsultantManagement } from './pages/admin/consultants/ConsultantManagement'
 import { ConsultantAnalytics } from './pages/admin/consultants/ConsultantAnalytics'
@@ -85,6 +87,7 @@ function App() {
             <Route path="automation" element={<AutomationPage />} />
             <Route path="development" element={<DevelopmentPage />} />
             <Route path="management-advisory" element={<ManagementAdvisoryPage />} />
+            <Route path="data-management" element={<DataManagementPage />} />
           </Route>
           
           {/* Solutions */}
@@ -159,6 +162,7 @@ function App() {
             <Route path="automatisierung" element={<AutomationPage />} />
             <Route path="entwicklung" element={<DevelopmentPage />} />
             <Route path="management-beratung" element={<ManagementAdvisoryPage />} />
+            <Route path="datenmanagement" element={<DataManagementPage />} />
           </Route>
           
           {/* Lösungen (Solutions) */}
@@ -256,13 +260,19 @@ function App() {
           {/* User Management */}
           <Route path="users" element={<UsersManager />} />
           
+          {/* Webinars Management */}
+          <Route path="webinars" element={<WebinarManagement />} />
+          
+          {/* Whitepapers Management */}
+          <Route path="whitepapers" element={<WhitepapersManagement />} />
+          
           {/* Consultant Management */}
           <Route path="consultants">
             <Route index element={<ConsultantManagement />} />
             <Route path="analytics" element={<ConsultantAnalytics />} />
           </Route>
           
-          {/* Business Operations */}
+          {/* Business Operations (legacy route for backwards compatibility) */}
           <Route path="business">
             <Route index element={<BusinessOverview />} />
             <Route path="webinars" element={<WebinarManagement />} />

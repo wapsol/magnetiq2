@@ -29,8 +29,8 @@ const ManagementAdvisoryPage: React.FC = () => {
         de: 'IT-Strategie & Transformation'
       },
       description: {
-        en: 'Develop comprehensive IT concepts ensuring future-proof architecture with strategic infrastructure alignment and digital process optimization.',
-        de: 'Entwicklung umfassender IT-Konzepte zur Gewährleistung zukunftssicherer Architektur mit strategischer Infrastruktur-Ausrichtung und digitaler Prozessoptimierung.'
+        en: 'Develop holistic IT concepts ensuring strategic, future-proof IT architecture. Focus on resilient infrastructure, digital process optimization, and innovation to create comprehensive technology roadmaps.',
+        de: 'Entwicklung ganzheitlicher IT-Konzepte zur Gewährleistung strategischer, zukunftssicherer IT-Architektur. Fokus auf belastbare Infrastruktur, digitale Prozessoptimierung und Innovation zur Erstellung umfassender Technologie-Roadmaps.'
       }
     },
     {
@@ -40,8 +40,8 @@ const ManagementAdvisoryPage: React.FC = () => {
         de: 'Programm- & Projektmanagement'
       },
       description: {
-        en: 'Successful project realization within quality, time, and budget constraints through systematic conceptualization and implementation.',
-        de: 'Erfolgreiche Projektumsetzung innerhalb der Qualitäts-, Zeit- und Budgetbeschränkungen durch systematische Konzeptionierung und Umsetzung.'
+        en: 'Successful project realization within quality, time, and budget constraints. Systematic conceptualization, implementation, and complete project lifecycle management to ensure optimal outcomes.',
+        de: 'Erfolgreiche Projektumsetzung innerhalb der Qualitäts-, Zeit- und Budgetbeschränkungen. Systematische Konzeptionierung, Implementierung und vollständiges Projektlebenszyklus-Management für optimale Ergebnisse.'
       }
     },
     {
@@ -51,8 +51,8 @@ const ManagementAdvisoryPage: React.FC = () => {
         de: 'Change Management'
       },
       description: {
-        en: 'Strategic implementation of organizational changes, addressing resistance and creating flexible, resilient structures.',
-        de: 'Strategische Implementierung organisatorischer Veränderungen, Adressierung von Widerständen und Schaffung flexibler, belastbarer Strukturen.'
+        en: 'Strategic implementation of organizational changes promoting change readiness, employee acceptance, and engagement. Address resistance while creating flexible, resilient organizational structures.',
+        de: 'Strategische Implementierung organisatorischer Veränderungen zur Förderung der Veränderungsbereitschaft, Mitarbeiterakzeptanz und -engagement. Widerstandsbewältigung bei gleichzeitiger Schaffung flexibler, belastbarer Organisationsstrukturen.'
       }
     },
     {
@@ -62,8 +62,8 @@ const ManagementAdvisoryPage: React.FC = () => {
         de: 'Krisenmanagement & Projektrettung'
       },
       description: {
-        en: 'Stabilize and secure endangered projects through root cause analysis and realignment with project goals.',
-        de: 'Stabilisierung und Sicherung gefährdeter Projekte durch Ursachenanalyse und Neuausrichtung auf Projektziele.'
+        en: 'Stabilize and secure endangered projects through comprehensive root cause analysis. Identify core problems, implement corrective measures, and realign projects with strategic goals.',
+        de: 'Stabilisierung und Sicherung gefährdeter Projekte durch umfassende Ursachenanalyse. Identifikation von Kernproblemen, Implementierung von Korrekturmaßnahmen und Neuausrichtung auf strategische Ziele.'
       }
     },
     {
@@ -73,8 +73,8 @@ const ManagementAdvisoryPage: React.FC = () => {
         de: 'IT Service Management'
       },
       description: {
-        en: 'Efficient IT service design and continuous improvement with standardized methodologies and infrastructure resilience.',
-        de: 'Effiziente IT-Service-Gestaltung und kontinuierliche Verbesserung mit standardisierten Methoden und Infrastruktur-Belastbarkeit.'
+        en: 'Efficient design and continuous improvement of IT services to maximize stability and service availability. Implement standardized methodologies for optimal infrastructure resilience.',
+        de: 'Effiziente Gestaltung und kontinuierliche Verbesserung von IT-Services zur Maximierung von Stabilität und Serviceverfügbarkeit. Implementierung standardisierter Methoden für optimale Infrastruktur-Belastbarkeit.'
       }
     },
     {
@@ -84,19 +84,19 @@ const ManagementAdvisoryPage: React.FC = () => {
         de: 'Digitale Transformation'
       },
       description: {
-        en: 'Enhance organizational performance through digital technologies with strategic roadmaps and cloud-based integration.',
-        de: 'Verbesserung der Organisationsleistung durch digitale Technologien mit strategischen Roadmaps und Cloud-basierter Integration.'
+        en: 'Enhance organizational performance through digital technologies. Includes process digitalization, infrastructure updates, and digital competence building with strategic roadmaps.',
+        de: 'Verbesserung der Organisationsleistung durch digitale Technologien. Umfasst Prozessdigitalisierung, Infrastruktur-Updates und Aufbau digitaler Kompetenzen mit strategischen Roadmaps.'
       }
     },
     {
       icon: <BuildingOfficeIcon className="h-8 w-8" />,
       title: {
-        en: 'ERP Consulting (AI-Featured)',
-        de: 'ERP-Beratung (Herstellerneutral, KI-gestützt)'
+        en: 'ERP Consulting (AI-First Approach)',
+        de: 'ERP-Beratung (KI-First Ansatz)'
       },
       description: {
-        en: 'Harmonize business areas with vendor-agnostic, AI-featured ERP solutions for comprehensive business optimization.',
-        de: 'Harmonisierung von Geschäftsbereichen mit herstellerneutralen, KI-gestützten ERP-Lösungen für umfassende Geschäftsoptimierung.'
+        en: 'Harmonize business areas in an integrated, vendor-neutral system with AI-first approach. Includes implementation support and comprehensive change management for optimal business transformation.',
+        de: 'Harmonisierung von Geschäftsbereichen in einem integrierten, herstellerneutralen System mit KI-First Ansatz. Umfasst Implementierungsunterstützung und umfassendes Change Management für optimale Geschäftstransformation.'
       }
     },
     {
@@ -106,8 +106,8 @@ const ManagementAdvisoryPage: React.FC = () => {
         de: 'Künstliche Intelligenz & Cognitive Twins'
       },
       description: {
-        en: 'Implementation of AI solutions and cognitive twins for intelligent process automation and decision support systems.',
-        de: 'Implementierung von KI-Lösungen und Cognitive Twins für intelligente Prozessautomation und Entscheidungsunterstützungssysteme.'
+        en: 'Create digital representations of physical systems with autonomous decision-making capabilities. Advanced AI solutions and cognitive twins for intelligent process automation and strategic decision support.',
+        de: 'Erstellung digitaler Repräsentationen physischer Systeme mit autonomen Entscheidungsfähigkeiten. Fortgeschrittene KI-Lösungen und Cognitive Twins für intelligente Prozessautomation und strategische Entscheidungsunterstützung.'
       }
     },
     {
@@ -117,8 +117,8 @@ const ManagementAdvisoryPage: React.FC = () => {
         de: 'Industrie 4.0 & Internet of Things'
       },
       description: {
-        en: 'Connected manufacturing solutions and IoT implementations for smart factory transformation and operational efficiency.',
-        de: 'Vernetzte Fertigungslösungen und IoT-Implementierungen für Smart Factory Transformation und operative Effizienz.'
+        en: 'Intelligent networking and data-driven control of devices and production processes. Connected manufacturing solutions and IoT implementations for comprehensive smart factory transformation.',
+        de: 'Intelligente Vernetzung und datengesteuerte Kontrolle von Geräten und Produktionsprozessen. Vernetzte Fertigungslösungen und IoT-Implementierungen für umfassende Smart Factory Transformation.'
       }
     },
     {
@@ -128,8 +128,8 @@ const ManagementAdvisoryPage: React.FC = () => {
         de: 'Cyber Security'
       },
       description: {
-        en: 'Comprehensive security strategies and implementations to protect digital assets and ensure business continuity.',
-        de: 'Umfassende Sicherheitsstrategien und -implementierungen zum Schutz digitaler Assets und zur Gewährleistung der Geschäftskontinuität.'
+        en: 'Ensure confidentiality, integrity, and availability of systems and data through multi-layered defense strategies. Comprehensive security implementations to protect digital assets and ensure business continuity.',
+        de: 'Gewährleistung der Vertraulichkeit, Integrität und Verfügbarkeit von Systemen und Daten durch mehrschichtige Verteidigungsstrategien. Umfassende Sicherheitsimplementierungen zum Schutz digitaler Assets und zur Geschäftskontinuität.'
       }
     },
     {
@@ -139,8 +139,8 @@ const ManagementAdvisoryPage: React.FC = () => {
         de: 'Data Science & Data Mining'
       },
       description: {
-        en: 'Advanced analytics and data mining techniques to unlock business insights and drive data-driven decision making.',
-        de: 'Fortgeschrittene Analytik und Data Mining Techniken zur Erschließung von Geschäftseinblicken und datengetriebener Entscheidungsfindung.'
+        en: 'Automated analysis of large, heterogeneous data sets to identify patterns supporting operational and strategic decisions. Advanced analytics and data mining techniques for comprehensive business intelligence.',
+        de: 'Automatisierte Analyse großer, heterogener Datensätze zur Identifikation von Mustern, die operative und strategische Entscheidungen unterstützen. Fortgeschrittene Analytik und Data Mining Techniken für umfassende Business Intelligence.'
       }
     }
   ]
@@ -172,8 +172,41 @@ const ManagementAdvisoryPage: React.FC = () => {
         de: 'Ganzheitliche Lösungen'
       },
       description: {
-        en: 'Looking beyond the plate - comprehensive problem-solving approach combining diverse expertise for optimal results within time and budget.',
-        de: 'Über den Tellerrand hinausblicken - ganzheitlicher Problemlösungsansatz durch Kombination vielfältiger Expertise für optimale Ergebnisse in Zeit und Budget.'
+        en: 'Looking beyond the plate - comprehensive problem-solving approach combining diverse expertise for optimal results within time and budget. Focused on delivering the best possible results.',
+        de: 'Über den Tellerrand hinausblicken - ganzheitlicher Problemlösungsansatz durch Kombination vielfältiger Expertise für optimale Ergebnisse in Zeit und Budget. Fokussiert auf bestmögliche Resultate.'
+      }
+    }
+  ]
+
+  const valuePropositions = [
+    {
+      title: {
+        en: 'Senior-Level Expertise',
+        de: 'Senior-Level Expertise'
+      },
+      description: {
+        en: 'Exclusively comprised of experts with minimum 20 years of IT and project experience in national and international environments.',
+        de: 'Ausschließlich bestehend aus Experten mit mindestens 20 Jahren IT- und Projekterfahrung in nationalen und internationalen Umgebungen.'
+      }
+    },
+    {
+      title: {
+        en: 'Holistic Approach',
+        de: 'Ganzheitlicher Ansatz'
+      },
+      description: {
+        en: 'Comprehensive "look beyond the plate" methodology ensuring all aspects of your business transformation are considered and optimized.',
+        de: 'Umfassende "Blick über den Tellerrand" Methodik, die sicherstellt, dass alle Aspekte Ihrer Unternehmenstransformation berücksichtigt und optimiert werden.'
+      }
+    },
+    {
+      title: {
+        en: 'Proven Results',
+        de: 'Bewährte Ergebnisse'
+      },
+      description: {
+        en: 'Focused on delivering the best possible results "in time & budget" with a track record of successful project implementations.',
+        de: 'Fokussiert auf die Lieferung bestmöglicher Ergebnisse "in Zeit & Budget" mit einer Erfolgsgeschichte erfolgreicher Projektimplementierungen.'
       }
     }
   ]
@@ -211,8 +244,8 @@ const ManagementAdvisoryPage: React.FC = () => {
               
               <p className="text-xl md:text-2xl text-gray-200 mb-8">
                 {language === 'de' 
-                  ? 'Strategische IT-Beratung mit mindestens 20 Jahren Erfahrung in nationalen und internationalen Projekten'
-                  : 'Strategic IT consulting with at least 20 years of experience in national and international projects'
+                  ? 'Strategische IT-Beratung und Transformation mit mindestens 20 Jahren Erfahrung in nationalen und internationalen Projekten'
+                  : 'Strategic IT consulting and transformation with at least 20 years of experience in national and international projects'
                 }
               </p>
               
@@ -297,6 +330,77 @@ const ManagementAdvisoryPage: React.FC = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Value Propositions Section */}
+        <section className={getSectionClasses('alt')}>
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-16">
+              <h2 className={`text-3xl font-bold ${textColors.primary} mb-4`}>
+                {language === 'de' ? 'Warum voltAIc Management Advisory?' : 'Why voltAIc Management Advisory?'}
+              </h2>
+              <p className={`text-xl ${textColors.secondary} max-w-3xl mx-auto`}>
+                {language === 'de' 
+                  ? 'Unsere einzigartige Kombination aus Erfahrung, Methodik und Fokus auf Ergebnisse unterscheidet uns von anderen Beratungsunternehmen'
+                  : 'Our unique combination of experience, methodology, and focus on results sets us apart from other consulting firms'
+                }
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {valuePropositions.map((proposition, index) => (
+                <div key={index} className={`${getCardClasses()} rounded-xl shadow-lg hover:shadow-xl duration-300 text-center`}>
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <div className="w-8 h-8 bg-blue-600 rounded-full"></div>
+                  </div>
+                  <h3 className={`text-xl font-bold ${textColors.primary} mb-4`}>
+                    {proposition.title[language]}
+                  </h3>
+                  <p className={`${textColors.secondary} leading-relaxed`}>
+                    {proposition.description[language]}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Contact Information Section */}
+        <section className={getSectionClasses()}>
+          <div className="container mx-auto px-6">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className={`text-3xl font-bold ${textColors.primary} mb-6`}>
+                {language === 'de' ? 'Lassen Sie uns sprechen' : 'Let\'s Talk'}
+              </h2>
+              <p className={`text-xl ${textColors.secondary} mb-8`}>
+                {language === 'de' 
+                  ? 'Kontaktieren Sie unsere erfahrenen Management-Berater für ein unverbindliches Beratungsgespräch über Ihre strategischen IT-Herausforderungen.'
+                  : 'Contact our experienced management consultants for a no-obligation consultation about your strategic IT challenges.'
+                }
+              </p>
+              
+              <div className="bg-blue-50 rounded-2xl p-8 mb-8">
+                <div className="flex items-center justify-center mb-4">
+                  <UserGroupIcon className="h-8 w-8 text-blue-600 mr-3" />
+                  <span className="text-lg font-semibold text-blue-900">
+                    {language === 'de' ? 'Direkter Kontakt zu unseren Experten' : 'Direct Contact to Our Experts'}
+                  </span>
+                </div>
+                <p className="text-blue-800 mb-4">
+                  {language === 'de' 
+                    ? 'Für datengetriebene Lösungen und strategische Beratung:'
+                    : 'For data-driven solutions and strategic consulting:'
+                  }
+                </p>
+                <a 
+                  href="mailto:datadriven@voltaic.systems" 
+                  className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors duration-200"
+                >
+                  datadriven@voltaic.systems
+                </a>
+              </div>
             </div>
           </div>
         </section>

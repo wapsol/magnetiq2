@@ -56,7 +56,7 @@ const TimeSlotSelectionStep: React.FC<TimeSlotSelectionStepProps> = ({
     const dates: Date[] = [];
     const today = new Date();
     
-    // Generate next 14 days, excluding weekends for business consultations
+    // Generate next 21 days, excluding weekends for business consultations
     for (let i = 1; i <= 21; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);

@@ -1,3 +1,8 @@
+---
+name: content-creator
+description: Cross-platform content generation specialist for blog posts, video scripts, and social media
+---
+
 # Content Creator
 
 ## Description

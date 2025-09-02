@@ -30,7 +30,7 @@ const AdminHeader = () => {
   const unreadCount = notifications.filter(n => n.unread).length
   
   return (
-    <header className="bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200 sticky top-0 z-40">
+    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
       <div className="flex items-center justify-between h-16 px-6">
         {/* Search */}
         <div className="flex-1 max-w-lg">
@@ -40,7 +40,7 @@ const AdminHeader = () => {
             </div>
             <input
               type="text"
-              className="form-input pl-10 w-full bg-gray-50 border-gray-200 focus:bg-white border rounded-lg px-4 py-2"
+              className="pl-10 w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500"
               placeholder="Search content, webinars, users..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -53,29 +53,29 @@ const AdminHeader = () => {
           {/* Notifications */}
           <div className="relative">
             <button 
-              className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              className="p-2 text-gray-400 hover:text-gray-600 rounded-lg"
               onClick={() => setShowNotifications(!showNotifications)}
             >
               <BellIcon className="h-6 w-6" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
+                <span className="absolute -top-1 -right-1 h-4 w-4 bg-black text-white text-xs rounded-full flex items-center justify-center">
                   {unreadCount}
                 </span>
               )}
             </button>
             
             {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                 <div className="px-4 py-3 border-b border-gray-100">
                   <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
                 </div>
                 <div className="max-h-64 overflow-y-auto">
                   {notifications.map((notification) => (
-                    <div key={notification.id} className={`px-4 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 ${notification.unread ? 'bg-blue-50' : ''}`}>
+                    <div key={notification.id} className={`px-4 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 ${notification.unread ? 'bg-gray-100' : ''}`}>
                       <div className="flex justify-between items-start">
                         <p className="text-sm text-gray-900">{notification.message}</p>
                         {notification.unread && (
-                          <div className="h-2 w-2 bg-blue-500 rounded-full flex-shrink-0 ml-2 mt-1"></div>
+                          <div className="h-2 w-2 bg-black rounded-full flex-shrink-0 ml-2 mt-1"></div>
                         )}
                       </div>
                       <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
@@ -83,7 +83,7 @@ const AdminHeader = () => {
                   ))}
                 </div>
                 <div className="px-4 py-3 border-t border-gray-100">
-                  <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                  <button className="text-sm text-black hover:text-gray-700 font-medium">
                     View all notifications
                   </button>
                 </div>
@@ -92,18 +92,18 @@ const AdminHeader = () => {
           </div>
           
           {/* Settings */}
-          <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+          <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg">
             <Cog6ToothIcon className="h-6 w-6" />
           </button>
           
           {/* User Menu */}
           <div className="relative">
             <button 
-              className="flex items-center space-x-3 p-2 text-sm rounded-lg hover:bg-gray-100 transition-colors duration-200 group"
+              className="flex items-center space-x-3 p-2 text-sm rounded-lg hover:bg-gray-100"
               onClick={() => setShowUserMenu(!showUserMenu)}
             >
               <div className="flex items-center space-x-2">
-                <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <div className="h-8 w-8 bg-black rounded-full flex items-center justify-center">
                   <span className="text-sm font-medium text-white">
                     {(user?.full_name || 'Admin').charAt(0).toUpperCase()}
                   </span>
@@ -117,11 +117,11 @@ const AdminHeader = () => {
                   </div>
                 </div>
               </div>
-              <ChevronDownIcon className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+              <ChevronDownIcon className="h-4 w-4 text-gray-400" />
             </button>
             
             {showUserMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                 <div className="py-1">
                   <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     <UserCircleIcon className="mr-3 h-5 w-5 text-gray-400" />

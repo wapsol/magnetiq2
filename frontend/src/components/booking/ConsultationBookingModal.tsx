@@ -182,7 +182,7 @@ const ConsultationBookingModal: React.FC<ConsultationBookingModalProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
-      <DialogContent className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl max-h-[90vh] bg-white rounded-lg shadow-xl z-50 overflow-hidden">
+      <DialogContent className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl max-h-[90vh] bg-white rounded-lg shadow-xl z-50 overflow-hidden flex flex-col">
         {/* Hidden Title and Description for accessibility */}
         <VisuallyHidden.Root>
           <DialogTitle>{getStepTitle()}</DialogTitle>
@@ -238,22 +238,20 @@ const ConsultationBookingModal: React.FC<ConsultationBookingModalProps> = ({
         )}
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto min-h-0">
           {renderCurrentStep()}
         </div>
 
         {/* GDPR Notice - shown on all steps except confirmation */}
         {currentStep !== 'confirmation' && (
-          <div className="px-6 pb-4">
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-xs text-gray-600 flex items-start">
-                <span className="inline-block w-4 h-4 bg-green-500 rounded-full mr-2 mt-0.5 flex-shrink-0" />
-                {language === 'de' 
-                  ? 'Alle Daten werden DSGVO-konform in unseren privaten Cloud-Systemen verarbeitet.'
-                  : 'All data is handled according to GDPR in our private cloud systems.'
-                }
-              </p>
-            </div>
+          <div className="px-6 py-4 border-t bg-gray-50 flex-shrink-0">
+            <p className="text-xs text-gray-600 flex items-start">
+              <span className="inline-block w-4 h-4 bg-green-500 rounded-full mr-2 mt-0.5 flex-shrink-0" />
+              {language === 'de' 
+                ? 'Alle Daten werden DSGVO-konform in unseren privaten Cloud-Systemen verarbeitet.'
+                : 'All data is handled according to GDPR in our private cloud systems.'
+              }
+            </p>
           </div>
         )}
       </DialogContent>
