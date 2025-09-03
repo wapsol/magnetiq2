@@ -32,24 +32,25 @@ const HomePage = () => {
       icon: <CpuChipIcon className="h-6 w-6" />,
       title: 'DOS - Data Operating System',
       description: 'Vollständige semantische Datenverwaltung mit autonomer KI-Integration für Enterprise-Umgebungen und komplexe Datenlandschaften.',
-      href: '/webinars'
+      href: '/products/data-operating-system'
     },
     {
       icon: <ChartBarIcon className="h-6 w-6" />,
       title: 'AI Data Mapper',
       description: 'Intelligente Datenintegration und -transformation mit Machine Learning für komplexe Unternehmensstrukturen und Prozessautomatisierung.',
-      href: '/whitepapers'
+      href: '/services/data-management'
     },
     {
       icon: <BoltIcon className="h-6 w-6" />,
       title: 'AI Customizing & Model Fine-tuning',
       description: 'Maßgeschneiderte KI-Lösungen mit Model Fine-tuning für spezifische Geschäftsanforderungen und Prozessoptimierung.',
-      href: '/book-consultation'
+      href: '/services/management-advisory'
     },
     {
       icon: <ShieldCheckIcon className="h-6 w-6" />,
       title: 'Elastic Autonomous Cloud Solutions',
-      description: 'Skalierbare Cloud-native KI-Infrastruktur mit autonomer Verwaltung und Elastic Computing für Enterprise-Anwendungen.'
+      description: 'Skalierbare Cloud-native KI-Infrastruktur mit autonomer Verwaltung und Elastic Computing für Enterprise-Anwendungen.',
+      href: '/products/private-cloud'
     },
   ]
 
@@ -81,7 +82,7 @@ const HomePage = () => {
           description: 'VoltAIc bedeutet künstliche Intelligenz langfristig gedacht: Der Schritt von großartigen KI-Möglichkeiten zu wirtschaftlich gesunden KI-Lösungen für jedes Unternehmen.',
           primary_action: {
             text: 'Enterprise Lösungen entdecken',
-            href: '/webinars',
+            href: '/products/data-operating-system',
             variant: 'primary'
           },
           secondary_action: {
@@ -108,12 +109,22 @@ const HomePage = () => {
         background="white"
       >
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 py-8">
-          {stats.map((stat, index) => (
-            <div key={index} className="text-center">
-              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">{stat.value}</div>
-              <div className={`text-sm mt-2 ${textColors.secondary}`}>{stat.label}</div>
-            </div>
-          ))}
+          <Link to="/products/data-operating-system" className="text-center group block">
+            <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors">{stats[0].value}</div>
+            <div className={`text-sm mt-2 ${textColors.secondary} group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors`}>{stats[0].label}</div>
+          </Link>
+          <Link to="/about" className="text-center group block">
+            <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors">{stats[1].value}</div>
+            <div className={`text-sm mt-2 ${textColors.secondary} group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors`}>{stats[1].label}</div>
+          </Link>
+          <Link to="/about" className="text-center group block">
+            <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors">{stats[2].value}</div>
+            <div className={`text-sm mt-2 ${textColors.secondary} group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors`}>{stats[2].label}</div>
+          </Link>
+          <Link to="/services/data-management" className="text-center group block">
+            <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors">{stats[3].value}</div>
+            <div className={`text-sm mt-2 ${textColors.secondary} group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors`}>{stats[3].label}</div>
+          </Link>
         </div>
       </SectionTemplate>
 
@@ -126,36 +137,36 @@ const HomePage = () => {
         background="white"
       >
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-          <div className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()}`}>
+          <Link to="/services/digital-transformation" className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()} block`}>
             <div className="text-4xl mb-3">🏦</div>
             <h4 className={`font-semibold mb-1 ${textColors.primary}`}>Financial Services</h4>
             <p className={`text-sm ${textColors.secondary}`}>Risikomanagement, Compliance und Fraud Detection</p>
-          </div>
-          <div className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()}`}>
+          </Link>
+          <Link to="/services/digital-transformation" className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()} block`}>
             <div className="text-4xl mb-3">🏥</div>
             <h4 className={`font-semibold mb-1 ${textColors.primary}`}>Healthcare</h4>
             <p className={`text-sm ${textColors.secondary}`}>Patientendaten-Management und Diagnostik-Unterstützung</p>
-          </div>
-          <div className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()}`}>
+          </Link>
+          <Link to="/services/digital-transformation" className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()} block`}>
             <div className="text-4xl mb-3">🏭</div>
             <h4 className={`font-semibold mb-1 ${textColors.primary}`}>Manufacturing</h4>
             <p className={`text-sm ${textColors.secondary}`}>Produktionsoptimierung und Qualitätskontrolle</p>
-          </div>
-          <div className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()}`}>
+          </Link>
+          <Link to="/services/digital-transformation" className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()} block`}>
             <div className="text-4xl mb-3">⚡</div>
             <h4 className={`font-semibold mb-1 ${textColors.primary}`}>Energy & Utilities</h4>
             <p className={`text-sm ${textColors.secondary}`}>Smart Grid Optimierung und Predictive Maintenance</p>
-          </div>
-          <div className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()}`}>
+          </Link>
+          <Link to="/services/digital-transformation" className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()} block`}>
             <div className="text-4xl mb-3">🏢</div>
             <h4 className={`font-semibold mb-1 ${textColors.primary}`}>Retail</h4>
             <p className={`text-sm ${textColors.secondary}`}>Customer Experience Enhancement und Inventory Management</p>
-          </div>
-          <div className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()}`}>
+          </Link>
+          <Link to="/services/digital-transformation" className={`text-center p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 ${getCardClasses()} block`}>
             <div className="text-4xl mb-3">🤝</div>
             <h4 className={`font-semibold mb-1 ${textColors.primary}`}>Sales & Customer Service</h4>
             <p className={`text-sm ${textColors.secondary}`}>CRM Enhancement und automatisierte Kundenbetreuung</p>
-          </div>
+          </Link>
         </div>
       </SectionTemplate>
 
@@ -186,33 +197,33 @@ const HomePage = () => {
         alignment="center"
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full mb-4">
+          <Link to="/products/private-cloud" className="text-center block group">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full mb-4 group-hover:bg-purple-200 dark:group-hover:bg-purple-900/30 transition-colors">
               <CpuChipIcon className="h-8 w-8 text-purple-600 dark:text-purple-400" />
             </div>
-            <h3 className={`text-xl font-semibold mb-2 ${textColors.primary}`}>Autonomie</h3>
-            <p className={textColors.secondary}>
+            <h3 className={`text-xl font-semibold mb-2 ${textColors.primary} group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors`}>Autonomie</h3>
+            <p className={`${textColors.secondary} group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors`}>
               Vollständige Kontrolle über Ihre Daten und KI-Systeme ohne Abhängigkeiten von externen Anbietern
             </p>
-          </div>
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full mb-4">
+          </Link>
+          <Link to="/services/data-management" className="text-center block group">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full mb-4 group-hover:bg-purple-200 dark:group-hover:bg-purple-900/30 transition-colors">
               <ShieldCheckIcon className="h-8 w-8 text-purple-600 dark:text-purple-400" />
             </div>
-            <h3 className={`text-xl font-semibold mb-2 ${textColors.primary}`}>Souveränität</h3>
-            <p className={textColors.secondary}>
+            <h3 className={`text-xl font-semibold mb-2 ${textColors.primary} group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors`}>Souveränität</h3>
+            <p className={`${textColors.secondary} group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors`}>
               Datensouveränität und Unabhängigkeit in Ihrer IT-Infrastruktur mit deutscher Ingenieursqualität
             </p>
-          </div>
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full mb-4">
+          </Link>
+          <Link to="/services/development" className="text-center block group">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full mb-4 group-hover:bg-purple-200 dark:group-hover:bg-purple-900/30 transition-colors">
               <ChartBarIcon className="h-8 w-8 text-purple-600 dark:text-purple-400" />
             </div>
-            <h3 className={`text-xl font-semibold mb-2 ${textColors.primary}`}>Innovation</h3>
-            <p className={textColors.secondary}>
+            <h3 className={`text-xl font-semibold mb-2 ${textColors.primary} group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors`}>Innovation</h3>
+            <p className={`${textColors.secondary} group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors`}>
               Modernste KI-Technologien und Semantic Data Engineering für nachhaltige Enterprise-Lösungen
             </p>
-          </div>
+          </Link>
         </div>
       </SectionTemplate>
 
@@ -244,9 +255,9 @@ const HomePage = () => {
                   <BoltIcon className="h-8 w-8 text-purple-600 dark:text-purple-400" />
                 </div>
                 <h3 className={`text-xl font-semibold mb-2 ${textColors.primary}`}>KI-Experten</h3>
-                <p className={`mb-6 ${textColors.secondary}`}>
+                <Link to="/about/careers" className={`mb-6 ${textColors.secondary} hover:text-gray-700 dark:hover:text-gray-300 transition-colors block`}>
                   Führend in der Entwicklung von KI-Lösungen mit Fokus auf Datensouveränität.
-                </p>
+                </Link>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">100+</div>

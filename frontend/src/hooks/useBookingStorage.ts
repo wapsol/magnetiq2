@@ -67,9 +67,17 @@ export const useBookingStorage = () => {
         return { data: null, step: null };
       }
       
+      // Deserialize Date objects
+      const deserializedData = {
+        ...storedData.data,
+        selectedDate: storedData.data.selectedDate 
+          ? new Date(storedData.data.selectedDate) 
+          : undefined
+      };
+      
       console.log('Booking data loaded successfully');
       return { 
-        data: storedData.data, 
+        data: deserializedData, 
         step: storedStep || 'consultant-selection' 
       };
     } catch (error) {

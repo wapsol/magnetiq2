@@ -21,9 +21,13 @@ const TimeSlotSelectionStep: React.FC<TimeSlotSelectionStepProps> = ({
   setLoading,
   language
 }) => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(
-    bookingData.selectedDate || null
-  );
+  const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
+    if (!bookingData.selectedDate) return null;
+    // Ensure selectedDate is a proper Date object
+    return bookingData.selectedDate instanceof Date 
+      ? bookingData.selectedDate 
+      : new Date(bookingData.selectedDate);
+  });
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>(
     bookingData.selectedTimeSlot || ''
   );

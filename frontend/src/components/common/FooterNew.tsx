@@ -15,6 +15,11 @@ const FooterNew = () => {
   const { isDarkMode, toggleDarkMode } = useTheme()
   const { language, t } = useLanguage()
   const basePath = language === 'de' ? '/de' : ''
+
+  // Scroll to top when link is clicked
+  const handleLinkClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
   
   const footerSections = {
     services: {
@@ -113,6 +118,7 @@ const FooterNew = () => {
                   <li key={link.href}>
                     <Link
                       to={link.href}
+                      onClick={handleLinkClick}
                       className="text-gray-500 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
                     >
                       {link.name}
@@ -132,6 +138,7 @@ const FooterNew = () => {
                   <li key={link.href}>
                     <Link
                       to={link.href}
+                      onClick={handleLinkClick}
                       className="text-gray-500 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
                     >
                       {link.name}
@@ -151,6 +158,7 @@ const FooterNew = () => {
                   <li key={link.href}>
                     <Link
                       to={link.href}
+                      onClick={handleLinkClick}
                       className="text-gray-500 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
                     >
                       {link.name}
@@ -170,6 +178,7 @@ const FooterNew = () => {
                   <li key={link.href}>
                     <Link
                       to={link.href}
+                      onClick={handleLinkClick}
                       className="text-gray-500 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
                     >
                       {link.name}
@@ -191,24 +200,28 @@ const FooterNew = () => {
               <div className="flex space-x-4">
                 <Link
                   to={`${basePath}/legal/${language === 'en' ? 'privacy' : 'datenschutz'}`}
+                  onClick={handleLinkClick}
                   className="text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
                 >
                   {t('footer.privacy')}
                 </Link>
                 <Link
                   to={`${basePath}/legal/${language === 'en' ? 'terms' : 'nutzungsbedingungen'}`}
+                  onClick={handleLinkClick}
                   className="text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
                 >
                   {t('footer.terms')}
                 </Link>
                 <Link
                   to={`${basePath}/legal/cookies`}
+                  onClick={handleLinkClick}
                   className="text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
                 >
                   {t('footer.cookies')}
                 </Link>
                 <Link
                   to={`${basePath}/legal/${language === 'en' ? 'imprint' : 'impressum'}`}
+                  onClick={handleLinkClick}
                   className="text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
                 >
                   {t('footer.imprint')}
@@ -235,6 +248,7 @@ const FooterNew = () => {
               {/* Admin Login Link */}
               <Link
                 to="/admin"
+                onClick={handleLinkClick}
                 className="text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
               >
                 {language === 'en' ? 'Admin Login' : 'Admin Anmeldung'}
