@@ -7,7 +7,7 @@ This document provides a comprehensive compilation of all consultant-related fea
 ## Public-Facing Features
 
 ### Core Consultant System 
-docs/spec_v2_current/frontend/public/consultants.md
+`docs/spec_v2_current/frontend/public/consultants.md`
 
 #### 1. Consultant Profile Pages 
 `/consultants/{slug}`
@@ -19,19 +19,22 @@ docs/spec_v2_current/frontend/public/consultants.md
 - **Real-time Availability Display**: Live booking widget with 30-for-30 service highlighting
 - **Photo Gallery**: Professional headshot with expandable gallery
 
-#### 2. Consultant Discovery & Search (`/consultants`)
+#### 2. Consultant Discovery & Search 
+`/consultants`
 - **Advanced Search Interface**: Multi-criteria filtering with expertise areas, location, availability, and pricing
 - **Map View Toggle**: Location-based consultant discovery
 - **Featured Consultant Showcases**: Trending, top-rated, new experts, and specialist spotlight sections
 - **Smart Matching Algorithm**: AI-powered consultant-client matching with relevance scoring
 - **Real-time Availability Checking**: Live slot availability with booking integration
 
-#### 3. 30-for-30 Service Integration (`/30-for-30`)
+#### 3. 30-for-30 Service Integration 
+`/30-for-30`
 - **Dedicated Service Landing Page**: €30 consultation service overview and booking
 - **Instant Booking System**: Real-time slot selection with payment processing
 - **Consultant Auto-matching**: Algorithm-based consultant selection for optimal matching
 
-### Consultant Signup Flow (`docs/spec_v2_current/frontend/public/features/consultant-signup.md`)
+### Consultant Signup Flow 
+`docs/spec_v2_current/frontend/public/features/consultant-signup.md`
 
 #### 4. Public Self-Registration System
 - **5-Phase Signup Workflow**: From initial interest to admin activation
@@ -40,7 +43,8 @@ docs/spec_v2_current/frontend/public/consultants.md
 - **Document Upload System**: CV, certifications, and portfolio submission
 - **Terms Acceptance**: Legal compliance with GDPR consent
 
-### Booking Integration (`docs/spec_v2_current/frontend/public/features/book-a-meeting.md`)
+### Booking Integration
+`docs/spec_v2_current/frontend/public/features/book-a-meeting.md`
 
 #### 5. Meeting Booking System
 - **Consultant Selection Interface**: Choose specific consultants or use AI matching
@@ -50,17 +54,20 @@ docs/spec_v2_current/frontend/public/consultants.md
 
 ### Content Integration
 
-#### 6. Webinar-Consultant Integration (`docs/spec_v2_current/frontend/public/features/webinars.md`)
+#### 6. Webinar-Consultant Integration 
+`docs/spec_v2_current/frontend/public/features/webinars.md`
 - **Speaker Assignment System**: Consultant-webinar associations
 - **Registration Flow**: Direct webinar signup from consultant profiles
 - **Content Attribution**: Speaker profiles linked to webinar content
 
-#### 7. Whitepaper Author Integration (`docs/spec_v2_current/frontend/public/features/whitepapers.md`)
+#### 7. Whitepaper Author Integration 
+`docs/spec_v2_current/frontend/public/features/whitepapers.md`
 - **Author Attribution**: Consultant bylines on whitepapers
 - **Direct Downloads**: One-click downloads from consultant profiles
 - **Content Portfolio Display**: Authored content showcasing
 
-### Newsletter Integration (`docs/spec_v2_current/frontend/public/features/newsletter.md`)
+### Newsletter Integration
+`docs/spec_v2_current/frontend/public/features/newsletter.md`
 
 #### 8. Consultant Content Promotion
 - **Featured Consultant Sections**: Newsletter highlighting of expert consultants
@@ -68,7 +75,8 @@ docs/spec_v2_current/frontend/public/consultants.md
 
 ## Admin Management Features
 
-### Comprehensive Admin Panel (`docs/spec_v2_current/frontend/adminpanel/consultant-management.md`)
+### Comprehensive Admin Panel 
+`docs/spec_v2_current/frontend/adminpanel/consultant-management.md`
 
 #### 9. Consultant Profile Management
 - **Profile Editor**: Full consultant data management interface
@@ -109,35 +117,40 @@ docs/spec_v2_current/frontend/public/consultants.md
 - **Template Management**: Profile generation templates
 - **Quality Control**: AI-generated content review and approval
 
-### Email Integration (`docs/spec_v2_current/frontend/adminpanel/email-management.md`)
+### Email Integration
+`docs/spec_v2_current/frontend/adminpanel/email-management.md`
 
 #### 16. Email Campaign Management
 - **Consultant Newsletter Creation**: Targeted email campaigns
 - **Automated Sequences**: Onboarding and nurturing flows
 - **Performance Tracking**: Open rates and engagement metrics
 
-### CRM Integration (`docs/spec_v2_current/frontend/adminpanel/crm-management.md`)
+### CRM Integration 
+`docs/spec_v2_current/frontend/adminpanel/crm-management.md`
 
 #### 17. Lead Management
 - **Consultant Lead Tracking**: From signup interest to activation
 - **Pipeline Management**: Multi-stage consultant acquisition process
 - **Conversion Analytics**: Signup-to-activation metrics
 
-### User Management (`docs/spec_v2_current/frontend/adminpanel/user-management.md`)
+### User Management 
+`docs/spec_v2_current/frontend/adminpanel/user-management.md`
 
 #### 18. Consultant User Accounts
 - **Account Creation**: Admin-managed consultant account setup
 - **Permission Management**: Role-based access controls
 - **Activity Monitoring**: Login tracking and session management
 
-### Settings Management (`docs/spec_v2_current/frontend/adminpanel/settings.md`)
+### Settings Management 
+`docs/spec_v2_current/frontend/adminpanel/settings.md`
 
 #### 19. Consultant Configuration
 - **Service Settings**: 30-for-30 and other service configurations
 - **Platform Settings**: Consultant platform parameters
 - **Integration Settings**: Third-party service configurations
 
-### Analytics Dashboard (`docs/spec_v2_current/frontend/adminpanel/analytics.md`)
+### Analytics Dashboard 
+`docs/spec_v2_current/frontend/adminpanel/analytics.md`
 
 #### 20. Consultant Analytics
 - **Platform Metrics**: Overall consultant system performance
@@ -146,7 +159,8 @@ docs/spec_v2_current/frontend/public/consultants.md
 
 ## Integration Features
 
-### LinkedIn Integration (`docs/spec_v2_current/frontend/integrations/linkedin.md`)
+### LinkedIn Integration 
+`docs/spec_v2_current/frontend/integrations/linkedin.md`
 
 #### 21. Profile Synchronization
 - **Automated Profile Import**: LinkedIn data extraction and synchronization
@@ -158,21 +172,24 @@ docs/spec_v2_current/frontend/public/consultants.md
 - **Profile Queue Management**: Batch processing of discovered profiles
 - **Data Quality Control**: Validation and cleanup processes
 
-### Stripe Payment Integration (`docs/spec_v2_current/frontend/integrations/stripe.md`)
+### Stripe Payment Integration 
+`docs/spec_v2_current/frontend/integrations/stripe.md`
 
 #### 23. Consultation Payments
 - **Payment Processing**: 30-for-30 and other consultation payments
 - **Consultant Payouts**: Revenue sharing and payment distribution
 - **Financial Reporting**: Payment analytics and reconciliation
 
-### CRM Integration (`docs/spec_v2_current/frontend/integrations/crm.md`)
+### CRM Integration 
+`docs/spec_v2_current/frontend/integrations/crm.md`
 
 #### 24. Lead Capture & Management
 - **Consultant Lead Tracking**: From discovery to activation
 - **Automated Workflows**: Lead nurturing sequences
 - **Performance Analytics**: Conversion tracking and optimization
 
-### Email Service Integration (`docs/spec_v2_current/frontend/integrations/brevo-email.md`)
+### Email Service Integration 
+`docs/spec_v2_current/frontend/integrations/brevo-email.md`
 
 #### 25. Communication Automation
 - **Onboarding Sequences**: New consultant welcome flows
@@ -181,7 +198,8 @@ docs/spec_v2_current/frontend/public/consultants.md
 
 ## Analytics & Reporting Features
 
-### Performance Analytics (`docs/spec_v2_current/frontend/adminpanel/analytics.md`)
+### Performance Analytics 
+`docs/spec_v2_current/frontend/adminpanel/analytics.md`
 
 #### 26. Consultant Performance Metrics
 - **Individual KPIs**: Per-consultant success indicators
@@ -198,21 +216,24 @@ docs/spec_v2_current/frontend/public/consultants.md
 - **Cost Analysis**: Acquisition and management costs
 - **ROI Calculations**: Return on consultant investment
 
-### Data Management (`docs/spec_v2_current/frontend/public/data-management.md`)
+### Data Management 
+`docs/spec_v2_current/frontend/public/data-management.md`
 
 #### 29. Consultant Data Governance
 - **Data Quality Management**: Profile completeness and accuracy
 - **Privacy Compliance**: GDPR and data protection adherence
 - **Audit Trails**: Change tracking and history
 
-### Search Analytics (`docs/spec_v2_current/frontend/public/search.md`)
+### Search Analytics 
+`docs/spec_v2_current/frontend/public/search.md`
 
 #### 30. Search Performance
 - **Query Analytics**: Most searched consultant criteria
 - **Result Optimization**: Search result relevance improvement
 - **User Behavior Tracking**: Search pattern analysis
 
-### Content Analytics (`docs/spec_v2_current/frontend/adminpanel/content-management.md`)
+### Content Analytics 
+`docs/spec_v2_current/frontend/adminpanel/content-management.md`
 
 #### 31. Content Performance Metrics
 - **Consultant Content Analytics**: Whitepaper and webinar performance
@@ -221,7 +242,8 @@ docs/spec_v2_current/frontend/public/consultants.md
 
 ## Content Integration Features
 
-### Whitepaper Integration (`docs/spec_v2_current/frontend/public/features/whitepapers.md`)
+### Whitepaper Integration 
+`docs/spec_v2_current/frontend/public/features/whitepapers.md`
 
 #### 32. Author Attribution System
 - **Consultant Bylines**: Author profiles on whitepapers
@@ -233,14 +255,16 @@ docs/spec_v2_current/frontend/public/consultants.md
 - **Lead Attribution**: Content-to-consultant lead tracking
 - **Performance Metrics**: Content engagement and conversion
 
-### Webinar Integration (`docs/spec_v2_current/frontend/public/features/webinars.md`)
+### Webinar Integration 
+`docs/spec_v2_current/frontend/public/features/webinars.md`
 
 #### 34. Speaker Management
 - **Consultant Speaker Assignments**: Webinar-consultant associations
 - **Registration Integration**: Direct signup from consultant profiles
 - **Performance Tracking**: Webinar attendance and engagement
 
-### Blog Integration (`docs/spec_v2_current/frontend/public/blog.md`)
+### Blog Integration 
+`docs/spec_v2_current/frontend/public/blog.md`
 
 #### 35. Consultant Blog Content
 - **Guest Post Management**: Consultant-authored blog posts
@@ -249,7 +273,8 @@ docs/spec_v2_current/frontend/public/consultants.md
 
 ## Search & Discovery Features
 
-### Advanced Search (`docs/spec_v2_current/frontend/public/search.md`)
+### Advanced Search 
+`docs/spec_v2_current/frontend/public/search.md`
 
 #### 36. Consultant Search Engine
 - **Multi-criteria Filtering**: Expertise, location, availability, pricing
@@ -270,7 +295,8 @@ docs/spec_v2_current/frontend/public/consultants.md
 
 ## Multi-language Support
 
-### Internationalization (`docs/spec_v2_current/frontend/public/public.md`)
+### Internationalization 
+`docs/spec_v2_current/frontend/public/public.md`
 
 #### 39. German Language Support
 - **Localized Content**: German translations for all consultant features
@@ -284,7 +310,8 @@ docs/spec_v2_current/frontend/public/consultants.md
 
 ## Mobile & Responsive Features
 
-### Mobile Optimization (`docs/spec_v2_current/frontend/public/public.md`)
+### Mobile Optimization 
+`docs/spec_v2_current/frontend/public/public.md`
 
 #### 41. Mobile Consultant Profiles
 - **Responsive Design**: Mobile-optimized consultant pages
@@ -298,7 +325,8 @@ docs/spec_v2_current/frontend/public/consultants.md
 
 ## Security & Compliance Features
 
-### Data Protection (`docs/spec_v2_current/frontend/privacy-compliance.md`)
+### Data Protection 
+`docs/spec_v2_current/frontend/privacy-compliance.md`
 
 #### 43. Privacy Compliance
 - **GDPR Compliance**: Full European data protection compliance
@@ -312,7 +340,8 @@ docs/spec_v2_current/frontend/public/consultants.md
 
 ## API Integration Features
 
-### Backend Integration (`docs/spec_v2_current/frontend/api-integration.md`)
+### Backend Integration 
+`docs/spec_v2_current/frontend/api-integration.md`)
 
 #### 45. Consultant API Integration
 - **Profile Management APIs**: CRUD operations for consultant profiles
@@ -326,7 +355,8 @@ docs/spec_v2_current/frontend/public/consultants.md
 
 ## Advanced Features
 
-### AI & Machine Learning (`docs/spec_v2_current/frontend/public/consultants.md`)
+### AI & Machine Learning 
+`docs/spec_v2_current/frontend/public/consultants.md`
 
 #### 47. AI-Powered Matching
 - **Smart Recommendations**: Machine learning consultant matching
@@ -338,7 +368,8 @@ docs/spec_v2_current/frontend/public/consultants.md
 - **Template Management**: Automated profile templates
 - **Quality Assurance**: AI content review and validation
 
-### Performance & Optimization (`docs/spec_v2_current/frontend/public/public.md`)
+### Performance & Optimization 
+`docs/spec_v2_current/frontend/public/public.md`
 
 #### 49. Performance Features
 - **Lazy Loading**: Optimized consultant profile loading
