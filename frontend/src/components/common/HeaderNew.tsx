@@ -101,11 +101,6 @@ const Header = () => {
           href: `${basePath}/${language === 'en' ? 'resources/whitepapers' : 'ressourcen/whitepapers'}`,
           description: language === 'en' ? 'In-depth guides' : 'Ausführliche Leitfäden'
         },
-        { 
-          name: t('resources.tools'), 
-          href: `${basePath}/${language === 'en' ? 'resources/tools' : 'ressourcen/tools'}`,
-          description: language === 'en' ? 'Calculators and assessments' : 'Rechner und Bewertungen'
-        },
       ]
     }
   ]

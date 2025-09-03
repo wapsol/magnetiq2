@@ -19,6 +19,7 @@ from app.api.v1.consultants.kyc import router as kyc_router
 from app.api.v1.consultants.analytics import router as analytics_router
 from app.api.v1.consultants.enrichment import router as enrichment_router
 from app.api.v1.admin import admin_router
+from app.api.v1.careers import careers_router
 from app.middleware.language_detection import LanguageDetectionMiddleware
 
 # Configure logging
@@ -243,6 +244,12 @@ app.include_router(
 app.include_router(
     admin_router,
     tags=["Admin Panel"]
+)
+
+app.include_router(
+    careers_router,
+    prefix="/api/v1/careers",
+    tags=["Careers - Job Applications"]
 )
 
 

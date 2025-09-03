@@ -31,9 +31,11 @@ import FoodBeveragePage from './pages/solutions/industries/FoodBeveragePage'
 // Pages - About
 import AboutPage from './pages/about/AboutPage'
 import AboutOverview from './pages/about/AboutOverview'
+import CareersPage from './pages/about/CareersPage'
 
 // Pages - Products
 import DataOperatingSystemPage from './pages/products/DataOperatingSystemPage'
+import PrivateCloudPage from './pages/products/PrivateCloudPage'
 
 // Pages - Contact
 import ContactOverview from './pages/contact/ContactOverview'
@@ -109,6 +111,7 @@ function App() {
           {/* Products */}
           <Route path="products">
             <Route path="data-operating-system" element={<DataOperatingSystemPage />} />
+            <Route path="private-cloud" element={<PrivateCloudPage />} />
           </Route>
           
           {/* Resources */}
@@ -127,7 +130,7 @@ function App() {
             <Route path="story" element={<AboutPage />} />
             <Route path="team" element={<AboutPage />} />
             <Route path="mission" element={<AboutPage />} />
-            <Route path="careers" element={<AboutPage />} />
+            <Route path="careers" element={<CareersPage />} />
             <Route path="partners" element={<AboutPage />} />
             <Route path="news" element={<AboutPage />} />
           </Route>
@@ -184,6 +187,7 @@ function App() {
           {/* Produkte (Products) */}
           <Route path="produkte">
             <Route path="daten-betriebssystem" element={<DataOperatingSystemPage />} />
+            <Route path="private-cloud" element={<PrivateCloudPage />} />
           </Route>
           
           {/* Ressourcen (Resources) */}
@@ -202,7 +206,7 @@ function App() {
             <Route path="geschichte" element={<AboutPage />} />
             <Route path="team" element={<AboutPage />} />
             <Route path="mission" element={<AboutPage />} />
-            <Route path="karriere" element={<AboutPage />} />
+            <Route path="karriere" element={<CareersPage />} />
             <Route path="partner" element={<AboutPage />} />
             <Route path="presse" element={<AboutPage />} />
           </Route>

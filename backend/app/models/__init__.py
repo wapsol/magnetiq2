@@ -10,3 +10,7 @@ from .consultant import (
     ConsultantEarning, ConsultantAvailability, ConsultantPortfolio,
     ConsultantStatus, KYCStatus, ProjectStatus
 )
+from .careers import (
+    JobApplication, JobApplicationAuditLog, ApplicationStatusHistory, 
+    ApplicationUploadMetadata, ApplicationStatus
+)

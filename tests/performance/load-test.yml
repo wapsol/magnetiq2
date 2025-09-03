@@ -1,0 +1,334 @@
+#
+# Performance Load Testing Configuration for Booking System
+#
+# Tests performance characteristics of the booking frontend and API:
+# - Modal load times and UI responsiveness  
+# - API response times under load
+# - Concurrent user simulation
+# - Resource utilization monitoring
+# - Performance regression detection
+#
+# Run with: artillery run tests/performance/load-test.yml
+#
+
+config:
+  target: 'http://localhost:8037'
+  phases:
+    # Warm-up phase
+    - duration: 30
+      arrivalRate: 1
+      name: "Warm-up"
+    
+    # Gradual load increase
+    - duration: 60  
+      arrivalRate: 2
+      rampTo: 10
+      name: "Ramp-up"
+    
+    # Peak load testing
+    - duration: 120
+      arrivalRate: 15
+      name: "Peak load"
+    
+    # Stress testing
+    - duration: 60
+      arrivalRate: 25
+      name: "Stress test"
+    
+    # Cool down
+    - duration: 30
+      arrivalRate: 5
+      name: "Cool-down"
+
+  # Performance benchmarks from specification
+  ensure:
+    # API response times
+    - max_response_time: 2000  # 2 seconds max
+    - median_response_time: 500  # 500ms median
+    - p95_response_time: 1000   # 95th percentile under 1s
+    
+    # Error rates
+    - error_rate: 5  # Less than 5% errors
+    
+    # Throughput
+    - min_requests_per_sec: 10
+
+  # Test data
+  payload:
+    - path: './fixtures/test-bookings.csv'
+      fields:
+        - consultant_id
+        - contact_email
+        - contact_phone
+        - billing_city
+
+scenarios:
+  #
+  # PSEUDO-CODE: Consultant API Load Testing
+  # GIVEN: Multiple concurrent users
+  # WHEN: Users request consultant data simultaneously  
+  # THEN: All requests should complete within performance benchmarks
+  #
+  - name: "Load Test - Get Active Consultants"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/v1/consultations/public/consultants/active"
+          headers:
+            Accept-Language: "{{ $randomItem(['en', 'de']) }}"
+          capture:
+            - json: "$.data.consultants[0].id"
+              as: "consultant_id"
+            - json: "$.data.consultants[1].id" 
+              as: "consultant_id_2"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.consultants"
+            - equals:
+              - "$.data.total"
+              - 2
+        
+      # Validate response structure and content
+      - think: 1
+      
+      - log: "Consultant API: {{ consultant_id }} loaded successfully"
+
+  #
+  # PSEUDO-CODE: Availability API Load Testing  
+  # GIVEN: Valid consultant and future dates
+  # WHEN: Multiple users check availability simultaneously
+  # THEN: API should respond quickly with accurate availability
+  #
+  - name: "Load Test - Check Availability" 
+    weight: 25
+    flow:
+      # Get consultants first
+      - get:
+          url: "/api/v1/consultations/public/consultants/active"
+          capture:
+            - json: "$.data.consultants[0].id"
+              as: "consultant_id"
+              
+      # Check availability for next 5 weekdays
+      - loop:
+        - get:
+            url: "/api/v1/consultations/public/consultants/{{ consultant_id }}/availability"
+            qs:
+              target_date: "{{ $moment().add($loopCount + 1, 'days').format('YYYY-MM-DD') }}"
+              timezone: "Europe/Berlin"
+            expect:
+              - statusCode: 200
+              - hasProperty: "data.available_slots"
+              - hasProperty: "data.default_slots"
+        count: 5
+        
+      - think: 2
+
+  #
+  # PSEUDO-CODE: Booking Creation Load Testing
+  # GIVEN: Valid booking data with unique emails
+  # WHEN: Multiple bookings are created simultaneously
+  # THEN: Each booking should be created successfully without conflicts
+  #
+  - name: "Load Test - Create Bookings"
+    weight: 20
+    flow:
+      # Get consultant
+      - get:
+          url: "/api/v1/consultations/public/consultants/active"
+          capture:
+            - json: "$.data.consultants[0].id"
+              as: "consultant_id"
+              
+      # Create unique booking
+      - post:
+          url: "/api/v1/consultations/public/bookings"
+          json:
+            consultant_id: "{{ consultant_id }}"
+            consultation_date: "{{ $moment().add(7, 'days').hour(10).minute(0).toISOString() }}"
+            time_slot: "{{ $randomItem(['10:00', '14:00']) }}"
+            contact_info:
+              first_name: "{{ $randomFirstName() }}"
+              last_name: "{{ $randomLastName() }}"
+              email: "loadtest-{{ $uuid() }}@example.com"
+              phone: "+49 {{ $randomInt(100, 999) }} {{ $randomInt(1000000, 9999999) }}"
+              company: "Load Test GmbH"
+            terms_accepted: true
+            utm_source: "load_test"
+            utm_medium: "artillery"
+            utm_campaign: "performance_testing"
+          capture:
+            - json: "$.data.booking_id"
+              as: "booking_id"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.booking_id"
+            - equals:
+              - "$.success"
+              - true
+              
+      - think: 1
+      
+      - log: "Booking created: {{ booking_id }}"
+
+  #
+  # PSEUDO-CODE: Billing Update Load Testing
+  # GIVEN: Existing bookings
+  # WHEN: Billing information is updated
+  # THEN: Updates should process quickly and correctly
+  #
+  - name: "Load Test - Update Billing"
+    weight: 15
+    flow:
+      # Create booking first
+      - get:
+          url: "/api/v1/consultations/public/consultants/active"
+          capture:
+            - json: "$.data.consultants[0].id"
+              as: "consultant_id"
+              
+      - post:
+          url: "/api/v1/consultations/public/bookings"
+          json:
+            consultant_id: "{{ consultant_id }}"
+            consultation_date: "{{ $moment().add(10, 'days').hour(14).minute(0).toISOString() }}"
+            time_slot: "14:00"
+            contact_info:
+              first_name: "Billing"
+              last_name: "Test"
+              email: "billing-{{ $uuid() }}@example.com"
+              phone: "+49 123 456 7890"
+            terms_accepted: true
+          capture:
+            - json: "$.data.booking_id"
+              as: "booking_id"
+              
+      # Update billing info
+      - put:
+          url: "/api/v1/consultations/public/bookings/{{ booking_id }}/billing"
+          json:
+            billing_info:
+              billing_first_name: "{{ $randomFirstName() }}"
+              billing_last_name: "{{ $randomLastName() }}"
+              billing_street: "Teststraße {{ $randomInt(1, 999) }}"
+              billing_postal_code: "{{ $randomInt(10000, 99999) }}"
+              billing_city: "{{ $randomItem(['Berlin', 'München', 'Hamburg', 'Köln']) }}"
+              billing_country: "DE"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.booking"
+
+  #
+  # PSEUDO-CODE: Payment Processing Load Testing
+  # GIVEN: Bookings with billing information
+  # WHEN: Payment is processed
+  # THEN: Payment should complete within acceptable time
+  #
+  - name: "Load Test - Process Payments"
+    weight: 10
+    flow:
+      # Create and prepare booking
+      - get:
+          url: "/api/v1/consultations/public/consultants/active"
+          capture:
+            - json: "$.data.consultants[0].id"
+              as: "consultant_id"
+              
+      - post:
+          url: "/api/v1/consultations/public/bookings"
+          json:
+            consultant_id: "{{ consultant_id }}"
+            consultation_date: "{{ $moment().add(14, 'days').hour(10).minute(0).toISOString() }}"
+            time_slot: "10:00"
+            contact_info:
+              first_name: "Payment"
+              last_name: "Test"
+              email: "payment-{{ $uuid() }}@example.com"
+              phone: "+49 987 654 3210"
+            terms_accepted: true
+          capture:
+            - json: "$.data.booking_id"
+              as: "booking_id"
+              
+      # Add billing info
+      - put:
+          url: "/api/v1/consultations/public/bookings/{{ booking_id }}/billing"
+          json:
+            billing_info:
+              billing_first_name: "Payment"
+              billing_last_name: "Test"
+              billing_street: "Payment Street 123"
+              billing_postal_code: "12345"
+              billing_city: "Berlin"
+              billing_country: "DE"
+              
+      # Process payment
+      - post:
+          url: "/api/v1/consultations/public/bookings/{{ booking_id }}/payment"
+          json:
+            payment_method: "stripe"
+            payment_provider: "stripe"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.booking"
+            - equals:
+              - "$.data.booking.payment_status"
+              - "completed"
+
+# Custom functions and helpers for testing
+functions:
+  randomFirstName:
+    - "Max"
+    - "Anna"
+    - "Thomas"
+    - "Julia"
+    - "Michael"
+    - "Laura"
+    - "Stefan"
+    - "Christina"
+    - "Daniel"
+    - "Sabrina"
+    
+  randomLastName:
+    - "Müller"
+    - "Schmidt"
+    - "Schneider"
+    - "Fischer"
+    - "Meyer"
+    - "Weber"
+    - "Wagner"
+    - "Becker"
+    - "Schulz"
+    - "Hoffmann"
+    
+  randomItem:
+    - "{{ Array.from(arguments).join(',').split(',')[Math.floor(Math.random() * arguments.length)] }}"
+
+# Post-test analysis and reporting
+after:
+  flow:
+    - log: "Performance test completed"
+    - log: "Total scenarios executed: {{ $stats.codes[200] }}"
+    - log: "Average response time: {{ $stats.latency.mean }}ms"
+    - log: "Error rate: {{ ($stats.codes[500] || 0) / $stats.requestsCompleted * 100 }}%"
+
+# Monitoring and alerting thresholds
+thresholds:
+  # Response time thresholds (from specification)
+  - metric: "response_time.mean"
+    threshold: 1000
+    condition: ">"
+    
+  - metric: "response_time.p95"  
+    threshold: 2000
+    condition: ">"
+    
+  # Error rate thresholds
+  - metric: "errors.rate"
+    threshold: 5
+    condition: ">"
+    
+  # Throughput thresholds  
+  - metric: "requests.completed"
+    threshold: 100
+    condition: "<"

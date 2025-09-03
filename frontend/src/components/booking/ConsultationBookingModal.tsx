@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Dialog, DialogContent, DialogOverlay, DialogTitle, DialogDescription } from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -9,6 +9,10 @@ import ContactInfoStep from './steps/ContactInfoStep';
 import BillingInfoStep from './steps/BillingInfoStep';
 import PaymentStep from './steps/PaymentStep';
 import ConfirmationStep from './steps/ConfirmationStep';
+import CancellationDialog from './CancellationDialog';
+import { useBookingStorage } from '../../hooks/useBookingStorage';
+import { useToast } from '../../hooks/useToast';
+import { ToastContainer } from '../common/Toast';
 
 export interface BookingData {
   selectedConsultant?: any;
@@ -63,6 +67,11 @@ const ConsultationBookingModal: React.FC<ConsultationBookingModalProps> = ({
   const [currentStep, setCurrentStep] = useState<BookingStep>(initialStep);
   const [bookingData, setBookingData] = useState<BookingData>({});
   const [loading, setLoading] = useState(false);
+  const [showCancellationDialog, setShowCancellationDialog] = useState(false);
+  const [hasLoadedSavedData, setHasLoadedSavedData] = useState(false);
+  
+  const { saveBookingData, loadBookingData, clearBookingData, hasSavedData } = useBookingStorage();
+  const { toasts, showToast, removeToast } = useToast();
 
   const steps: BookingStep[] = [
     'consultant-selection',
@@ -93,27 +102,92 @@ const ConsultationBookingModal: React.FC<ConsultationBookingModalProps> = ({
     setBookingData(prev => ({ ...prev, ...updates }));
   }, []);
 
+  // Load saved data when modal opens
+  useEffect(() => {
+    if (isOpen && !hasLoadedSavedData) {
+      const { data: savedData, step: savedStep } = loadBookingData();
+      if (savedData && Object.keys(savedData).length > 0) {
+        setBookingData(savedData);
+        if (savedStep && savedStep !== 'confirmation') {
+          setCurrentStep(savedStep as BookingStep);
+        }
+        
+        // Show toast notification about loaded data
+        showToast({
+          type: 'info',
+          title: language === 'de' ? 'Daten wiederhergestellt' : 'Data Restored',
+          message: language === 'de' 
+            ? 'Ihre gespeicherten Buchungsdaten wurden geladen.'
+            : 'Your saved booking data has been loaded.'
+        });
+      }
+      setHasLoadedSavedData(true);
+    }
+  }, [isOpen, hasLoadedSavedData, loadBookingData, showToast, language]);
+
+  // Reset loaded flag when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setHasLoadedSavedData(false);
+    }
+  }, [isOpen]);
+
   const handleClose = useCallback(() => {
     if (currentStep === 'confirmation') {
+      // Clear saved data on successful completion
+      clearBookingData();
       onClose();
       return;
     }
 
     // Ask for confirmation if user has started the booking process
     if (currentStepIndex > 0) {
-      const confirmMessage = language === 'de' 
-        ? 'Möchten Sie den Buchungsprozess wirklich abbrechen? Alle Daten gehen verloren.'
-        : 'Are you sure you want to cancel the booking process? All data will be lost.';
-      
-      if (window.confirm(confirmMessage)) {
-        setCurrentStep('consultant-selection');
-        setBookingData({});
-        onClose();
-      }
+      setShowCancellationDialog(true);
     } else {
       onClose();
     }
-  }, [currentStep, currentStepIndex, language, onClose]);
+  }, [currentStep, currentStepIndex, onClose, clearBookingData]);
+
+  const handleCancellationClose = useCallback(() => {
+    setShowCancellationDialog(false);
+  }, []);
+
+  const handleConfirmCancel = useCallback(() => {
+    // Clear any saved data and close
+    clearBookingData();
+    setCurrentStep('consultant-selection');
+    setBookingData({});
+    setShowCancellationDialog(false);
+    onClose();
+  }, [clearBookingData, onClose]);
+
+  const handleSaveAndExit = useCallback(() => {
+    // Save current progress and close
+    const success = saveBookingData(bookingData, currentStep);
+    if (success) {
+      setShowCancellationDialog(false);
+      onClose();
+      
+      // Show success toast
+      showToast({
+        type: 'success',
+        title: language === 'de' ? 'Daten gespeichert' : 'Data Saved',
+        message: language === 'de' 
+          ? 'Ihre Buchungsdaten wurden gespeichert und werden beim nächsten Besuch wiederhergestellt.'
+          : 'Your booking progress has been saved and will be restored on your next visit.'
+      });
+    } else {
+      // Show error toast
+      showToast({
+        type: 'error',
+        title: language === 'de' ? 'Speichern fehlgeschlagen' : 'Save Failed',
+        message: language === 'de' 
+          ? 'Ihre Daten konnten nicht gespeichert werden.'
+          : 'Your data could not be saved.'
+      });
+      handleConfirmCancel(); // Fallback to cancel without saving
+    }
+  }, [bookingData, currentStep, saveBookingData, onClose, handleConfirmCancel, language, showToast]);
 
   const getStepTitle = useCallback(() => {
     const titles = {
@@ -245,15 +319,37 @@ const ConsultationBookingModal: React.FC<ConsultationBookingModalProps> = ({
         {/* GDPR Notice - shown on all steps except confirmation */}
         {currentStep !== 'confirmation' && (
           <div className="px-6 py-4 border-t bg-gray-50 flex-shrink-0">
-            <p className="text-xs text-gray-600 flex items-start">
+            <p className="text-xs text-gray-600 flex items-start mb-2">
               <span className="inline-block w-4 h-4 bg-green-500 rounded-full mr-2 mt-0.5 flex-shrink-0" />
               {language === 'de' 
                 ? 'Alle Daten werden DSGVO-konform in unseren privaten Cloud-Systemen verarbeitet.'
                 : 'All data is handled according to GDPR in our private cloud systems.'
               }
             </p>
+            {hasSavedData() && (
+              <p className="text-xs text-blue-600 flex items-start">
+                <span className="inline-block w-4 h-4 bg-blue-500 rounded-full mr-2 mt-0.5 flex-shrink-0" />
+                {language === 'de' 
+                  ? 'Gespeicherte Buchungsdaten wurden geladen. Sie können Ihren Fortschritt jederzeit speichern.'
+                  : 'Saved booking data was loaded. You can save your progress at any time.'
+                }
+              </p>
+            )}
           </div>
         )}
+        
+        {/* Cancellation Dialog */}
+        <CancellationDialog
+          isOpen={showCancellationDialog}
+          onClose={handleCancellationClose}
+          onConfirmCancel={handleConfirmCancel}
+          onSaveAndExit={handleSaveAndExit}
+          language={language as 'en' | 'de'}
+          hasProgress={currentStepIndex > 0}
+        />
+        
+        {/* Toast Notifications */}
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
       </DialogContent>
     </Dialog>
   );

@@ -17,6 +17,7 @@ const BillingInfoStep: React.FC<BillingInfoStepProps> = ({
   updateBookingData,
   onNext,
   onBack,
+  loading,
   setLoading,
   language
 }) => {
@@ -125,7 +126,14 @@ const BillingInfoStep: React.FC<BillingInfoStepProps> = ({
             consultant_id: bookingData.selectedConsultant!.id,
             consultation_date: bookingData.selectedDate!.toISOString(),
             time_slot: bookingData.selectedTimeSlot,
-            contact_info: bookingData.contactInfo,
+            contact_info: {
+              first_name: bookingData.contactInfo!.firstName,
+              last_name: bookingData.contactInfo!.lastName,
+              email: bookingData.contactInfo!.email,
+              company: bookingData.contactInfo!.company || null,
+              website: bookingData.contactInfo!.website || null,
+              phone: bookingData.contactInfo!.phone
+            },
             terms_accepted: bookingData.termsAccepted
           })
         });

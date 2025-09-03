@@ -159,6 +159,7 @@ async def create_booking(
         raise e
     except Exception as e:
         logger.error(f"Error creating booking: {str(e)}")
+        logger.error(f"Request data: {request}")
         raise HTTPException(status_code=500, detail="Failed to create booking")
 
 
