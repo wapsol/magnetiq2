@@ -7,7 +7,7 @@ This document specifies the test requirements for the public consultation bookin
 - **URL**: `/contact/booking`
 - **Purpose**: Enable public users to book 30-minute consultation sessions
 - **Price**: €30 per session
-- **Consultants**: Pascal Köth and Ashant Chalasani
+- **Consultants**: Any of the consultants from the AdminPanel.
 - **Time Slots**: 10:00 AM and 2:00 PM (weekdays only)
 - **Booking Window**: 21 days into the future (weekdays only)
 
