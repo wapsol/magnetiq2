@@ -6,9 +6,11 @@ This document provides a comprehensive compilation of all consultant-related fea
 
 ## Public-Facing Features
 
-### Core Consultant System (`docs/spec_v2_current/frontend/public/consultants.md`)
+### Core Consultant System 
+docs/spec_v2_current/frontend/public/consultants.md
 
-#### 1. Consultant Profile Pages (`/consultants/{slug}`)
+#### 1. Consultant Profile Pages 
+`/consultants/{slug}`
 - **Professional Profile Display**: Comprehensive consultant profiles with personal info, expertise areas, certifications, and statistics
 - **LinkedIn Integration Panel**: Synced professional data display with current position, skills, and network size
 - **Statistics Dashboard**: Whitepaper count, webinar metrics, consultation data, and engagement statistics
