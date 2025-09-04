@@ -321,24 +321,14 @@ For detailed integration patterns and implementation, see [Integrations Specific
 
 ## Deployment Architecture
 
-For detailed deployment procedures and configurations, see [Deployment Specification](./deployment.md).
+Magnetiq v2 supports multiple deployment strategies from simple Docker-based deployments to enterprise Kubernetes environments with ArgoCD GitOps workflows.
 
-### Environment Strategy
-- **Development**: Local SQLite with Docker Compose
-- **Production**: Single-server deployment with SQLite
-- **Staging**: Replica of production environment
+### Deployment Options
+- **Docker Compose**: Traditional container orchestration for simple deployments
+- **Kubernetes + ArgoCD**: GitOps-based deployment with Longhorn persistent storage
+- **Hybrid Environments**: Mix of local development and cloud production
 
-### Docker Configuration
-- **Multi-stage builds**: Optimized production images
-- **Volume mounts**: Database file and media storage
-- **Environment variables**: Configuration management
-- **Health checks**: Basic service health monitoring
-
-### Monitoring & Logging
-- **Application Logs**: Structured JSON logging
-- **Access Logs**: Nginx access and error logs
-- **Health Checks**: Basic endpoint monitoring
-- **File System**: Database file size and growth monitoring
+For comprehensive deployment procedures, environment configurations, infrastructure setup, and operational procedures, see [Deployment Specification](./deployment.md).
 
 ## Migration Path to v3
 

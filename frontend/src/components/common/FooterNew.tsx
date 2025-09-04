@@ -5,7 +5,9 @@ import {
   PhoneIcon, 
   MapPinIcon,
   SunIcon,
-  MoonIcon
+  MoonIcon,
+  CalendarDaysIcon,
+  ClockIcon
 } from '@heroicons/react/24/outline'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { useTheme } from '../../contexts/ThemeContext'
@@ -15,6 +17,40 @@ const FooterNew = () => {
   const { isDarkMode, toggleDarkMode } = useTheme()
   const { language, t } = useLanguage()
   const basePath = language === 'de' ? '/de' : ''
+
+  // Next 5 upcoming webinars data
+  const upcomingWebinars = [
+    {
+      id: 1,
+      title: language === 'de' ? 'KI-Bereitschaftsbewertung' : 'AI Readiness Assessment',
+      date: '2025-10-01',
+      time: '16:00 CET'
+    },
+    {
+      id: 2,
+      title: language === 'de' ? 'Das KI-Pilot-Playbook' : 'The AI Pilot Playbook',
+      date: '2025-10-15',
+      time: '16:00 CET'
+    },
+    {
+      id: 3,
+      title: language === 'de' ? 'Automatisierung der Dokumentenverarbeitung' : 'Automating Document Processing',
+      date: '2025-10-29',
+      time: '16:00 CET'
+    },
+    {
+      id: 4,
+      title: language === 'de' ? 'KI-gestütztes Wissensmanagement' : 'AI-Powered Knowledge Management',
+      date: '2025-11-12',
+      time: '16:00 CET'
+    },
+    {
+      id: 5,
+      title: language === 'de' ? 'Ein KI-Kompetenzzentrum aufbauen' : 'Creating an AI Center of Excellence',
+      date: '2025-11-26',
+      time: '16:00 CET'
+    }
+  ]
 
   // Scroll to top when link is clicked
   const handleLinkClick = () => {
@@ -63,6 +99,73 @@ const FooterNew = () => {
   return (
     <footer className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-700 text-gray-600 dark:text-gray-200">
       <div className="container">
+        {/* Next 5 Webinars Section */}
+        <div className="py-12 border-b border-gray-100 dark:border-gray-700">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              {language === 'de' ? 'Kommende Webinare' : 'Upcoming Webinars'}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300">
+              {language === 'de' 
+                ? 'Melden Sie sich für unsere kostenlosen KI-Webinare an'
+                : 'Register for our free AI webinars'
+              }
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {upcomingWebinars.map((webinar) => {
+              const formatDate = (dateString) => {
+                const date = new Date(dateString)
+                return language === 'de' 
+                  ? date.toLocaleDateString('de-DE', { 
+                      day: '2-digit', 
+                      month: '2-digit',
+                      year: 'numeric'
+                    })
+                  : date.toLocaleDateString('en-US', { 
+                      month: 'short', 
+                      day: 'numeric',
+                      year: 'numeric'
+                    })
+              }
+              
+              return (
+                <Link
+                  key={webinar.id}
+                  to={`/webinars/${webinar.id}`}
+                  onClick={handleLinkClick}
+                  className="block p-4 bg-violet-50 dark:bg-violet-900/20 rounded-lg border border-violet-200 dark:border-violet-700 hover:border-violet-300 dark:hover:border-violet-600 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-all duration-200 group"
+                >
+                  <h3 className="font-medium text-gray-900 dark:text-white text-sm mb-2 line-clamp-2 group-hover:text-violet-600 dark:group-hover:text-violet-300">
+                    {webinar.title}
+                  </h3>
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
+                      <CalendarDaysIcon className="h-3 w-3" />
+                      <span>{formatDate(webinar.date)}</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
+                      <ClockIcon className="h-3 w-3" />
+                      <span>{webinar.time}</span>
+                    </div>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+          
+          <div className="text-center mt-6">
+            <Link
+              to="/webinars"
+              onClick={handleLinkClick}
+              className="inline-flex items-center px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-lg font-medium transition-colors duration-200"
+            >
+              {language === 'de' ? 'Alle Webinare anzeigen' : 'View All Webinars'}
+            </Link>
+          </div>
+        </div>
+
         {/* Main Footer Content */}
         <div className="py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">

@@ -72,7 +72,8 @@ class TranslationService {
       
       return {}
     } catch (error) {
-      console.error(`Failed to load translations for ${namespace}:${language}`, error)
+      // Silently fail for now as translation API might not be implemented yet
+      // console.error(`Failed to load translations for ${namespace}:${language}`, error)
       return {}
     } finally {
       this.loading.delete(cacheKey)
@@ -101,7 +102,8 @@ class TranslationService {
       
       return key // Fallback to key if translation not found
     } catch (error) {
-      console.error(`Failed to load translation for ${namespace}.${key}:${language}`, error)
+      // Silently fail for now as translation API might not be implemented yet
+      // console.error(`Failed to load translation for ${namespace}.${key}:${language}`, error)
       return key
     }
   }

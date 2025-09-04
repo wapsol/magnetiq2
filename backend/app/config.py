@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     refresh_token_expire_days: int = 7
     
     # CORS
-    allowed_origins: List[str] = ["http://localhost:8036", "http://localhost:3000"]
+    allowed_origins: List[str] = ["http://localhost:8036", "http://localhost:3000", "http://localhost:8038", "http://localhost:8039"]
     allowed_methods: List[str] = ["GET", "POST", "PUT", "PATCH", "DELETE"]
     allowed_headers: List[str] = ["*"]
     

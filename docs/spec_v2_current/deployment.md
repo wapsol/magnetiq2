@@ -3,7 +3,7 @@
 ## Architecture Overview
 ![Deployment Architecture](../diagrams/assets/specs/deployment_architecture.png)
 
-Magnetiq v2 deployment focuses on simplicity and rapid deployment using SQLite database and minimal infrastructure requirements. This specification covers Docker-based deployment for both development and production environments.
+Magnetiq v2 deployment supports both traditional Docker-based deployment and modern Kubernetes with ArgoCD GitOps workflows. This specification covers all deployment scenarios from localhost development to production Kubernetes clusters using Longhorn persistent storage.
 
 ### Simple Stack Architecture
 - **Frontend**: React SPA served via Nginx (Port 8036)
@@ -21,13 +21,24 @@ Magnetiq v2 deployment focuses on simplicity and rapid deployment using SQLite d
 - **4GB RAM minimum** for comfortable development
 - **10GB free disk space** for containers and data
 
-### Production Environment
+### Production Environment Options
+
+#### Traditional Docker Deployment
 - **Linux server** (Ubuntu 20.04+ recommended)
 - **Docker & Docker Compose** for container orchestration
 - **2GB RAM minimum** for production workload
 - **20GB free disk space** for application data and backups
 - **SSL certificate** (Let's Encrypt recommended)
 - **Domain name** configured with proper DNS records
+
+#### Kubernetes Deployment
+- **Kubernetes cluster** (v1.24+ recommended)
+- **ArgoCD** for GitOps deployment automation
+- **Longhorn storage** for persistent volume management
+- **cert-manager** for automated SSL certificate management
+- **Container registry access** for image storage
+- **4GB RAM minimum** per node for K8s overhead
+- **50GB persistent storage** via Longhorn volumes
 
 #### Performance Expectations
 - **Optimal User Load**: Up to 100 concurrent users
@@ -72,6 +83,123 @@ The production environment includes:
 - **Automated restarts** for container reliability
 - **Security headers** and hardened configurations
 - **Backup systems** for data protection
+
+## Kubernetes Deployment with ArgoCD
+
+### Kubernetes Architecture
+For production environments requiring scalability, monitoring, and GitOps workflows, Magnetiq v2 can be deployed on Kubernetes clusters with ArgoCD for automated deployment management.
+
+#### Kubernetes Manifest Structure
+```
+k8s/
+├── namespace.yaml           # Dedicated namespace isolation
+├── configmap.yaml          # Non-sensitive configuration
+├── secrets.yaml            # Sensitive configuration (DATABASE_URL, SECRET_KEY)
+├── backend/
+│   ├── deployment.yaml     # Backend FastAPI deployment
+│   ├── service.yaml        # Backend service definition
+│   └── pvc.yaml           # Persistent Volume Claim for database
+├── frontend/
+│   ├── deployment.yaml     # Frontend React deployment
+│   └── service.yaml        # Frontend service definition
+├── ingress.yaml            # Traffic routing and SSL termination
+└── storage.yaml            # Longhorn StorageClass configuration
+```
+
+#### Persistent Storage with Longhorn
+- **Database Volume**: Longhorn PVC for SQLite database file persistence
+- **Media Volume**: Longhorn PVC for uploaded media files
+- **Backup Strategy**: Longhorn snapshots for point-in-time recovery
+- **Volume Expansion**: Dynamic storage expansion as data grows
+- **Replication**: Longhorn replica configuration for data durability
+
+#### Container Configuration
+- **Backend Image**: Multi-stage production build targeting Gunicorn server
+- **Frontend Image**: Nginx-based static file serving from build artifacts
+- **Resource Limits**: CPU/Memory limits configured for optimal performance
+- **Health Checks**: Liveness and readiness probes for service availability
+- **Security Context**: Non-root user execution with proper filesystem permissions
+
+### ArgoCD GitOps Workflow
+
+#### Application Configuration
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: magnetiq-v2
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/your-org/magnetiq2
+    targetRevision: main
+    path: k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: magnetiq-v2
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+```
+
+#### Deployment Process
+1. **Git Repository**: Kubernetes manifests committed to version control
+2. **ArgoCD Sync**: Automated deployment triggered by git commits
+3. **Health Monitoring**: ArgoCD tracks application and resource health
+4. **Rollback Capability**: Automatic rollback on deployment failures
+5. **Drift Detection**: Configuration drift detection and correction
+
+### SSL Certificate Management
+- **cert-manager Integration**: Automated Let's Encrypt certificate provisioning
+- **DNS Challenge**: Automated domain validation for wildcard certificates
+- **Certificate Renewal**: Automatic certificate renewal before expiry
+- **TLS Configuration**: Ingress controller TLS termination setup
+
+### Production Deployment Process
+
+#### Phase 1: Infrastructure Preparation
+1. **Kubernetes Cluster Setup**: Ensure cluster meets minimum requirements
+2. **ArgoCD Installation**: Deploy ArgoCD in dedicated namespace
+3. **Longhorn Installation**: Configure persistent storage backend
+4. **cert-manager Setup**: Install certificate management automation
+
+#### Phase 2: Container Registry Setup
+1. **Build Production Images**:
+   ```bash
+   docker build --target production -t registry.example.com/magnetiq-backend:v2.x.x ./backend
+   docker build --target production -t registry.example.com/magnetiq-frontend:v2.x.x ./frontend
+   ```
+2. **Push to Registry**: Upload images to accessible container registry
+3. **Image Pull Secrets**: Configure K8s authentication for private registries
+
+#### Phase 3: Kubernetes Manifest Creation
+1. **Environment Configuration**: Create ConfigMaps and Secrets
+2. **Storage Configuration**: Define PVCs with Longhorn StorageClass
+3. **Service Definitions**: Configure internal service networking
+4. **Ingress Configuration**: Set up external traffic routing with SSL
+
+#### Phase 4: ArgoCD Application Setup
+1. **Git Repository**: Commit K8s manifests to version control
+2. **ArgoCD Application**: Create Application resource pointing to manifests
+3. **Sync Policies**: Configure automatic or manual sync preferences
+4. **RBAC Setup**: Configure ArgoCD permissions and project boundaries
+
+#### Phase 5: Database Migration
+1. **Data Export**: Export SQLite database from localhost development
+2. **Pod Access**: Use `kubectl exec` to access backend pod
+3. **Database Import**: Import data into production SQLite volume
+4. **Data Verification**: Validate data integrity post-migration
+
+### Monitoring and Observability
+- **Health Endpoints**: Application health checks via `/health` endpoint
+- **ArgoCD Dashboard**: Deployment status and application health monitoring
+- **Kubernetes Events**: Resource events and pod lifecycle tracking
+- **Longhorn Dashboard**: Storage utilization and volume health
+- **Ingress Monitoring**: SSL certificate status and traffic metrics
 
 ## Nginx Configuration
 

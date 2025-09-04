@@ -165,7 +165,7 @@ const BlockRenderer: React.FC<BlockRendererProps> = ({
 
       default:
         // Unknown block type - render as debug info in development
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.MODE === 'development') {
           return (
             <div className="border-2 border-dashed border-yellow-300 bg-yellow-50 p-4 rounded-lg">
               <p className="text-yellow-800 font-medium">Unknown block type: {block._type}</p>

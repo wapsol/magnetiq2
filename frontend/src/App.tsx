@@ -45,6 +45,7 @@ import ImprintPage from './pages/legal/ImprintPage'
 // Pages - Public (Existing)
 import HomePage from './pages/public/HomePage'
 import WebinarsPage from './pages/public/WebinarsPage'
+import WebinarDetailPage from './pages/public/WebinarDetailPage'
 import WhitepapersPage from './pages/public/WhitepapersPage'
 import BookAMeetingPage from './pages/public/BookAMeetingPage'
 
@@ -119,11 +120,16 @@ function App() {
           {/* Resources */}
           <Route path="resources">
             <Route path="webinars" element={<WebinarsPage />} />
-            <Route path="webinars/:slug" element={<WebinarsPage />} />
             <Route path="whitepapers" element={<WhitepapersPage />} />
             <Route path="whitepapers/:slug" element={<WhitepapersPage />} />
             <Route path="blog" element={<HomePage />} />
             <Route path="tools" element={<HomePage />} />
+          </Route>
+
+          {/* Webinar Detail Routes */}
+          <Route path="webinars">
+            <Route index element={<WebinarsPage />} />
+            <Route path=":id" element={<WebinarDetailPage />} />
           </Route>
           
           {/* Consultants */}
@@ -193,11 +199,16 @@ function App() {
           {/* Ressourcen (Resources) */}
           <Route path="ressourcen">
             <Route path="webinare" element={<WebinarsPage />} />
-            <Route path="webinare/:slug" element={<WebinarsPage />} />
             <Route path="whitepapers" element={<WhitepapersPage />} />
             <Route path="whitepapers/:slug" element={<WhitepapersPage />} />
             <Route path="blog" element={<HomePage />} />
             <Route path="tools" element={<HomePage />} />
+          </Route>
+
+          {/* Webinar Detail Routes (German) */}
+          <Route path="webinare">
+            <Route index element={<WebinarsPage />} />
+            <Route path=":id" element={<WebinarDetailPage />} />
           </Route>
           
           {/* Berater (Consultants) */}

@@ -9,7 +9,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
 }) => {
   // Handle empty or invalid content
   if (!content) {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       return (
         <div className="border-2 border-dashed border-red-300 bg-red-50 p-4 rounded-lg">
           <p className="text-red-800">No content provided to ContentRenderer</p>
@@ -29,7 +29,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
       case 'empty':
         return renderEmptyContent()
       default:
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.MODE === 'development') {
           return (
             <div className="border-2 border-dashed border-orange-300 bg-orange-50 p-4 rounded-lg">
               <p className="text-orange-800">Unknown content format: {content.format}</p>
@@ -77,7 +77,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
   }
 
   const renderEmptyContent = (): React.ReactNode => {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       return (
         <div className="border-2 border-dashed border-gray-300 bg-gray-50 p-8 rounded-lg text-center">
           <p className="text-gray-600">No content available for language: {language}</p>

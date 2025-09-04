@@ -148,6 +148,12 @@ class WhitepaperDownload(Base):
     job_title = Column(String(255))
     phone = Column(String(50))
     
+    # Email Validation
+    email_validated = Column(Boolean, default=False)
+    validation_token = Column(String(64), unique=True, index=True)
+    validation_sent_at = Column(DateTime(timezone=True))
+    email_validated_at = Column(DateTime(timezone=True))
+    
     # Download Details
     download_ip = Column(String(45))
     user_agent = Column(Text)
@@ -156,8 +162,15 @@ class WhitepaperDownload(Base):
     utm_medium = Column(String(100))
     utm_campaign = Column(String(100))
     
+    # Secure Download Links
+    download_token = Column(String(64), unique=True, index=True)
+    download_link_expires_at = Column(DateTime(timezone=True))
+    download_count = Column(Integer, default=0)
+    download_limit = Column(Integer, default=3)  # Allow 3 downloads per validated email
+    
     # Timestamps
-    downloaded_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
+    requested_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
+    downloaded_at = Column(DateTime(timezone=True))
 
     # Relationships
     whitepaper = relationship("Whitepaper", backref="downloads")

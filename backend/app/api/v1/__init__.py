@@ -5,6 +5,7 @@ from .content import router as content_router
 from .communication import communication_router
 from .admin import admin_router
 from .consultants import consultants_main_router
+from .public import router as public_router
 
 api_router = APIRouter(prefix="/api/v1")
 
@@ -14,3 +15,4 @@ api_router.include_router(content_router)
 api_router.include_router(communication_router, prefix="/communication")
 api_router.include_router(admin_router)
 api_router.include_router(consultants_main_router)
+api_router.include_router(public_router, prefix="/public", tags=["public"])

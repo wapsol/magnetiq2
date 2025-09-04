@@ -399,28 +399,71 @@ interface WebinarCardProps {
 - **Personalization**: Show recommended webinars based on previous attendance
 - **Waitlist**: Join waitlist for fully booked sessions
 
-### Webinar Landing Page (`/webinars/{slug}`)
+### Webinar Detail/Landing Page (`/webinars/{id}` or `/webinars/{slug}`)
 
-#### Page Structure
+→ **Enhanced Implementation**: Complete webinar detail page with calendar integration and social sharing
+🔗 **Calendar Integration**: Google Calendar, Outlook, Apple Calendar, ICS download
+📱 **Social Sharing**: LinkedIn, Twitter, Facebook with custom messaging
+🎯 **Registration Flow**: Multi-step modal with validation and confirmation
 
-**1. Hero Section**
+#### Page Structure & Components
+
+**1. Enhanced Hero Section**
 ```html
 <section class="hero">
   <div class="hero-content">
-    <h1>{webinar.title}</h1>
-    <p class="subtitle">{webinar.description}</p>
-    <div class="session-details">
-      <span class="date-time">{formatted_datetime}</span>
-      <span class="duration">{duration} minutes</span>
-      <span class="timezone">{timezone}</span>
+    <div class="webinar-meta">
+      <span class="category-badge">{webinar.category}</span>
+      <span class="status-indicator">{webinar.status}</span>
+      <span class="level-badge">{webinar.level}</span>
+    </div>
+    <h1 class="webinar-title">{webinar.title}</h1>
+    <p class="webinar-subtitle">{webinar.description}</p>
+    <div class="session-details-grid">
+      <div class="detail-item">
+        <CalendarIcon className="detail-icon" />
+        <span class="detail-label">Date & Time</span>
+        <span class="detail-value">{formatted_datetime}</span>
+      </div>
+      <div class="detail-item">
+        <ClockIcon className="detail-icon" />
+        <span class="detail-label">Duration</span>
+        <span class="detail-value">{duration} minutes</span>
+      </div>
+      <div class="detail-item">
+        <GlobeIcon className="detail-icon" />
+        <span class="detail-label">Timezone</span>
+        <span class="detail-value">{timezone}</span>
+      </div>
+      <div class="detail-item">
+        <UsersIcon className="detail-icon" />
+        <span class="detail-label">Attendees</span>
+        <span class="detail-value">{attendees}/{maxAttendees}</span>
+      </div>
     </div>
     <div class="cta-section">
-      <button class="primary-cta">Register Now</button>
-      <button class="secondary-cta">Add to Calendar</button>
+      <button class="btn-primary btn-lg" onclick="openRegistrationModal()">
+        {webinar.status === 'live' ? 'Join Live Now' : 'Register Now'}
+      </button>
+      <div class="secondary-actions">
+        <CalendarDropdown webinar={webinar} />
+        <SocialShareDropdown webinar={webinar} />
+        <button class="btn-outline">Share with Team</button>
+      </div>
     </div>
   </div>
-  <div class="hero-image">
-    <img src="{webinar.promotionalImage}" alt="{webinar.title}" />
+  <div class="hero-visual">
+    <img src="{webinar.promotionalImage}" alt="{webinar.title}" class="webinar-featured-image" />
+    <div class="registration-stats">
+      <div class="stat-item">
+        <span class="stat-number">{registrationCount}</span>
+        <span class="stat-label">Registered</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{availableSpots}</span>
+        <span class="stat-label">Spots Left</span>
+      </div>
+    </div>
   </div>
 </section>
 ```
@@ -566,7 +609,71 @@ interface RegistrationSectionProps {
   - Popular sessions in consultant's expertise area
   - Trending topics in consultant's industry focus
 
-**6. Enhanced Social Proof & Consultant Credibility**
+**6. Enhanced Calendar Integration Section**
+```typescript
+interface CalendarIntegrationProps {
+  webinar: WebinarSession;
+  userTimezone: string;
+  registrationId?: string;
+}
+```
+
+**Calendar Integration Features:**
+- **Multi-Platform Support**:
+  - Google Calendar deep linking with pre-filled event details
+  - Outlook Calendar integration (Web, Desktop, Mobile)
+  - Apple Calendar support for iOS/macOS users
+  - Universal ICS file download for any calendar application
+  
+- **Smart Event Details**:
+  - Automatic timezone conversion based on user location
+  - Meeting link inclusion (if available or placeholder)
+  - Reminder settings (24h, 1h, 15min before)
+  - Webinar description and preparation materials
+  - Presenter information and credentials
+  
+- **Advanced Features**:
+  - Series event creation for multi-part webinars
+  - Automatic update notifications for schedule changes
+  - Integration with user's existing calendar preferences
+  - Bulk calendar export for multiple webinars
+
+**7. Social Sharing Integration**
+```typescript
+interface SocialSharingProps {
+  webinar: WebinarSession;
+  customMessage?: string;
+  includeRegistrationLink: boolean;
+  trackingUtmParams: UtmParameters;
+}
+```
+
+**Social Sharing Features:**
+- **LinkedIn Integration**:
+  - Professional networking focus with industry hashtags
+  - Consultant/speaker tagging and mention
+  - Company page sharing for corporate attendees
+  - Thought leadership positioning in posts
+  
+- **Twitter Sharing**:
+  - Thread creation for detailed webinar information
+  - Hashtag optimization for discoverability
+  - Speaker handle mentions and retweets
+  - Live-tweeting encouragement during sessions
+  
+- **Facebook Sharing**:
+  - Event creation and invitation capabilities
+  - Visual content optimization for engagement
+  - Community group sharing permissions
+  - Business page cross-promotion
+  
+- **Advanced Sharing Features**:
+  - Custom messaging templates by industry/role
+  - Social proof integration ("Join 500+ professionals")
+  - Referral tracking and attribution
+  - Team sharing with bulk invitation capabilities
+
+**8. Enhanced Social Proof & Consultant Credibility**
 ← **Testimonial Management**: [Review System](../../backend/reviews.md#consultant-reviews)
 🔗 **Company Directory**: [Client Showcase](../clients.md#case-studies)
 
@@ -600,7 +707,49 @@ interface RegistrationSectionProps {
   - "Top-rated consultant in [expertise area] category"
   - Live updates on registration momentum
 
-### Registration Modal
+### Enhanced Registration Modal with Multi-Step Flow
+
+→ **Advanced Registration Experience**: Multi-step modal with smart validation and confirmation
+🎯 **Conversion Optimization**: Progress indicators, social proof, and urgency elements
+📧 **Email Integration**: Immediate confirmation with calendar attachments
+🔒 **Security & Privacy**: GDPR compliance and data protection
+
+#### Multi-Step Registration Flow
+```typescript
+interface RegistrationFlowState {
+  currentStep: 'personal' | 'professional' | 'preferences' | 'confirmation';
+  formData: RegistrationFormData;
+  validationErrors: ValidationErrors;
+  isSubmitting: boolean;
+  registrationComplete: boolean;
+}
+```
+
+**Step 1: Personal Information**
+- Name, email, phone (with international formatting)
+- Automatic duplicate registration check
+- Social login options (LinkedIn, Google)
+- Email validation and domain verification
+
+**Step 2: Professional Details**
+- Company information with auto-complete
+- Job title and seniority level
+- Industry and use case selection
+- Team size and decision-making authority
+
+**Step 3: Webinar Preferences**
+- Specific areas of interest within the topic
+- Questions for the presenter (optional)
+- Consultation interest and follow-up preferences
+- Calendar and reminder preferences
+
+**Step 4: Confirmation & Next Steps**
+- Registration summary and confirmation
+- Automatic calendar event creation
+- Social sharing encouragement
+- Related content recommendations
+
+### Original Registration Modal
 
 #### Form Structure
 ```typescript
@@ -1308,6 +1457,59 @@ def process_waitlists():
         process_session_waitlist.delay(session.id)
 ```
 
+## Enhanced SEO and Meta Tag Management
+
+### Dynamic Meta Tags for Webinar Pages
+```typescript
+interface WebinarSEOData {
+  title: string;
+  description: string;
+  keywords: string[];
+  ogImage: string;
+  ogTitle: string;
+  ogDescription: string;
+  twitterCard: 'summary' | 'summary_large_image';
+  structuredData: WebinarStructuredData;
+}
+```
+
+**SEO Features:**
+- **Dynamic Title Generation**: 
+  - Format: "[Webinar Title] - Free Expert Session | voltAIc Systems"
+  - Language-specific optimization for German/English
+  - Speaker credibility integration in titles
+  
+- **Rich Meta Descriptions**:
+  - Compelling 150-character descriptions with CTAs
+  - Date, time, and presenter information inclusion
+  - Value proposition and key takeaway highlights
+  
+- **Open Graph Optimization**:
+  - Custom promotional images for each webinar
+  - Speaker photos and credential highlights
+  - Registration count and social proof elements
+  
+- **Structured Data Markup**:
+  - Schema.org Event markup for rich snippets
+  - Performer (speaker) information and credentials
+  - Location (online), date, time, and pricing info
+  - Organization and brand information
+
+### URL Structure and Routing
+```typescript
+interface WebinarRouting {
+  canonical: {
+    en: '/webinars/{id}' | '/webinars/{slug}';
+    de: '/de/webinare/{id}' | '/de/webinare/{slug}';
+  };
+  alternateUrls: {
+    registration: '/webinars/{id}/register';
+    calendar: '/webinars/{id}/calendar';
+    share: '/webinars/{id}/share';
+  };
+}
+```
+
 ## Integration Features
 
 ### Odoo CRM Integration
@@ -1559,11 +1761,74 @@ interface LiveSessionDashboard {
 }
 ```
 
+## Enhanced Performance Optimization
+
+### Page Loading Performance
+```typescript
+interface PerformanceMetrics {
+  targetMetrics: {
+    firstContentfulPaint: '< 1.5s';
+    largestContentfulPaint: '< 2.5s';
+    cumulativeLayoutShift: '< 0.1';
+    firstInputDelay: '< 100ms';
+  };
+  optimizations: {
+    imageOptimization: 'WebP with fallbacks';
+    codesplitting: 'Route-based and component-based';
+    caching: 'Browser and CDN caching strategies';
+    prefetching: 'Critical resource preloading';
+  };
+}
+```
+
+**Performance Features:**
+- **Image Optimization**:
+  - WebP format with PNG/JPG fallbacks
+  - Responsive image sizes for different devices
+  - Lazy loading for below-the-fold content
+  - Placeholder blur effects during loading
+  
+- **Code Optimization**:
+  - Route-based code splitting for webinar pages
+  - Component-level splitting for registration modal
+  - Tree shaking for unused calendar/sharing utilities
+  - Bundle analysis and optimization
+  
+- **Caching Strategy**:
+  - Browser caching for static assets (images, CSS, JS)
+  - API response caching for webinar data
+  - CDN caching for global content delivery
+  - Service worker implementation for offline support
+
+### Mobile Optimization
+```typescript
+interface MobileOptimization {
+  responsive: {
+    breakpoints: ['mobile', 'tablet', 'desktop', 'large-desktop'];
+    touchOptimization: 'Increased tap targets and gesture support';
+    networkOptimization: 'Reduced data usage and faster loading';
+  };
+  features: {
+    swipeGestures: 'Navigation and interaction enhancements';
+    nativeIntegration: 'Calendar and sharing app integration';
+    offlineSupport: 'Basic page viewing without connection';
+  };
+}
+```
+
 ## Quality Assurance & Testing
 
-### Registration Flow Testing
+### Comprehensive Testing Framework
+
+#### Registration Flow Testing
 ```typescript
 interface RegistrationFlowTests {
+  // Multi-Step Registration
+  testMultiStepFlow: () => void;
+  testStepValidation: () => void;
+  testProgressSaving: () => void;
+  testStepNavigation: () => void;
+  
   // Basic Registration
   testValidRegistration: () => void;
   testInvalidEmailFormat: () => void;
@@ -1575,26 +1840,44 @@ interface RegistrationFlowTests {
   testWaitlistFunctionality: () => void;
   testCapacityUpdates: () => void;
   
-  // Payment Integration
-  testFreeRegistration: () => void;
-  testPaidRegistration: () => void;
-  testPaymentFailure: () => void;
-  testRefundProcess: () => void;
+  // Calendar Integration Testing
+  testGoogleCalendarIntegration: () => void;
+  testOutlookCalendarIntegration: () => void;
+  testICSFileGeneration: () => void;
+  testTimezoneConversion: () => void;
+  
+  // Social Sharing Testing
+  testLinkedInSharing: () => void;
+  testTwitterSharing: () => void;
+  testFacebookSharing: () => void;
+  testCustomMessageGeneration: () => void;
   
   // Email Automation
-  testConfirmationEmail: () => void;
+  testConfirmationEmailWithCalendar: () => void;
   testReminderEmails: () => void;
-  testCalendarInvites: () => void;
+  testCalendarAttachments: () => void;
+  
+  // SEO and Meta Tags
+  testDynamicMetaTags: () => void;
+  testOpenGraphData: () => void;
+  testStructuredData: () => void;
+  
+  // Performance Testing
+  testPageLoadSpeed: () => void;
+  testImageOptimization: () => void;
+  testMobileResponsiveness: () => void;
   
   // Multilingual Support
   testGermanRegistration: () => void;
   testEnglishRegistration: () => void;
   testLanguageSwitching: () => void;
+  testLocalizedURLs: () => void;
   
   // Integration Testing
   testOdooSynchronization: () => void;
-  testCalendarIntegration: () => void;
   testAnalyticsTracking: () => void;
+  testEmailServiceIntegration: () => void;
+  testCalendarServiceAPIs: () => void;
 }
 ```
 
@@ -1618,6 +1901,145 @@ class WebinarLoadTests:
         """Test database queries under high load."""
         pass
 ```
+
+## Footer Integration Feature
+
+### Next 5 Webinars Footer Section
+
+→ **Global Visibility**: [Footer Component](../../frontend/components.md#footer-component)
+🔗 **Registration Flow**: [Registration System](../booking.md#webinar-registration)
+← **Supports**: [Lead Generation](../../business/lead-generation.md#footer-conversion)
+
+#### Overview
+The footer of every page displays the next 5 upcoming webinars to maximize visibility and conversion opportunities. This feature provides a consistent touchpoint for webinar promotion across the entire site.
+
+#### Layout & Design
+```typescript
+interface FooterWebinarSection {
+  title: TranslatedText;
+  subtitle: TranslatedText;
+  webinars: UpcomingWebinar[];
+  viewAllLink: string;
+  layout: 'grid' | 'carousel';
+}
+
+interface UpcomingWebinar {
+  id: string;
+  title: TranslatedText;
+  date: string;
+  time: string;
+  registrationLink: string;
+}
+```
+
+**Visual Structure:**
+- **Section Header**: "Upcoming Webinars" with subtitle encouraging registration
+- **5-Column Grid**: Responsive layout showing next 5 webinars
+- **Webinar Cards**: Compact design with title, date, time, and registration link
+- **Call-to-Action**: "View All Webinars" button linking to full webinar page
+- **Responsive Behavior**: Adapts to mobile with horizontal scroll or stacked layout
+
+#### Webinar Card Components
+```typescript
+interface FooterWebinarCard {
+  webinar: {
+    id: string;
+    title: string;
+    date: string; // Format: '2025-10-01'
+    time: string; // Format: '16:00 CET'
+  };
+  formatDate: (dateString: string) => string;
+  language: 'en' | 'de';
+}
+```
+
+**Card Features:**
+- **Truncated Title**: 2-line max with ellipsis for longer titles
+- **Date Display**: Localized date formatting (DD.MM.YYYY for DE, MMM DD, YYYY for EN)
+- **Time Display**: Consistent timezone display (16:00 CET)
+- **Visual Design**: Light violet theme matching site branding
+- **Hover Effects**: Subtle elevation and color changes
+- **Registration Link**: Direct link to webinar detail page for registration
+
+#### Data Management
+```typescript
+interface FooterWebinarData {
+  upcomingWebinars: {
+    id: number;
+    title: TranslatedText;
+    date: string;
+    time: string;
+  }[];
+  
+  getNext5Webinars: () => UpcomingWebinar[];
+  formatDateForLocale: (date: string, locale: 'en' | 'de') => string;
+  generateRegistrationUrl: (webinarId: string) => string;
+}
+```
+
+**Data Features:**
+- **Live Data**: Always shows the 5 most recent upcoming webinars
+- **Auto-Update**: Updates as webinars are added, removed, or dates change
+- **Fallback Handling**: Graceful degradation when fewer than 5 webinars available
+- **Cache Optimization**: Efficient data fetching to avoid page load impact
+
+#### Multilingual Support
+```typescript
+interface FooterWebinarTranslations {
+  en: {
+    sectionTitle: 'Upcoming Webinars';
+    sectionSubtitle: 'Register for our free AI webinars';
+    viewAllButton: 'View All Webinars';
+    dateFormat: 'MMM DD, YYYY';
+  };
+  de: {
+    sectionTitle: 'Kommende Webinare';
+    sectionSubtitle: 'Melden Sie sich für unsere kostenlosen KI-Webinare an';
+    viewAllButton: 'Alle Webinare anzeigen';
+    dateFormat: 'DD.MM.YYYY';
+  };
+}
+```
+
+#### Integration Points
+- **Footer Component**: Integrated into main Footer.tsx component
+- **Language Context**: Uses useLanguage hook for internationalization
+- **Webinar Data**: Sources data from WebinarsPage.tsx webinar array
+- **Routing**: Links to individual webinar pages using Next.js routing
+- **Styling**: Consistent with site's violet branding and responsive design
+
+#### Analytics Tracking
+```typescript
+interface FooterWebinarAnalytics {
+  events: {
+    footerWebinarView: 'Footer webinar section viewed';
+    footerWebinarClick: 'Footer webinar card clicked';
+    footerViewAllClick: 'Footer "View All" button clicked';
+  };
+  
+  tracking: {
+    webinarId: string;
+    webinarTitle: string;
+    footerPosition: number; // 1-5
+    pageContext: string; // Which page footer was viewed from
+  };
+}
+```
+
+#### Performance Considerations
+- **Lazy Loading**: Footer webinar data loads after initial page content
+- **Caching**: Client-side caching of webinar data to reduce API calls
+- **Optimization**: Minimal data fetching - only essential webinar information
+- **Responsive Images**: Optimized loading for mobile vs desktop
+
+#### Test Coverage Requirements
+- **Data Display**: Verify correct upcoming webinar data display
+- **Responsive Design**: Test across mobile, tablet, desktop viewports
+- **Language Switching**: Validate proper translation and date formatting
+- **Link Functionality**: Ensure all registration links work correctly
+- **Empty State**: Handle gracefully when no upcoming webinars available
+- **Loading States**: Proper loading indicators while fetching data
+- **Analytics**: Verify click tracking and event recording
 
 ## Success Metrics & KPIs
 

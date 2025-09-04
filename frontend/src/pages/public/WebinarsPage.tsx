@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useLanguage } from '../../contexts/LanguageContext'
 import { backgrounds, textColors, getCardClasses, getSectionClasses } from '../../utils/styling'
 import { 
   VideoCameraIcon, 
@@ -15,6 +16,7 @@ import {
 import { Link } from 'react-router-dom'
 
 const WebinarsPage = () => {
+  const { language } = useLanguage()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedStatus, setSelectedStatus] = useState('all')
@@ -37,73 +39,269 @@ const WebinarsPage = () => {
   ]
 
   const webinars = [
+    // Active upcoming webinars - Starting October 1, 2025, every 2 weeks on Wednesday at 16:00
     {
       id: 1,
+      title: language === 'de' ? 'KI-Bereitschaftsbewertung: Sind Ihre Unternehmensdaten bereit für KI?' : 'AI Readiness Assessment: Is Your Company Data Ready for AI?',
+      description: language === 'de' 
+        ? 'Dieses grundlegende Webinar hilft Unternehmen zu bewerten, ob sie über die notwendige Infrastruktur, Datenqualität und organisatorische Ausrichtung verfügen, um KI erfolgreich zu implementieren. Die Teilnehmer erhalten ein klares Verständnis der zu behebenden Lücken und eine Roadmap für die KI-Bereitschaft.'
+        : 'This foundational webinar helps companies evaluate whether they have the necessary infrastructure, data quality, and organizational alignment to successfully implement AI. Attendees will leave with a clear understanding of gaps to address and a roadmap for becoming AI-ready.',
+      presenter: 'Dr. Marcus Rodriguez',
+      presenterTitle: 'Chief AI Strategy Officer',
+      category: 'ai',
+      status: 'upcoming',
+      date: '2025-10-01',
+      time: '4:00 PM CET',
+      duration: '90 minutes',
+      attendees: 0,
+      maxAttendees: 500,
+      image: '/api/placeholder/400/250',
+      tags: ['AI Readiness', 'Data Quality', 'Infrastructure', 'Skills Gap', 'ROI'],
+      level: 'Beginner',
+      keyPoints: language === 'de' ? [
+        'Datenqualitäts-Audit-Framework',
+        'Infrastrukturanforderungen vs. Aktueller Stand',
+        'Kompetenzlückenanalyse',
+        'Kulturelle Bereitschaftsindikatoren',
+        'Sicherheits- und Compliance-Baseline',
+        'Budget-Realitätsprüfung',
+        'Quick-Win-Identifikation',
+        'Bereitschafts-Scorecard-Vorlage'
+      ] : [
+        'Data Quality Audit Framework',
+        'Infrastructure Requirements vs. Current State',
+        'Skills Gap Analysis',
+        'Cultural Readiness Indicators',
+        'Security and Compliance Baseline',
+        'Budget Reality Check',
+        'Quick Win Identification',
+        'Readiness Scorecard Template'
+      ]
+    },
+    {
+      id: 2,
+      title: language === 'de' ? 'Das KI-Pilot-Playbook: Wie Sie Ihr erstes KI-Projekt in 90 Tagen durchführen' : 'The AI Pilot Playbook: How to Run Your First AI Project in 90 Days',
+      description: language === 'de'
+        ? 'Ein praktischer, schrittweiser Leitfaden zur Auswahl, Abgrenzung und Durchführung eines KI-Pilotprojekts, das der Unternehmensleitung einen klaren ROI demonstrieren kann. Dieses Webinar konzentriert sich darauf, häufige Fallstricke zu vermeiden und Momentum für größere KI-Initiativen aufzubauen.'
+        : 'A practical, step-by-step guide to selecting, scoping, and executing a pilot AI project that can demonstrate clear ROI to leadership. This webinar focuses on avoiding common pitfalls and building momentum for larger AI initiatives.',
+      presenter: 'Sarah Chen',
+      presenterTitle: 'Head of AI Implementation',
+      category: 'ai',
+      status: 'upcoming',
+      date: '2025-10-15',
+      time: '4:00 PM CET',
+      duration: '90 minutes',
+      attendees: 0,
+      maxAttendees: 500,
+      image: '/api/placeholder/400/250',
+      tags: ['AI Pilot', 'Project Management', 'ROI', 'Implementation', '90-Day Plan'],
+      level: 'Intermediate',
+      keyPoints: language === 'de' ? [
+        'Projektauswahlmatrix',
+        'Erfolgsorientierte Projektabgrenzung',
+        'Wöchentlicher Implementierungszeitplan',
+        'Stakeholder-Kommunikationsframework',
+        'Build vs. Buy Entscheidungsbaum',
+        'Risikominderungsstrategien',
+        'Erfolgsmetriken und KPIs',
+        'Skalierungs-Playbook'
+      ] : [
+        'Project Selection Matrix',
+        'Scoping for Success',
+        'Week-by-Week Implementation Timeline',
+        'Stakeholder Communication Framework',
+        'Build vs. Buy Decision Tree',
+        'Risk Mitigation Strategies',
+        'Success Metrics and KPIs',
+        'Scaling Playbook'
+      ]
+    },
+    {
+      id: 3,
+      title: language === 'de' ? 'Automatisierung der Dokumentenverarbeitung: Von Verträgen bis Rechnungen' : 'Automating Document Processing: From Contracts to Invoices',
+      description: language === 'de'
+        ? 'Erfahren Sie, wie KI dokumentenlastige Workflows in Rechts-, Finanz- und Betriebsabteilungen transformieren kann. Dieses Webinar demonstriert echten ROI durch automatisierte Extraktion, Klassifizierung und Verarbeitung von Geschäftsdokumenten.'
+        : 'Explore how AI can transform document-heavy workflows in legal, finance, and operations departments. This webinar demonstrates real ROI through automated extraction, classification, and processing of business documents.',
+      presenter: 'Michael Wang',
+      presenterTitle: 'Director of Document Intelligence',
+      category: 'ai',
+      status: 'upcoming',
+      date: '2025-10-29',
+      time: '4:00 PM CET',
+      duration: '75 minutes',
+      attendees: 0,
+      maxAttendees: 400,
+      image: '/api/placeholder/400/250',
+      tags: ['Document AI', 'OCR', 'Automation', 'Invoice Processing', 'Contract Analysis'],
+      level: 'Intermediate',
+      keyPoints: language === 'de' ? [
+        'Dokumententyp-Priorisierung',
+        'OCR zu Intelligenz-Pipeline',
+        'Genauigkeit vs. Automatisierung Trade-offs',
+        'Integration in bestehende Systeme',
+        'Compliance und Audit-Trails',
+        'Multi-Format-Verarbeitung',
+        'ROI-Rechner',
+        'Anbieter-Bewertungskriterien'
+      ] : [
+        'Document Type Prioritization',
+        'OCR to Intelligence Pipeline',
+        'Accuracy vs. Automation Trade-offs',
+        'Integration with Existing Systems',
+        'Compliance and Audit Trails',
+        'Multi-format Handling',
+        'ROI Calculator',
+        'Vendor Evaluation Criteria'
+      ]
+    },
+    {
+      id: 4,
+      title: language === 'de' ? 'KI-gestütztes Wissensmanagement: Die kollektive Intelligenz Ihres Unternehmens durchsuchbar machen' : 'AI-Powered Knowledge Management: Making Your Company\'s Collective Intelligence Searchable',
+      description: language === 'de'
+        ? 'Transformieren Sie, wie Mitarbeiter Informationen in Ihrer Organisation finden und teilen, indem Sie eine intelligente Wissensdatenbank aufbauen, die Silos aufbricht. Dieses Webinar zeigt, wie institutionelles Wissen mit KI erfasst, organisiert und verfügbar gemacht wird.'
+        : 'Transform how employees find and share information across your organization by building an intelligent knowledge base that breaks down silos. This webinar shows how to capture, organize, and surface institutional knowledge using AI.',
+      presenter: 'Dr. Emily Watson',
+      presenterTitle: 'Knowledge Systems Architect',
+      category: 'ai',
+      status: 'upcoming',
+      date: '2025-11-12',
+      time: '4:00 PM CET',
+      duration: '90 minutes',
+      attendees: 0,
+      maxAttendees: 450,
+      image: '/api/placeholder/400/250',
+      tags: ['Knowledge Management', 'Search', 'AI', 'Information Retrieval', 'Collaboration'],
+      level: 'Intermediate',
+      keyPoints: language === 'de' ? [
+        'Wissens-Audit-Prozess',
+        'Intelligente Erfassungsstrategien',
+        'Semantische Suchimplementierung',
+        'Personalisierung und Berechtigungen',
+        'Wissensgraph-Konstruktion',
+        'Kontinuierliche Lernmechanismen',
+        'Change-Management-Ansatz',
+        'Erfolgsmetriken und Messung'
+      ] : [
+        'Knowledge Audit Process',
+        'Intelligent Ingestion Strategies',
+        'Semantic Search Implementation',
+        'Personalization and Permissions',
+        'Knowledge Graph Construction',
+        'Continuous Learning Mechanisms',
+        'Change Management Approach',
+        'Success Metrics and Measurement'
+      ]
+    },
+    {
+      id: 5,
+      title: language === 'de' ? 'Ein KI-Kompetenzzentrum mit begrenzten Ressourcen aufbauen' : 'Creating an AI Center of Excellence with Limited Resources',
+      description: language === 'de'
+        ? 'Erfahren Sie, wie mittelständische Unternehmen KI-Governance etablieren, Best Practices teilen und KI-Initiativen ohne Enterprise-Level-Budgets skalieren können. Dieses Webinar bietet einen praktischen Rahmen für den Aufbau organisatorischer KI-Fähigkeiten.'
+        : 'Learn how mid-size companies can establish AI governance, share best practices, and scale AI initiatives without enterprise-level budgets. This webinar provides a practical framework for building organizational AI capability.',
+      presenter: 'Alexandra Foster',
+      presenterTitle: 'AI Transformation Consultant',
+      category: 'ai',
+      status: 'upcoming',
+      date: '2025-11-26',
+      time: '4:00 PM CET',
+      duration: '90 minutes',
+      attendees: 0,
+      maxAttendees: 350,
+      image: '/api/placeholder/400/250',
+      tags: ['AI Governance', 'Center of Excellence', 'Strategy', 'Skills Development', 'Best Practices'],
+      level: 'Advanced',
+      keyPoints: language === 'de' ? [
+        'Schlankes Governance-Framework',
+        'Kompetenzentwicklungspfad',
+        'Technologie-Stack-Standardisierung',
+        'Projektportfolio-Management',
+        'Wissensaustausch-Infrastruktur',
+        'Anbieter-Management-Strategie',
+        'Erfolgsgeschichten-Dokumentation',
+        'Skalierungsmodell'
+      ] : [
+        'Lightweight Governance Framework',
+        'Skills Development Pathway',
+        'Technology Stack Standardization',
+        'Project Portfolio Management',
+        'Knowledge Sharing Infrastructure',
+        'Vendor Management Strategy',
+        'Success Story Documentation',
+        'Scaling Model'
+      ]
+    },
+    {
+      id: 6,
+      title: language === 'de' ? 'KI-ROI messen: KPIs und Metriken, die für die Führung wichtig sind' : 'Measuring AI ROI: KPIs and Metrics That Matter to Leadership',
+      description: language === 'de'
+        ? 'Meistern Sie die Kunst, überzeugende Business Cases für KI-Investitionen zu erstellen und deren Erfolg zu verfolgen. Dieses Webinar bietet Frameworks und Vorlagen zur Kommunikation des KI-Werts in Begriffen, die Führungskräfte und Vorstände verstehen.'
+        : 'Master the art of building compelling business cases for AI investments and tracking their success. This webinar provides frameworks and templates for communicating AI value in terms executives and boards understand.',
+      presenter: 'Robert Sterling',
+      presenterTitle: 'Chief Financial Technology Officer',
+      category: 'ai',
+      status: 'upcoming',
+      date: '2025-12-10',
+      time: '4:00 PM CET',
+      duration: '90 minutes',
+      attendees: 0,
+      maxAttendees: 400,
+      image: '/api/placeholder/400/250',
+      tags: ['AI ROI', 'KPIs', 'Metrics', 'Business Case', 'Executive Reporting'],
+      level: 'Advanced',
+      keyPoints: language === 'de' ? [
+        'Vor-Implementierung Business Case',
+        'Direkte vs. Indirekte Werterfassung',
+        'Pilot-zu-Produktion Metriken',
+        'Time-to-Value-Analyse',
+        'Risikoadjustierte Renditen',
+        'Wettbewerbs-Benchmarking',
+        'Dashboard-Design für Führungskräfte',
+        'Investitionsbegründungsvorlagen'
+      ] : [
+        'Pre-Implementation Business Case',
+        'Direct vs. Indirect Value Capture',
+        'Pilot to Production Metrics',
+        'Time-to-Value Analysis',
+        'Risk-Adjusted Returns',
+        'Competitive Benchmarking',
+        'Dashboard Design for Executives',
+        'Investment Justification Templates'
+      ]
+    },
+    // Archived/Recorded webinars (deactivated)
+    {
+      id: 101,
       title: 'Advanced React Patterns for Scalable Applications',
       description: 'Learn advanced React patterns including render props, compound components, and custom hooks for building maintainable applications.',
       presenter: 'Sarah Chen',
       presenterTitle: 'Senior Frontend Architect',
       category: 'react',
-      status: 'live',
+      status: 'recorded',
       date: '2024-01-15',
-      time: '3:00 PM CET',
+      time: 'On Demand',
       duration: '90 minutes',
       attendees: 247,
-      maxAttendees: 500,
+      maxAttendees: null,
       image: '/api/placeholder/400/250',
       tags: ['React', 'Architecture', 'Best Practices'],
       level: 'Intermediate',
     },
     {
-      id: 2,
+      id: 102,
       title: 'Building Microservices with Node.js and Docker',
       description: 'Deep dive into microservices architecture, containerization strategies, and deployment patterns for modern web applications.',
       presenter: 'Marcus Rodriguez',
       presenterTitle: 'DevOps Lead',
       category: 'backend',
-      status: 'upcoming',
+      status: 'recorded',
       date: '2024-01-18',
-      time: '2:00 PM CET',
+      time: 'On Demand',
       duration: '120 minutes',
       attendees: 156,
-      maxAttendees: 300,
+      maxAttendees: null,
       image: '/api/placeholder/400/250',
       tags: ['Node.js', 'Docker', 'Microservices'],
       level: 'Advanced',
-    },
-    {
-      id: 3,
-      title: 'AI-Powered Content Management: The Future is Here',
-      description: 'Explore how artificial intelligence is revolutionizing content management systems and what it means for businesses.',
-      presenter: 'Dr. Emily Watson',
-      presenterTitle: 'AI Research Director',
-      category: 'ai',
-      status: 'upcoming',
-      date: '2024-01-22',
-      time: '4:00 PM CET',
-      duration: '75 minutes',
-      attendees: 89,
-      maxAttendees: 200,
-      image: '/api/placeholder/400/250',
-      tags: ['AI', 'CMS', 'Innovation'],
-      level: 'Beginner',
-    },
-    {
-      id: 4,
-      title: 'Scaling Your SaaS: From Startup to Enterprise',
-      description: 'Strategic insights on scaling software-as-a-service products, managing technical debt, and building for enterprise clients.',
-      presenter: 'Alex Thompson',
-      presenterTitle: 'CTO & Co-founder',
-      category: 'business',
-      status: 'recorded',
-      date: '2024-01-10',
-      time: 'On Demand',
-      duration: '105 minutes',
-      attendees: 432,
-      maxAttendees: null,
-      image: '/api/placeholder/400/250',
-      tags: ['SaaS', 'Scaling', 'Strategy'],
-      level: 'Intermediate',
     },
   ]
 

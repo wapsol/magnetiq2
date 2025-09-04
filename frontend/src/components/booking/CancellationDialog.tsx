@@ -88,7 +88,7 @@ const CancellationDialog: React.FC<CancellationDialogProps> = ({
                   <Save size={16} className="text-violet-600 dark:text-violet-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 mb-1">
+                  <h3 className="font-medium text-gray-900 text-sm mb-1">
                     {t.saveAndExit}
                   </h3>
                   <p className="text-sm text-gray-600">
@@ -108,7 +108,7 @@ const CancellationDialog: React.FC<CancellationDialogProps> = ({
                   <X size={16} className="text-gray-600 dark:text-gray-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 mb-1">
+                  <h3 className="font-medium text-gray-900 text-sm mb-1">
                     {t.cancelAndLose}
                   </h3>
                   <p className="text-sm text-gray-600">
@@ -130,7 +130,7 @@ const CancellationDialog: React.FC<CancellationDialogProps> = ({
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 mb-1">
+                  <h3 className="font-medium text-gray-900 text-sm mb-1">
                     {t.continueBooking}
                   </h3>
                   <p className="text-sm text-gray-600">
