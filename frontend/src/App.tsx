@@ -30,7 +30,6 @@ import FoodBeveragePage from './pages/solutions/industries/FoodBeveragePage'
 
 // Pages - About
 import AboutPage from './pages/about/AboutPage'
-import AboutOverview from './pages/about/AboutOverview'
 import CareersPage from './pages/about/CareersPage'
 
 // Pages - Products
@@ -133,15 +132,8 @@ function App() {
           </Route>
           
           {/* About */}
-          <Route path="about">
-            <Route index element={<AboutOverview />} />
-            <Route path="story" element={<AboutPage />} />
-            <Route path="team" element={<AboutPage />} />
-            <Route path="mission" element={<AboutPage />} />
-            <Route path="careers" element={<CareersPage />} />
-            <Route path="partners" element={<AboutPage />} />
-            <Route path="news" element={<AboutPage />} />
-          </Route>
+          <Route path="about" element={<AboutPage />} />
+          <Route path="about/careers" element={<CareersPage />} />
           
           {/* Contact */}
           <Route path="contact">
@@ -214,15 +206,8 @@ function App() {
           </Route>
           
           {/* Über uns (About) */}
-          <Route path="ueber-uns">
-            <Route index element={<AboutOverview />} />
-            <Route path="geschichte" element={<AboutPage />} />
-            <Route path="team" element={<AboutPage />} />
-            <Route path="mission" element={<AboutPage />} />
-            <Route path="karriere" element={<CareersPage />} />
-            <Route path="partner" element={<AboutPage />} />
-            <Route path="presse" element={<AboutPage />} />
-          </Route>
+          <Route path="ueber-uns" element={<AboutPage />} />
+          <Route path="ueber-uns/karriere" element={<CareersPage />} />
           
           {/* Kontakt (Contact) */}
           <Route path="kontakt">

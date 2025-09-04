@@ -298,36 +298,36 @@ const AIConsultingPage: React.FC = () => {
         }
       />
 
-      <div className={backgrounds.page}>
+      <div className={`${backgrounds.page}`}>
         {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white overflow-hidden">
-          <div className="absolute inset-0 bg-black/20"></div>
+        <section className="relative py-20 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 dark:from-blue-900/20 dark:via-purple-900/20 dark:to-indigo-900/20 text-gray-800 dark:text-gray-200 overflow-hidden">
+          <div className="absolute inset-0 bg-black/5 dark:bg-white/5"></div>
           <div className="relative container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
-              <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
+              <div className="inline-flex items-center space-x-2 bg-blue-600 dark:bg-blue-700 text-white rounded-full px-4 py-2 mb-8">
                 <BoltIcon className="h-5 w-5" />
                 <span className="text-sm font-medium">
                   {language === 'de' ? 'Strategische KI-Transformation' : 'Strategic AI Transformation'}
                 </span>
               </div>
               
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900 dark:text-white">
                 {language === 'de' ? (
-                  <>KI <span className="text-blue-400">Beratung</span></>
+                  <>KI <span className="text-blue-600 dark:text-blue-400">Beratung</span></>
                 ) : (
-                  <>AI <span className="text-blue-400">Consulting</span></>
+                  <>AI <span className="text-blue-600 dark:text-blue-400">Consulting</span></>
                 )}
               </h1>
               
-              <p className="text-xl md:text-2xl text-gray-200 mb-8">
+              <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8">
                 {language === 'de' 
                   ? 'Strategische KI-Implementierung mit bewährter 6-Stufen-Roadmap für nachhaltige digitale Transformation'
                   : 'Strategic AI implementation with proven 6-stage roadmap for sustainable digital transformation'
                 }
               </p>
 
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-8">
-                <p className="text-lg italic">
+              <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-8">
+                <p className="text-lg italic text-gray-800 dark:text-gray-200">
                   {language === 'de' 
                     ? '"KI ist so nützlich oder gefährlich wie alles, was Menschen geschaffen haben. Für den intelligenten Teil der Menschheit wird KI ein zuverlässiger starker Partner sein."'
                     : '"AI is as useful or dangerous as anything humans have created. For the intelligent part of humanity, AI will be a reliable strong partner."'
@@ -336,17 +336,17 @@ const AIConsultingPage: React.FC = () => {
               </div>
               
               <div className="flex flex-wrap justify-center gap-4">
-                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-                  <ClockIcon className="h-5 w-5 text-blue-400" />
-                  <span className="font-medium">3-12 {language === 'de' ? 'Monate' : 'Months'}</span>
+                <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2">
+                  <ClockIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <span className="font-medium text-gray-800 dark:text-gray-200">3-12 {language === 'de' ? 'Monate' : 'Months'}</span>
                 </div>
-                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-                  <ShieldCheckIcon className="h-5 w-5 text-green-400" />
-                  <span className="font-medium">{language === 'de' ? 'Herstellerneutral' : 'Vendor-Neutral'}</span>
+                <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2">
+                  <ShieldCheckIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <span className="font-medium text-gray-800 dark:text-gray-200">{language === 'de' ? 'Herstellerneutral' : 'Vendor-Neutral'}</span>
                 </div>
-                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-                  <AcademicCapIcon className="h-5 w-5 text-purple-400" />
-                  <span className="font-medium">15+ {language === 'de' ? 'Jahre Erfahrung' : 'Years Experience'}</span>
+                <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2">
+                  <AcademicCapIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <span className="font-medium text-gray-800 dark:text-gray-200">15+ {language === 'de' ? 'Jahre Erfahrung' : 'Years Experience'}</span>
                 </div>
               </div>
             </div>
@@ -384,7 +384,7 @@ const AIConsultingPage: React.FC = () => {
         </section>
 
         {/* AI Implementation Roadmap */}
-        <section className="py-16">
+        <section className={getSectionClasses()}>
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
               <h2 className={`text-3xl font-bold mb-4 ${textColors.primary}`}>
@@ -493,7 +493,7 @@ const AIConsultingPage: React.FC = () => {
         </section>
 
         {/* Technical Capabilities */}
-        <section className="py-16">
+        <section className={getSectionClasses()}>
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
               <h2 className={`text-3xl font-bold mb-4 ${textColors.primary}`}>

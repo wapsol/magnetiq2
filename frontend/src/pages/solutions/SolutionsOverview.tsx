@@ -160,28 +160,28 @@ const SolutionsOverview = () => {
         }
       />
 
-      <div className={backgrounds.page}>
+      <div className={`${backgrounds.page}`}>
         {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white overflow-hidden">
-          <div className="absolute inset-0 bg-black/20"></div>
+        <section className="relative py-20 bg-gradient-to-br from-primary-50 via-primary-100 to-purple-50 text-gray-800 overflow-hidden">
+          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
           <div className="relative container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
-              <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
+              <div className="inline-flex items-center space-x-2 bg-primary-600 text-white rounded-full px-4 py-2 mb-8">
                 <GlobeAltIcon className="h-5 w-5" />
                 <span className="text-sm font-medium">
                   {language === 'de' ? 'Branchenübergreifende Expertise' : 'Cross-Industry Expertise'}
                 </span>
               </div>
               
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 text-primary-900">
                 {language === 'de' ? (
-                  <>Unsere <span className="text-blue-400">Lösungen</span></>
+                  <>Unsere <span className="text-primary-600">Lösungen</span></>
                 ) : (
-                  <>Our <span className="text-blue-400">Solutions</span></>
+                  <>Our <span className="text-primary-600">Solutions</span></>
                 )}
               </h1>
               
-              <p className="text-xl md:text-2xl text-gray-200 mb-8">
+              <p className="text-xl md:text-2xl text-primary-700 mb-8">
                 {language === 'de' 
                   ? 'Branchenspezifische KI-Lösungen und technologieorientierte Implementierungen für nachhaltigen Geschäftserfolg'
                   : 'Industry-specific AI solutions and technology-focused implementations for sustainable business success'
@@ -190,9 +190,9 @@ const SolutionsOverview = () => {
               
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12">
                 {stats.map((stat, index) => (
-                  <div key={index} className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                    <div className="text-2xl md:text-3xl font-bold text-purple-400">{stat.value}</div>
-                    <div className="text-sm text-gray-300">{stat.label}</div>
+                  <div key={index} className="text-center bg-white/60 backdrop-blur-sm border border-primary-200 rounded-lg p-4">
+                    <div className="text-2xl md:text-3xl font-bold text-primary-600">{stat.value}</div>
+                    <div className="text-sm text-primary-800">{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -329,7 +329,7 @@ const SolutionsOverview = () => {
             <div className="text-center mt-12">
               <Link 
                 to={`${basePath}/solutions/industries`} 
-                className="inline-flex items-center px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors duration-200"
+                className="inline-flex items-center px-8 py-3 bg-violet-600 text-white font-semibold rounded-lg hover:bg-violet-700 transition-colors duration-200"
               >
                 {language === 'de' ? 'Alle Branchen anzeigen' : 'View All Industries'}
                 <ArrowRightIcon className="ml-2 h-4 w-4" />
@@ -339,7 +339,7 @@ const SolutionsOverview = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+        <section className="py-16 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-600 dark:to-purple-700 text-violet-900 dark:text-white">
           <div className="container mx-auto px-6 text-center">
             <h2 className="text-3xl font-bold mb-4">
               {language === 'de' ? 'Bereit für maßgeschneiderte Lösungen?' : 'Ready for Tailored Solutions?'}
@@ -353,14 +353,14 @@ const SolutionsOverview = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a 
                 href="/contact/booking" 
-                className="inline-flex items-center px-8 py-3 bg-white text-purple-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                className="inline-flex items-center px-8 py-3 bg-violet-600 text-white font-semibold rounded-lg hover:bg-violet-700 dark:bg-white dark:text-violet-600 dark:hover:bg-gray-100 transition-colors duration-200"
               >
                 {language === 'de' ? 'Lösungs-Beratung' : 'Solution Consultation'}
                 <ArrowRightIcon className="ml-2 h-4 w-4" />
               </a>
               <a 
                 href="/contact" 
-                className="inline-flex items-center px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-purple-600 transition-colors duration-200"
+                className="inline-flex items-center px-8 py-3 border-2 border-violet-600 text-violet-600 font-semibold rounded-lg hover:bg-violet-600 hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-violet-600 transition-colors duration-200"
               >
                 {language === 'de' ? 'Mehr erfahren' : 'Learn More'}
               </a>

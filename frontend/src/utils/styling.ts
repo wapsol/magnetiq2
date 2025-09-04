@@ -170,8 +170,9 @@ export const inputs = {
 
 // Gradient backgrounds
 export const gradients = {
-  // Hero gradients
-  heroPurple: 'bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900',
+  // Hero gradients - light shades with subtle contrast
+  heroPurple: 'bg-gradient-to-br from-violet-100 via-purple-50 to-indigo-100',
+  heroVioletLight: 'bg-gradient-to-br from-violet-50 via-purple-100 to-violet-50 dark:from-violet-900 dark:via-purple-800 dark:to-violet-900',
   heroBlue: 'bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900',
   heroDark: 'bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900',
   

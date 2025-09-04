@@ -38,7 +38,7 @@ const ImprintPage = () => {
       content: (
         <div className="space-y-2">
           <p className="font-semibold text-lg">{companyInfo.name}</p>
-          <p className={textColors.secondary}>{companyInfo.business}</p>
+          <p className={`${textColors.secondary}`}>{companyInfo.business}</p>
           <div className="mt-4">
             <p>{companyInfo.address.street}</p>
             <p>{companyInfo.address.postalCode} {companyInfo.address.city}</p>
@@ -78,7 +78,7 @@ const ImprintPage = () => {
       title: language === 'en' ? 'Management' : 'Geschäftsführung',
       content: (
         <div>
-          <p className={textColors.secondary}>
+          <p className={`${textColors.secondary}`}>
             {language === 'en' ? 'Managing Directors:' : 'Geschäftsführer:'}
           </p>
           <p className="font-medium">[Name of Managing Director]</p>
@@ -91,19 +91,19 @@ const ImprintPage = () => {
       content: (
         <div className="space-y-2">
           <p>
-            <span className={textColors.secondary}>
+            <span className={`${textColors.secondary}`}>
               {language === 'en' ? 'District Court:' : 'Amtsgericht:'}
             </span>
             <span className="ml-2">Stuttgart</span>
           </p>
           <p>
-            <span className={textColors.secondary}>
+            <span className={`${textColors.secondary}`}>
               {language === 'en' ? 'Registration Number:' : 'Handelsregisternummer:'}
             </span>
             <span className="ml-2">HRB [NUMBER]</span>
           </p>
           <p>
-            <span className={textColors.secondary}>
+            <span className={`${textColors.secondary}`}>
               {language === 'en' ? 'VAT ID:' : 'Umsatzsteuer-ID:'}
             </span>
             <span className="ml-2">DE[NUMBER]</span>
@@ -140,7 +140,7 @@ const ImprintPage = () => {
         }
       />
 
-      <div className={backgrounds.page}>
+      <div className={`${backgrounds.page}`}>
         {/* Header */}
         <section className={getSectionClasses('alt')}>
           <div className="container mx-auto px-6">
@@ -181,7 +181,7 @@ const ImprintPage = () => {
                         <h3 className={`text-lg font-bold ${textColors.primary} mb-4`}>
                           {section.title}
                         </h3>
-                        <div className={textColors.secondary}>
+                        <div className={`${textColors.secondary}`}>
                           {section.content}
                         </div>
                       </div>
@@ -205,7 +205,7 @@ const ImprintPage = () => {
                         <ShieldCheckIcon className="h-6 w-6 mr-3" />
                         Disclaimer
                       </h2>
-                      <p className={textColors.secondary}>
+                      <p className={`${textColors.secondary}`}>
                         Despite careful content control, we assume no liability for the content of external links. 
                         The operators of the linked pages are exclusively responsible for their content.
                       </p>
@@ -214,7 +214,7 @@ const ImprintPage = () => {
                         <DocumentTextIcon className="h-6 w-6 mr-3" />
                         Privacy Policy
                       </h2>
-                      <p className={textColors.secondary}>
+                      <p className={`${textColors.secondary}`}>
                         The use of our website is generally possible without providing personal data. 
                         Where personal data is collected on our pages, this is done on a voluntary basis wherever possible.
                       </p>
@@ -223,7 +223,7 @@ const ImprintPage = () => {
                         <ScaleIcon className="h-6 w-6 mr-3" />
                         Copyright
                       </h2>
-                      <p className={textColors.secondary}>
+                      <p className={`${textColors.secondary}`}>
                         The content and works created by the site operators on these pages are subject to German copyright law. 
                         Duplication, processing, distribution and any form of commercialization of such material beyond the scope 
                         of the copyright law shall require the prior written consent of its respective author or creator.
@@ -235,7 +235,7 @@ const ImprintPage = () => {
                         <ShieldCheckIcon className="h-6 w-6 mr-3" />
                         Haftungsausschluss
                       </h2>
-                      <p className={textColors.secondary}>
+                      <p className={`${textColors.secondary}`}>
                         Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. 
                         Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich.
                       </p>
@@ -244,7 +244,7 @@ const ImprintPage = () => {
                         <DocumentTextIcon className="h-6 w-6 mr-3" />
                         Datenschutz
                       </h2>
-                      <p className={textColors.secondary}>
+                      <p className={`${textColors.secondary}`}>
                         Die Nutzung unserer Webseite ist in der Regel ohne Angabe personenbezogener Daten möglich. 
                         Soweit auf unseren Seiten personenbezogene Daten erhoben werden, erfolgt dies, soweit möglich, 
                         stets auf freiwilliger Basis.
@@ -254,7 +254,7 @@ const ImprintPage = () => {
                         <ScaleIcon className="h-6 w-6 mr-3" />
                         Urheberrecht
                       </h2>
-                      <p className={textColors.secondary}>
+                      <p className={`${textColors.secondary}`}>
                         Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem 
                         deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung 
                         außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors 

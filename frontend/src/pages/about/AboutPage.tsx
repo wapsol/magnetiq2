@@ -127,16 +127,16 @@ const AboutPage = () => {
   return (
     <div className={`min-h-screen ${backgrounds.pageAlt}`}>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white py-20">
+      <section className="bg-violet-50/30 dark:bg-violet-900/10 py-20">
         <div className="container">
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex items-center justify-center mb-6">
-              <BoltIcon className="h-16 w-16 text-primary-200" />
+              <BoltIcon className="h-16 w-16 text-violet-600 dark:text-violet-400" />
             </div>
-            <h1 className="text-5xl font-bold mb-6">
+            <h1 className="text-5xl font-bold mb-6 text-gray-900 dark:text-white">
               {language === 'en' ? 'About voltAIc Systems' : 'Über voltAIc Systems'}
             </h1>
-            <p className="text-xl text-primary-100 leading-relaxed">
+            <p className="text-xl text-gray-700 dark:text-gray-200 leading-relaxed">
               {language === 'en'
                 ? 'We believe artificial intelligence should enhance human potential, not replace it. Our mission is to bridge the gap between cutting-edge AI technology and practical business solutions.'
                 : 'Wir glauben, dass künstliche Intelligenz das menschliche Potenzial erweitern, nicht ersetzen sollte. Unsere Mission ist es, die Lücke zwischen modernster KI-Technologie und praktischen Geschäftslösungen zu schließen.'}
@@ -150,7 +150,7 @@ const AboutPage = () => {
         <div className="container">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center mb-12">
-              <BookOpenIcon className="h-8 w-8 text-primary-600 mr-4" />
+              <BookOpenIcon className="h-8 w-8 text-violet-600 mr-4" />
               <h2 className="text-4xl font-bold text-gray-900 dark:text-white">
                 {language === 'en' ? 'Our Story' : 'Unsere Geschichte'}
               </h2>
@@ -169,8 +169,8 @@ const AboutPage = () => {
               {storyMilestones.map((milestone, index) => (
                 <div key={milestone.year} className="flex items-start space-x-6">
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
-                      <span className="text-primary-600 dark:text-primary-400 font-bold text-sm">
+                    <div className="w-12 h-12 bg-violet-100 dark:bg-violet-900 rounded-full flex items-center justify-center">
+                      <span className="text-violet-600 dark:text-violet-400 font-bold text-sm">
                         {milestone.year.slice(-2)}
                       </span>
                     </div>
@@ -195,7 +195,7 @@ const AboutPage = () => {
         <div className="container">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center mb-12">
-              <UserGroupIcon className="h-8 w-8 text-primary-600 mr-4" />
+              <UserGroupIcon className="h-8 w-8 text-violet-600 mr-4" />
               <h2 className="text-4xl font-bold text-gray-900 dark:text-white">
                 {language === 'en' ? 'Our Founders' : 'Unsere Gründer'}
               </h2>
@@ -222,7 +222,7 @@ const AboutPage = () => {
                       <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                         {founder.name}
                       </h3>
-                      <p className="text-primary-600 dark:text-primary-400 font-medium mb-4">
+                      <p className="text-violet-600 dark:text-violet-400 font-medium mb-4">
                         {founder.role}
                       </p>
                       <blockquote className="text-gray-600 dark:text-gray-300 italic">
@@ -236,7 +236,7 @@ const AboutPage = () => {
 
             {/* Advisory Board */}
             <div className="flex items-center mb-12">
-              <UserGroupIcon className="h-8 w-8 text-primary-600 mr-4" />
+              <UserGroupIcon className="h-8 w-8 text-violet-600 mr-4" />
               <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
                 {language === 'en' ? 'Advisory Board' : 'Beirat'}
               </h3>
@@ -262,7 +262,7 @@ const AboutPage = () => {
                       <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                         {advisor.name}
                       </h3>
-                      <p className="text-primary-600 dark:text-primary-400 font-medium mb-4 text-sm">
+                      <p className="text-violet-600 dark:text-violet-400 font-medium mb-4 text-sm">
                         {advisor.role}
                       </p>
                       <blockquote className="text-gray-600 dark:text-gray-300 italic">
@@ -282,18 +282,18 @@ const AboutPage = () => {
         <div className="container">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center mb-12">
-              <SparklesIcon className="h-8 w-8 text-primary-600 mr-4" />
+              <SparklesIcon className="h-8 w-8 text-violet-600 mr-4" />
               <h2 className="text-4xl font-bold text-gray-900 dark:text-white">
                 {language === 'en' ? 'Mission & Values' : 'Mission & Werte'}
               </h2>
             </div>
 
             {/* Mission Statement */}
-            <div className="bg-primary-50 dark:bg-primary-900/20 rounded-2xl p-8 mb-12">
-              <h3 className="text-2xl font-semibold text-primary-900 dark:text-primary-100 mb-4">
+            <div className="bg-violet-50/30 dark:bg-violet-900/10 rounded-2xl p-8 mb-12">
+              <h3 className="text-2xl font-semibold text-violet-900 dark:text-violet-100 mb-4">
                 {language === 'en' ? 'Our Mission' : 'Unsere Mission'}
               </h3>
-              <p className="text-lg text-primary-800 dark:text-primary-200 leading-relaxed">
+              <p className="text-lg text-violet-800 dark:text-violet-200 leading-relaxed">
                 {language === 'en'
                   ? 'To transform businesses through intelligent automation and data-driven insights, making advanced AI technology accessible, ethical, and profitable for organizations of every size. We believe that the future belongs to companies that can successfully integrate human creativity with artificial intelligence.'
                   : 'Unternehmen durch intelligente Automatisierung und datengestützte Erkenntnisse zu transformieren und erweiterte KI-Technologie für Organisationen jeder Größe zugänglich, ethisch und profitabel zu machen. Wir glauben, dass die Zukunft Unternehmen gehört, die menschliche Kreativität erfolgreich mit künstlicher Intelligenz integrieren können.'}
@@ -305,8 +305,8 @@ const AboutPage = () => {
               {coreValues.map((value) => (
                 <div key={value.title} className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
                   <div className="flex items-center mb-4">
-                    <div className="bg-primary-100 dark:bg-primary-900 p-3 rounded-lg mr-4">
-                      <value.icon className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+                    <div className="bg-violet-100 dark:bg-violet-900 p-3 rounded-lg mr-4">
+                      <value.icon className="h-6 w-6 text-violet-600 dark:text-violet-400" />
                     </div>
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                       {value.title}
@@ -323,13 +323,13 @@ const AboutPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary-600 to-primary-700 text-white">
+      <section className="py-20 bg-violet-50/50 dark:bg-violet-900/10 border-t border-violet-100 dark:border-violet-800">
         <div className="container">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-6">
+            <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
               {language === 'en' ? 'Ready to Transform Your Business?' : 'Bereit, Ihr Unternehmen zu transformieren?'}
             </h2>
-            <p className="text-xl text-primary-100 mb-8">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
               {language === 'en'
                 ? 'Let\'s discuss how AI can drive growth and efficiency in your organization.'
                 : 'Lassen Sie uns besprechen, wie KI Wachstum und Effizienz in Ihrem Unternehmen vorantreiben kann.'}
@@ -337,13 +337,13 @@ const AboutPage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href="/contact/booking"
-                className="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-primary-50 transition-colors duration-200"
+                className="bg-violet-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-violet-700 transition-colors duration-200"
               >
                 {language === 'en' ? 'Schedule Consultation' : 'Beratung vereinbaren'}
               </a>
               <a
                 href="/services"
-                className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600 transition-colors duration-200"
+                className="border-2 border-violet-600 text-violet-600 px-8 py-3 rounded-lg font-semibold hover:bg-violet-600 hover:text-white transition-colors duration-200"
               >
                 {language === 'en' ? 'View Our Services' : 'Unsere Services ansehen'}
               </a>

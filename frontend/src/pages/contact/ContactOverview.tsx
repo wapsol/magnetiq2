@@ -149,7 +149,7 @@ const ContactOverview = () => {
         }
       />
 
-      <div className={backgrounds.page}>
+      <div className={`${backgrounds.page}`}>
         {/* Hero Section */}
         <section className="relative py-20 bg-gradient-to-br from-teal-900 via-green-900 to-blue-900 text-white overflow-hidden">
           <div className="absolute inset-0 bg-black/20"></div>

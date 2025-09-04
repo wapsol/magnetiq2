@@ -410,7 +410,7 @@ const OverviewTab: React.FC<{ consultant: ConsultantProfile; language: string }>
           <div className="space-y-4">
             {consultant.total_projects !== undefined && (
               <div className="flex items-center justify-between">
-                <span className={textColors.secondary}>
+                <span className={`${textColors.secondary}`}>
                   {language === 'de' ? 'Projekte gesamt' : 'Total Projects'}
                 </span>
                 <span className={`font-semibold ${textColors.primary}`}>
@@ -421,7 +421,7 @@ const OverviewTab: React.FC<{ consultant: ConsultantProfile; language: string }>
 
             {consultant.completed_projects !== undefined && (
               <div className="flex items-center justify-between">
-                <span className={textColors.secondary}>
+                <span className={`${textColors.secondary}`}>
                   {language === 'de' ? 'Abgeschlossen' : 'Completed'}
                 </span>
                 <span className={`font-semibold ${textColors.primary}`}>
@@ -432,7 +432,7 @@ const OverviewTab: React.FC<{ consultant: ConsultantProfile; language: string }>
 
             {consultant.response_rate !== undefined && consultant.response_rate !== null && (
               <div className="flex items-center justify-between">
-                <span className={textColors.secondary}>
+                <span className={`${textColors.secondary}`}>
                   {language === 'de' ? 'Antwortrate' : 'Response Rate'}
                 </span>
                 <span className={`font-semibold ${textColors.primary}`}>
@@ -443,7 +443,7 @@ const OverviewTab: React.FC<{ consultant: ConsultantProfile; language: string }>
 
             {consultant.response_time_hours !== undefined && consultant.response_time_hours !== null && (
               <div className="flex items-center justify-between">
-                <span className={textColors.secondary}>
+                <span className={`${textColors.secondary}`}>
                   {language === 'de' ? 'Antwortzeit' : 'Response Time'}
                 </span>
                 <span className={`font-semibold ${textColors.primary}`}>
@@ -489,7 +489,7 @@ const OverviewTab: React.FC<{ consultant: ConsultantProfile; language: string }>
             <div className="space-y-2">
               {consultant.languages_spoken.map((lang, index) => (
                 <div key={index} className="flex justify-between">
-                  <span className={textColors.secondary}>{lang.language}</span>
+                  <span className={`${textColors.secondary}`}>{lang.language}</span>
                   <span className={`text-sm ${textColors.primary} font-medium`}>
                     {lang.proficiency}
                   </span>
@@ -510,7 +510,7 @@ const OverviewTab: React.FC<{ consultant: ConsultantProfile; language: string }>
               consultant.availability_status === 'available' ? 'bg-green-500' :
               consultant.availability_status === 'busy' ? 'bg-yellow-500' : 'bg-red-500'
             }`}></div>
-            <span className={textColors.secondary}>
+            <span className={`${textColors.secondary}`}>
               {consultant.availability_status === 'available' && (language === 'de' ? 'Verfügbar' : 'Available')}
               {consultant.availability_status === 'busy' && (language === 'de' ? 'Beschäftigt' : 'Busy')}
               {consultant.availability_status === 'unavailable' && (language === 'de' ? 'Nicht verfügbar' : 'Unavailable')}
@@ -531,7 +531,7 @@ const ReviewsTab: React.FC<{ reviews: ConsultantReview[]; language: string }> = 
         <h3 className={`text-xl font-semibold ${textColors.primary} mb-2`}>
           {language === 'de' ? 'Noch keine Bewertungen' : 'No Reviews Yet'}
         </h3>
-        <p className={textColors.secondary}>
+        <p className={`${textColors.secondary}`}>
           {language === 'de' 
             ? 'Seien Sie der Erste, der diesen Berater bewertet!'
             : 'Be the first to review this consultant!'
@@ -563,7 +563,7 @@ const ReviewsTab: React.FC<{ reviews: ConsultantReview[]; language: string }> = 
               ))}
             </div>
           </div>
-          <p className={textColors.secondary}>{review.comment}</p>
+          <p className={`${textColors.secondary}`}>{review.comment}</p>
         </div>
       ))}
     </div>
@@ -579,7 +579,7 @@ const PortfolioTab: React.FC<{ portfolio: ConsultantPortfolioItem[]; language: s
         <h3 className={`text-xl font-semibold ${textColors.primary} mb-2`}>
           {language === 'de' ? 'Kein Portfolio verfügbar' : 'No Portfolio Available'}
         </h3>
-        <p className={textColors.secondary}>
+        <p className={`${textColors.secondary}`}>
           {language === 'de' 
             ? 'Dieser Berater hat noch keine Portfolio-Elemente hochgeladen.'
             : 'This consultant hasn\'t uploaded any portfolio items yet.'

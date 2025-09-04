@@ -121,9 +121,9 @@ const DataManagementPage: React.FC = () => {
         canonicalUrl={language === 'de' ? '/de/dienstleistungen/datenmanagement' : '/services/data-management'}
       />
 
-      <div className={backgrounds.page}>
+      <div className={`${backgrounds.page}`}>
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div className="bg-gradient-to-br from-primary-50 via-primary-100 to-purple-50 dark:from-violet-900/20 dark:via-purple-900/20 dark:to-indigo-900/20 text-gray-900 dark:text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="text-center">
               <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -136,10 +136,10 @@ const DataManagementPage: React.FC = () => {
                 }
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                <button className="bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 hover:shadow-xl transition-all duration-200">
                   {language === 'de' ? 'Kostenlose Beratung' : 'Free Consultation'}
                 </button>
-                <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors">
+                <button className="border-2 border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400 px-8 py-3 rounded-lg font-semibold hover:bg-primary-600 hover:text-white dark:hover:bg-primary-400 dark:hover:text-gray-900 transition-all duration-200">
                   {language === 'de' ? 'Mehr erfahren' : 'Learn More'}
                 </button>
               </div>
@@ -165,13 +165,13 @@ const DataManagementPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {features.map((feature, index) => (
                 <div key={index} className={`${getCardClasses()} shadow-lg hover:shadow-xl`}>
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-6">
-                    <feature.icon className="w-6 h-6 text-blue-600" />
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-violet-100 dark:bg-violet-900/30 rounded-lg mb-6">
+                    <feature.icon className="w-6 h-6 text-violet-600 dark:text-violet-400" />
                   </div>
                   <h3 className={`text-xl font-semibold ${textColors.primary} mb-4`}>
                     {feature.title[language as keyof typeof feature.title]}
                   </h3>
-                  <p className={textColors.secondary}>
+                  <p className={`${textColors.secondary}`}>
                     {feature.description[language as keyof typeof feature.description]}
                   </p>
                 </div>
@@ -210,33 +210,33 @@ const DataManagementPage: React.FC = () => {
                     }
                   ].map((feature, index) => (
                     <div key={index} className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                      <span className={textColors.secondary}>
+                      <div className="w-2 h-2 bg-violet-600 rounded-full"></div>
+                      <span className={`${textColors.secondary}`}>
                         {feature[language as keyof typeof feature]}
                       </span>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl p-8 text-white">
-                <h3 className="text-2xl font-bold mb-4">
+              <div className="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/30 dark:to-purple-900/30 rounded-2xl p-8 border border-violet-200 dark:border-violet-700">
+                <h3 className={`text-2xl font-bold mb-4 ${textColors.primary}`}>
                   {language === 'de' ? 'Effizienz-Dreieck' : 'Efficiency Triangle'}
                 </h3>
                 <div className="space-y-4 mb-6">
                   <div className="flex items-center space-x-3">
-                    <ChartBarIcon className="w-6 h-6" />
-                    <span>{language === 'de' ? 'Daten harmonisieren' : 'Harmonize Data'}</span>
+                    <ChartBarIcon className="w-6 h-6 text-violet-600 dark:text-violet-400" />
+                    <span className={`${textColors.primary}`}>{language === 'de' ? 'Daten harmonisieren' : 'Harmonize Data'}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <CubeIcon className="w-6 h-6" />
-                    <span>{language === 'de' ? 'Komplexität reduzieren' : 'Reduce Complexity'}</span>
+                    <CubeIcon className="w-6 h-6 text-violet-600 dark:text-violet-400" />
+                    <span className={`${textColors.primary}`}>{language === 'de' ? 'Komplexität reduzieren' : 'Reduce Complexity'}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <ArrowPathIcon className="w-6 h-6" />
-                    <span>{language === 'de' ? 'Dynamik optimieren' : 'Optimize Dynamics'}</span>
+                    <ArrowPathIcon className="w-6 h-6 text-violet-600 dark:text-violet-400" />
+                    <span className={`${textColors.primary}`}>{language === 'de' ? 'Dynamik optimieren' : 'Optimize Dynamics'}</span>
                   </div>
                 </div>
-                <p className="text-white/90 text-sm">
+                <p className={`${textColors.secondary} text-sm`}>
                   {language === 'de' 
                     ? 'Bis 2027: 300 ZB Daten jährlich. DOS hilft dabei, diese Herausforderung zu meistern.'
                     : 'By 2027: 300 ZB data annually. DOS helps master this challenge.'
@@ -286,8 +286,8 @@ const DataManagementPage: React.FC = () => {
                 }
               ].map((promise, index) => (
                 <div key={index} className={`${getCardClasses()} text-center p-6`}>
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mb-4">
-                    <promise.icon className="w-6 h-6 text-green-600" />
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-violet-100 dark:bg-violet-900/30 rounded-lg mb-4">
+                    <promise.icon className="w-6 h-6 text-violet-600 dark:text-violet-400" />
                   </div>
                   <h3 className={`text-lg font-semibold ${textColors.primary} mb-2`}>
                     {promise.title[language as keyof typeof promise.title]}
@@ -309,7 +309,7 @@ const DataManagementPage: React.FC = () => {
                     }
                   </strong>
                 </p>
-                <p className={textColors.secondary}>
+                <p className={`${textColors.secondary}`}>
                   {language === 'de' 
                     ? 'Potenzial für 30% Effizienzverbesserung durch Risikoreduktion'
                     : 'Potential for 30% efficiency improvement through risk reduction'
@@ -337,8 +337,8 @@ const DataManagementPage: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   {benefits.map((benefit, index) => (
                     <div key={index} className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                      <span className={textColors.primary}>
+                      <div className="w-2 h-2 bg-violet-600 rounded-full"></div>
+                      <span className={`${textColors.primary}`}>
                         {benefit[language as keyof typeof benefit]}
                       </span>
                     </div>
@@ -346,19 +346,19 @@ const DataManagementPage: React.FC = () => {
                 </div>
               </div>
               <div className="lg:text-center">
-                <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 text-white">
+                <div className="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/30 dark:to-purple-900/30 rounded-2xl p-8 border border-violet-200 dark:border-violet-700">
                   <div className="text-center">
-                    <ChartBarIcon className="w-16 h-16 mx-auto mb-4 text-white/80" />
-                    <h3 className="text-2xl font-bold mb-4">
+                    <ChartBarIcon className="w-16 h-16 mx-auto mb-4 text-violet-600 dark:text-violet-400" />
+                    <h3 className={`text-2xl font-bold mb-4 ${textColors.primary}`}>
                       {language === 'de' ? 'Bereit anzufangen?' : 'Ready to Start?'}
                     </h3>
-                    <p className="mb-6">
+                    <p className={`mb-6 ${textColors.secondary}`}>
                       {language === 'de' 
                         ? 'Lassen Sie uns Ihre Datenherausforderungen besprechen'
                         : 'Let\'s discuss your data challenges'
                       }
                     </p>
-                    <button className="bg-white text-blue-600 font-bold py-3 px-6 rounded-lg hover:bg-gray-100 transition-colors">
+                    <button className="bg-violet-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-violet-700 transition-colors">
                       {language === 'de' ? 'Kontakt aufnehmen' : 'Get in Touch'}
                     </button>
                   </div>
@@ -405,13 +405,13 @@ const DataManagementPage: React.FC = () => {
                 }
               ].map((item) => (
                 <div key={item.step} className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full text-xl font-bold mb-4">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-violet-600 text-white rounded-full text-xl font-bold mb-4">
                     {item.step}
                   </div>
                   <h3 className={`text-lg font-semibold ${textColors.primary} mb-2`}>
                     {item.title[language as keyof typeof item.title]}
                   </h3>
-                  <p className={textColors.secondary}>
+                  <p className={`${textColors.secondary}`}>
                     {item.description[language as keyof typeof item.description]}
                   </p>
                 </div>
@@ -443,7 +443,7 @@ const DataManagementPage: React.FC = () => {
                 }
               ].map((stat, index) => (
                 <div key={index} className={`${getCardClasses()} p-8 shadow-lg`}>
-                  <div className="text-4xl md:text-5xl font-bold text-blue-600 mb-2">
+                  <div className="text-4xl md:text-5xl font-bold text-violet-600 mb-2">
                     {stat.value}
                   </div>
                   <div className={`font-medium ${textColors.primary}`}>
@@ -456,28 +456,28 @@ const DataManagementPage: React.FC = () => {
         </div>
 
         {/* CTA Section */}
-        <div className="py-16 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+        <div className="py-16 bg-gradient-to-br from-violet-100 via-purple-50 to-indigo-100 dark:from-violet-900 dark:via-purple-800 dark:to-indigo-900">
           <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold mb-4">
+            <h2 className={`text-3xl font-bold mb-4 ${textColors.primary}`}>
               {language === 'de' ? 'Starten Sie Ihre Datenreise mit voltAIc' : 'Start Your Data Journey with voltAIc'}
             </h2>
-            <p className="text-xl mb-6">
+            <p className={`text-xl mb-6 ${textColors.primary}`}>
               {language === 'de' 
                 ? 'Entdecken Sie, wie unser Daten-Betriebssystem und Datenversprechen Ihr Unternehmen transformieren können'
                 : 'Discover how our Data Operating System and data promise can transform your business'
               }
             </p>
-            <p className="text-white/90 mb-8">
+            <p className={`mb-8 ${textColors.secondary}`}>
               {language === 'de' 
                 ? 'Vollständige Datensouveränität • DSGVO-konform • Bis zu 10 Petabyte Verarbeitung'
                 : 'Complete Data Sovereignty • GDPR Compliant • Up to 10 Petabyte Processing'
               }
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-blue-600 font-bold text-lg px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors">
+              <button className="bg-violet-600 text-white font-bold text-lg px-8 py-4 rounded-lg hover:bg-violet-700 transition-colors">
                 {language === 'de' ? 'Kostenlose Beratung buchen' : 'Book Free Consultation'}
               </button>
-              <button className="border-2 border-white text-white font-bold text-lg px-8 py-4 rounded-lg hover:bg-white/10 transition-colors">
+              <button className="border-2 border-violet-600 text-violet-600 dark:border-violet-400 dark:text-violet-400 font-bold text-lg px-8 py-4 rounded-lg hover:bg-violet-600 hover:text-white dark:hover:bg-violet-400 dark:hover:text-gray-900 transition-colors">
                 {language === 'de' ? 'DOS Demo anfragen' : 'Request DOS Demo'}
               </button>
             </div>

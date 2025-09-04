@@ -271,6 +271,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Navigation
     'nav.home': 'Home',
     'nav.services': 'Services',
+    'nav.products': 'Products',
     'nav.solutions': 'Solutions',
     'nav.resources': 'Resources',
     'nav.about': 'About',
@@ -283,11 +284,24 @@ const translations: Record<Language, Record<string, string>> = {
     'services.management_advisory': 'Management Advisory',
     'services.automation': 'Automation',
     'services.development': 'Development',
+    'services.ai_consulting.description': 'Strategic AI implementation',
+    'services.digital_transformation.description': 'Modernize your business',
+    'services.data_management.description': 'Data strategy and governance',
+    'services.management_advisory.description': 'Strategic IT consulting and transformation',
+    
+    // Products
+    'products.data_operating_system': 'Data Operating System',
+    'products.private_cloud': 'Private Cloud',
+    'products.data_operating_system.description': 'Unified data management platform',
+    'products.private_cloud.description': 'Secure cloud infrastructure',
     
     // Solutions
     'solutions.industries': 'Industries',
     'solutions.technology': 'Technology',
     'solutions.case_studies': 'Case Studies',
+    'solutions.industries.description': 'Industry-specific solutions',
+    'solutions.technology.description': 'Technology platforms',
+    'solutions.case_studies.description': 'Success stories',
     
     // Industries
     'industries.fintech.title': 'Financial Services',
@@ -309,6 +323,8 @@ const translations: Record<Language, Record<string, string>> = {
     'resources.whitepapers': 'Whitepapers',
     'resources.blog': 'Blog',
     'resources.tools': 'Tools',
+    'resources.webinars.description': 'Live and recorded webinars',
+    'resources.whitepapers.description': 'In-depth guides',
     
     // About
     'about.story': 'Our Story',
@@ -335,6 +351,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Navigation
     'nav.home': 'Startseite',
     'nav.services': 'Dienstleistungen',
+    'nav.products': 'Produkte',
     'nav.solutions': 'Lösungen',
     'nav.resources': 'Ressourcen',
     'nav.about': 'Über uns',
@@ -347,11 +364,24 @@ const translations: Record<Language, Record<string, string>> = {
     'services.management_advisory': 'Management-Beratung',
     'services.automation': 'Automatisierung',
     'services.development': 'Entwicklung',
+    'services.ai_consulting.description': 'Strategische KI-Implementierung',
+    'services.digital_transformation.description': 'Modernisieren Sie Ihr Unternehmen',
+    'services.data_management.description': 'Datenstrategie und Governance',
+    'services.management_advisory.description': 'Strategische IT-Beratung und Transformation',
+    
+    // Products
+    'products.data_operating_system': 'Daten-Betriebssystem',
+    'products.private_cloud': 'Private Cloud',
+    'products.data_operating_system.description': 'Einheitliche Datenmanagement-Plattform',
+    'products.private_cloud.description': 'Sichere Cloud-Infrastruktur',
     
     // Solutions
     'solutions.industries': 'Branchen',
     'solutions.technology': 'Technologie',
     'solutions.case_studies': 'Fallstudien',
+    'solutions.industries.description': 'Branchenspezifische Lösungen',
+    'solutions.technology.description': 'Technologieplattformen',
+    'solutions.case_studies.description': 'Erfolgsgeschichten',
     
     // Industries
     'industries.fintech.title': 'Finanzdienstleistungen',
@@ -373,6 +403,8 @@ const translations: Record<Language, Record<string, string>> = {
     'resources.whitepapers': 'Whitepapers',
     'resources.blog': 'Blog',
     'resources.tools': 'Tools',
+    'resources.webinars.description': 'Live und aufgezeichnete Webinare',
+    'resources.whitepapers.description': 'Ausführliche Leitfäden',
     
     // About
     'about.story': 'Unsere Geschichte',

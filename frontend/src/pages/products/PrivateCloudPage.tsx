@@ -147,13 +147,13 @@ const PrivateCloudPage: React.FC = () => {
         }
       />
 
-      <div className={backgrounds.page}>
+      <div className={`${backgrounds.page}`}>
         {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white overflow-hidden">
-          <div className="absolute inset-0 bg-black/20"></div>
+        <section className="relative py-20 bg-gradient-to-br from-primary-50 via-primary-100 to-purple-50 text-gray-900 overflow-hidden">
+          <div className="absolute inset-0 bg-white/10"></div>
           <div className="relative container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
-              <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
+              <div className="inline-flex items-center space-x-2 bg-primary-600/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
                 <CloudIcon className="h-5 w-5" />
                 <span className="text-sm font-medium">
                   {language === 'de' ? 'Powered by re-cloud.io' : 'Powered by re-cloud.io'}
@@ -162,13 +162,13 @@ const PrivateCloudPage: React.FC = () => {
               
               <h1 className="text-4xl md:text-6xl font-bold mb-6">
                 {language === 'de' ? (
-                  <>Private <span className="text-blue-400">Cloud</span></>
+                  <>Private <span className="text-primary-600">Cloud</span></>
                 ) : (
-                  <>Private <span className="text-blue-400">Cloud</span></>
+                  <>Private <span className="text-primary-600">Cloud</span></>
                 )}
               </h1>
               
-              <p className="text-xl md:text-2xl text-gray-200 mb-8">
+              <p className="text-xl md:text-2xl text-gray-700 mb-8">
                 {language === 'de' 
                   ? 'Sichere, autonome Cloud-Infrastruktur für KI-Enterprise-Anwendungen mit vollständiger Datenhoheit, Privacy-Schutz und strategischer Unabhängigkeit'
                   : 'Secure, autonomous cloud infrastructure for AI enterprise applications with complete data sovereignty, privacy protection, and strategic independence'
@@ -176,15 +176,15 @@ const PrivateCloudPage: React.FC = () => {
               </p>
               
               <div className="flex flex-wrap justify-center gap-4 mb-8">
-                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+                <div className="flex items-center space-x-2 bg-primary-600/10 backdrop-blur-sm rounded-lg px-4 py-2">
                   <ShieldCheckIcon className="h-5 w-5 text-green-400" />
                   <span className="font-medium">{language === 'de' ? 'DSGVO-Konform' : 'GDPR Compliant'}</span>
                 </div>
-                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+                <div className="flex items-center space-x-2 bg-primary-600/10 backdrop-blur-sm rounded-lg px-4 py-2">
                   <LockClosedIcon className="h-5 w-5 text-blue-400" />
                   <span className="font-medium">{language === 'de' ? 'Datenhoheit' : 'Data Sovereignty'}</span>
                 </div>
-                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+                <div className="flex items-center space-x-2 bg-primary-600/10 backdrop-blur-sm rounded-lg px-4 py-2">
                   <CpuChipIcon className="h-5 w-5 text-purple-400" />
                   <span className="font-medium">{language === 'de' ? 'KI-Optimiert' : 'AI-Optimized'}</span>
                 </div>

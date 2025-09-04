@@ -106,24 +106,24 @@ const TechnologyPage = () => {
   return (
     <div className={`min-h-screen ${backgrounds.pageAlt}`}>
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-primary-600 to-primary-800 dark:from-primary-700 dark:to-primary-900">
+      <div className="bg-gradient-to-br from-primary-50 via-primary-100 to-purple-50 dark:from-primary-900/20 dark:via-purple-900/20 dark:to-indigo-900/20">
         <div className="container py-24">
           <div className="max-w-4xl">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+            <h1 className="text-5xl md:text-6xl font-bold text-primary-900 dark:text-white mb-6">
               {language === 'en' ? 'Technology Solutions' : 'Technologie-Lösungen'}
             </h1>
-            <p className="text-xl text-primary-100 mb-8 leading-relaxed">
+            <p className="text-xl text-primary-700 dark:text-primary-100 mb-8 leading-relaxed">
               {language === 'en'
                 ? 'Advanced AI technologies tailored to transform your business processes. From intelligent model fine-tuning to context-aware automation and human-centric project management.'
                 : 'Fortschrittliche KI-Technologien, die auf die Transformation Ihrer Geschäftsprozesse zugeschnitten sind. Von intelligenter Modell-Feinabstimmung bis hin zu kontextbewusster Automatisierung und menschenzentrierter Projektleitung.'}
             </p>
             <div className="flex flex-wrap gap-4">
               {keyMetrics.map((metric, index) => (
-                <div key={index} className="bg-white/10 backdrop-blur-sm rounded-lg p-4 flex items-center space-x-3">
-                  <metric.icon className="h-6 w-6 text-primary-200" />
+                <div key={index} className="bg-white/60 dark:bg-white/10 backdrop-blur-sm border border-primary-200 dark:border-primary-700 rounded-lg p-4 flex items-center space-x-3">
+                  <metric.icon className="h-6 w-6 text-primary-600 dark:text-primary-200" />
                   <div>
-                    <div className="text-sm font-medium text-white">{metric.title}</div>
-                    <div className="text-xs text-primary-200">{metric.description}</div>
+                    <div className="text-sm font-medium text-primary-800 dark:text-white">{metric.title}</div>
+                    <div className="text-xs text-primary-600 dark:text-primary-200">{metric.description}</div>
                   </div>
                 </div>
               ))}
@@ -171,7 +171,7 @@ const TechnologyPage = () => {
                       {tech.benefits.map((benefit, bIndex) => (
                         <div key={bIndex} className="flex items-center space-x-2">
                           <div className="w-2 h-2 bg-primary-600 dark:bg-primary-400 rounded-full"></div>
-                          <span className={textColors.secondary}>{benefit}</span>
+                          <span className={`${textColors.secondary}`}>{benefit}</span>
                         </div>
                       ))}
                     </div>

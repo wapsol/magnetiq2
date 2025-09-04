@@ -71,7 +71,7 @@ const HomePage = () => {
   ]
 
   return (
-    <ContentTemplate className={backgrounds.page}>
+    <ContentTemplate className={`${backgrounds.page}`}>
       {/* Hero Image Section with Professional Background */}
       <HeroImageRenderer
         block={{
@@ -241,7 +241,7 @@ const HomePage = () => {
               {benefits.map((benefit, index) => (
                 <li key={index} className="flex items-center space-x-3">
                   <CheckCircleIcon className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0" />
-                  <span className={textColors.secondary}>{benefit}</span>
+                  <span className={`${textColors.secondary}`}>{benefit}</span>
                 </li>
               ))}
             </ul>

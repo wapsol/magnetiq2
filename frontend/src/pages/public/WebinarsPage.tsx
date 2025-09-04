@@ -148,23 +148,23 @@ const WebinarsPage = () => {
   return (
     <div className={`${backgrounds.pageAlt} min-h-screen`}>
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-accent-600 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
+      <div className="relative bg-gradient-to-br from-primary-50 via-primary-100 to-purple-50 text-gray-800 overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="relative container section-sm">
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex items-center justify-center space-x-2 mb-6">
-              <VideoCameraIcon className="h-12 w-12 text-primary-200" />
-              <h1 className="text-4xl lg:text-6xl font-bold">
+              <VideoCameraIcon className="h-12 w-12 text-primary-600" />
+              <h1 className="text-4xl lg:text-6xl font-bold text-primary-900">
                 Expert Webinars
               </h1>
             </div>
-            <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-primary-700 mb-8 max-w-2xl mx-auto">
               Join our live webinars and recorded sessions featuring industry experts sharing 
               the latest trends, best practices, and innovative solutions.
             </p>
             
             {/* Search and Filters in Hero */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8 max-w-4xl mx-auto">
+            <div className="bg-white/60 backdrop-blur-sm border border-primary-200 rounded-2xl p-6 mb-8 max-w-4xl mx-auto">
               <div className="flex flex-col lg:flex-row gap-4">
                 {/* Enhanced Search */}
                 <div className="flex-1">
@@ -183,11 +183,11 @@ const WebinarsPage = () => {
                 {/* Filters Row */}
                 <div className="flex flex-wrap gap-3 lg:flex-nowrap">
                   <div className="flex items-center space-x-2">
-                    <FunnelIcon className="h-5 w-5 text-white/70" />
+                    <FunnelIcon className="h-5 w-5 text-primary-600" />
                     <select
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="rounded-lg border-0 bg-white/20 text-white backdrop-blur-sm py-2 px-3 focus:ring-2 focus:ring-white/50"
+                      className="rounded-lg border border-primary-200 bg-white text-primary-800 backdrop-blur-sm py-2 px-3 focus:ring-2 focus:ring-primary-300"
                     >
                       {categories.map(category => (
                         <option key={category.id} value={category.id} className="text-gray-900">
@@ -200,7 +200,7 @@ const WebinarsPage = () => {
                   <select
                     value={selectedStatus}
                     onChange={(e) => setSelectedStatus(e.target.value)}
-                    className="rounded-lg border-0 bg-white/20 text-white backdrop-blur-sm py-2 px-3 focus:ring-2 focus:ring-white/50"
+                    className="rounded-lg border border-primary-200 bg-white text-primary-800 backdrop-blur-sm py-2 px-3 focus:ring-2 focus:ring-primary-300"
                   >
                     {statuses.map(status => (
                       <option key={status.id} value={status.id} className="text-gray-900">
@@ -213,7 +213,7 @@ const WebinarsPage = () => {
                   <select
                     value={selectedLevel || 'all'}
                     onChange={(e) => setSelectedLevel(e.target.value === 'all' ? null : e.target.value)}
-                    className="rounded-lg border-0 bg-white/20 text-white backdrop-blur-sm py-2 px-3 focus:ring-2 focus:ring-white/50"
+                    className="rounded-lg border border-primary-200 bg-white text-primary-800 backdrop-blur-sm py-2 px-3 focus:ring-2 focus:ring-primary-300"
                   >
                     <option value="all" className="text-gray-900">All Levels</option>
                     <option value="Beginner" className="text-gray-900">Beginner</option>
@@ -225,7 +225,7 @@ const WebinarsPage = () => {
               
               {/* Quick Filter Tags */}
               <div className="flex flex-wrap gap-2 mt-6">
-                <span className="text-white/90 text-lg font-semibold mr-4">Quick Filters:</span>
+                <span className="text-primary-700 text-lg font-semibold mr-4">Quick Filters:</span>
                 {[{ id: 'live', name: '🔴 Live Now', type: 'status' }, { id: 'upcoming', name: '📅 Upcoming', type: 'status' }, { id: 'recorded', name: '🎬 Recorded', type: 'status' }, { id: 'ai', name: '🤖 AI & ML', type: 'category' }, { id: 'react', name: '⚛️ React', type: 'category' }, { id: 'backend', name: '⚙️ Backend', type: 'category' }, { id: 'business', name: '📊 Business', type: 'category' }].map(tag => (
                   <button
                     key={tag.id}
@@ -239,8 +239,8 @@ const WebinarsPage = () => {
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors backdrop-blur-sm ${
                       (tag.type === 'status' && selectedStatus === tag.id) || 
                       (tag.type === 'category' && selectedCategory === tag.id) 
-                        ? 'bg-white text-primary-600 shadow-lg' 
-                        : 'bg-white/20 text-white/90 hover:bg-white/30'
+                        ? 'bg-primary-600 text-white shadow-lg' 
+                        : 'bg-white border border-primary-200 text-primary-700 hover:bg-primary-50'
                     }`}
                   >
                     {tag.name}
@@ -253,7 +253,7 @@ const WebinarsPage = () => {
                     setSelectedStatus('all')
                     setSelectedLevel(null)
                   }}
-                  className="px-4 py-2 rounded-full bg-red-500/20 text-white/90 text-sm font-medium hover:bg-red-500/30 transition-colors backdrop-blur-sm"
+                  className="px-4 py-2 rounded-full bg-red-100 border border-red-200 text-red-700 text-sm font-medium hover:bg-red-200 transition-colors backdrop-blur-sm"
                 >
                   ✕ Clear All
                 </button>
@@ -402,18 +402,18 @@ const WebinarsPage = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-secondary-900 text-white">
+      <div className="bg-primary-50 border-t border-primary-200">
         <div className="container section text-center">
-          <h2 className="text-3xl font-bold mb-4">
+          <h2 className="text-3xl font-bold mb-4 text-primary-900">
             Want to Host a Webinar?
           </h2>
-          <p className="text-secondary-300 mb-8 max-w-2xl mx-auto">
+          <p className="text-primary-700 mb-8 max-w-2xl mx-auto">
             Share your expertise with our community. We provide the platform, 
             you provide the knowledge.
           </p>
           <Link
             to="/book-consultation"
-            className="btn-lg bg-primary-600 text-white hover:bg-primary-700 shadow-lg"
+            className="inline-block px-8 py-4 bg-primary-600 text-white font-semibold text-lg rounded-xl hover:bg-primary-700 hover:shadow-xl hover:scale-105 transition-all duration-200 shadow-lg border border-primary-500 hover:border-primary-600"
           >
             Propose a Webinar
           </Link>

@@ -34,22 +34,22 @@ const Header = () => {
         { 
           name: t('services.ai_consulting'), 
           href: `${basePath}/${language === 'en' ? 'services/ai-consulting' : 'dienstleistungen/ki-beratung'}`,
-          description: language === 'en' ? 'Strategic AI implementation' : 'Strategische KI-Implementierung'
+          description: t('services.ai_consulting.description')
         },
         { 
           name: t('services.digital_transformation'), 
           href: `${basePath}/${language === 'en' ? 'services/digital-transformation' : 'dienstleistungen/digitale-transformation'}`,
-          description: language === 'en' ? 'Modernize your business' : 'Modernisieren Sie Ihr Unternehmen'
+          description: t('services.digital_transformation.description')
         },
         { 
           name: t('services.data_management'), 
           href: `${basePath}/${language === 'en' ? 'services/data-management' : 'dienstleistungen/datenmanagement'}`,
-          description: language === 'en' ? 'Data strategy and governance' : 'Datenstrategie und Governance'
+          description: t('services.data_management.description')
         },
         { 
           name: t('services.management_advisory'), 
           href: `${basePath}/${language === 'en' ? 'services/management-advisory' : 'dienstleistungen/management-beratung'}`,
-          description: language === 'en' ? 'Strategic IT consulting and transformation' : 'Strategische IT-Beratung und Transformation'
+          description: t('services.management_advisory.description')
         },
       ]
     },
@@ -59,12 +59,12 @@ const Header = () => {
         { 
           name: t('products.data_operating_system'), 
           href: `${basePath}/${language === 'en' ? 'products/data-operating-system' : 'produkte/daten-betriebssystem'}`,
-          description: language === 'en' ? 'Unified data management platform' : 'Einheitliche Datenmanagement-Plattform'
+          description: t('products.data_operating_system.description')
         },
         { 
           name: t('products.private_cloud'), 
           href: `${basePath}/${language === 'en' ? 'products/private-cloud' : 'produkte/private-cloud'}`,
-          description: language === 'en' ? 'Secure cloud infrastructure' : 'Sichere Cloud-Infrastruktur'
+          description: t('products.private_cloud.description')
         },
       ]
     },
@@ -74,17 +74,17 @@ const Header = () => {
         { 
           name: t('solutions.industries'), 
           href: `${basePath}/${language === 'en' ? 'solutions/industries' : 'loesungen/branchen'}`,
-          description: language === 'en' ? 'Industry-specific solutions' : 'Branchenspezifische Lösungen'
+          description: t('solutions.industries.description')
         },
         { 
           name: t('solutions.technology'), 
           href: `${basePath}/${language === 'en' ? 'solutions/technology' : 'loesungen/technologie'}`,
-          description: language === 'en' ? 'Technology platforms' : 'Technologieplattformen'
+          description: t('solutions.technology.description')
         },
         { 
           name: t('solutions.case_studies'), 
           href: `${basePath}/${language === 'en' ? 'solutions/case-studies' : 'loesungen/fallstudien'}`,
-          description: language === 'en' ? 'Success stories' : 'Erfolgsgeschichten'
+          description: t('solutions.case_studies.description')
         },
       ]
     },
@@ -94,12 +94,12 @@ const Header = () => {
         { 
           name: t('resources.webinars'), 
           href: `${basePath}/${language === 'en' ? 'resources/webinars' : 'ressourcen/webinare'}`,
-          description: language === 'en' ? 'Live and recorded webinars' : 'Live und aufgezeichnete Webinare'
+          description: t('resources.webinars.description')
         },
         { 
           name: t('resources.whitepapers'), 
           href: `${basePath}/${language === 'en' ? 'resources/whitepapers' : 'ressourcen/whitepapers'}`,
-          description: language === 'en' ? 'In-depth guides' : 'Ausführliche Leitfäden'
+          description: t('resources.whitepapers.description')
         },
       ]
     }

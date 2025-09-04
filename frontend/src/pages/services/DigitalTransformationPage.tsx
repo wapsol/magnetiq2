@@ -28,28 +28,28 @@ const DigitalTransformationPage: React.FC = () => {
         }
       />
 
-      <div className={backgrounds.page}>
+      <div className={`${backgrounds.page}`}>
         {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white overflow-hidden">
-          <div className="absolute inset-0 bg-black/20"></div>
+        <section className="relative py-20 bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 dark:from-violet-900 dark:via-purple-900 dark:to-indigo-900 text-gray-800 dark:text-white overflow-hidden">
+          <div className="absolute inset-0 bg-violet-100/20 dark:bg-black/20"></div>
           <div className="relative container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
-              <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
-                <RocketLaunchIcon className="h-5 w-5" />
-                <span className="text-sm font-medium">
+              <div className="inline-flex items-center space-x-2 bg-violet-100/80 dark:bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
+                <RocketLaunchIcon className="h-5 w-5 text-violet-600 dark:text-white" />
+                <span className="text-sm font-medium text-violet-700 dark:text-white">
                   {language === 'de' ? 'Innovation durch Digitalisierung' : 'Innovation through Digitalization'}
                 </span>
               </div>
               
               <h1 className="text-4xl md:text-6xl font-bold mb-6">
                 {language === 'de' ? (
-                  <>Digitale <span className="text-blue-400">Transformation</span></>
+                  <>Digitale <span className="text-violet-600 dark:text-violet-400">Transformation</span></>
                 ) : (
-                  <>Digital <span className="text-blue-400">Transformation</span></>
+                  <>Digital <span className="text-violet-600 dark:text-violet-400">Transformation</span></>
                 )}
               </h1>
               
-              <p className="text-xl md:text-2xl text-gray-200 mb-8">
+              <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-200 mb-8">
                 {language === 'de' 
                   ? 'Förderung von Leistungsfähigkeit, Resilienz und Wettbewerbsfähigkeit durch strategischen Einsatz digitaler Technologien'
                   : 'Promoting performance, resilience, and competitiveness through strategic deployment of digital technologies'
@@ -57,17 +57,17 @@ const DigitalTransformationPage: React.FC = () => {
               </p>
               
               <div className="flex flex-wrap justify-center gap-4 mb-8">
-                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-                  <CpuChipIcon className="h-5 w-5 text-blue-400" />
-                  <span className="font-medium">{language === 'de' ? 'SAP Integration' : 'SAP Integration'}</span>
+                <div className="flex items-center space-x-2 bg-violet-100/80 dark:bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+                  <CpuChipIcon className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                  <span className="font-medium text-violet-700 dark:text-white">{language === 'de' ? 'SAP Integration' : 'SAP Integration'}</span>
                 </div>
-                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-                  <CloudArrowUpIcon className="h-5 w-5 text-green-400" />
-                  <span className="font-medium">{language === 'de' ? 'Cloud Migration' : 'Cloud Migration'}</span>
+                <div className="flex items-center space-x-2 bg-violet-100/80 dark:bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+                  <CloudArrowUpIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <span className="font-medium text-violet-700 dark:text-white">{language === 'de' ? 'Cloud Migration' : 'Cloud Migration'}</span>
                 </div>
-                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-                  <ChartBarIcon className="h-5 w-5 text-purple-400" />
-                  <span className="font-medium">{language === 'de' ? 'Analytics & KI' : 'Analytics & AI'}</span>
+                <div className="flex items-center space-x-2 bg-violet-100/80 dark:bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+                  <ChartBarIcon className="h-5 w-5 text-violet-600 dark:text-purple-400" />
+                  <span className="font-medium text-violet-700 dark:text-white">{language === 'de' ? 'Analytics & KI' : 'Analytics & AI'}</span>
                 </div>
               </div>
             </div>
@@ -150,7 +150,7 @@ const DigitalTransformationPage: React.FC = () => {
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
-                <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full px-6 py-2 mb-6">
+                <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-full px-6 py-2 mb-6">
                   <CpuChipIcon className="h-5 w-5" />
                   <span className="font-medium">{language === 'de' ? 'Spezialisierte SAP-Lösungen' : 'Specialized SAP Solutions'}</span>
                 </div>
@@ -268,18 +268,18 @@ const DigitalTransformationPage: React.FC = () => {
         </section>
 
         {/* Call to Action */}
-        <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-700">
+        <section className="py-20 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-600 dark:to-purple-700">
           <div className="container mx-auto px-6 text-center">
-            <h2 className="text-3xl font-bold text-white mb-6">
+            <h2 className="text-3xl font-bold text-violet-900 dark:text-white mb-6">
               {language === 'de' ? 'Bereit für Ihre digitale Transformation?' : 'Ready for Your Digital Transformation?'}
             </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-violet-700 dark:text-violet-100 mb-8 max-w-2xl mx-auto">
               {language === 'de' 
                 ? 'Lassen Sie uns gemeinsam Ihre Unternehmensprozesse modernisieren und Ihre Wettbewerbsfähigkeit stärken.'
                 : 'Let us work together to modernize your business processes and strengthen your competitive advantage.'
               }
             </p>
-            <button className="bg-white text-blue-600 font-bold py-4 px-8 rounded-lg hover:bg-blue-50 transition duration-300 shadow-lg">
+            <button className="bg-violet-600 text-white font-bold py-4 px-8 rounded-lg hover:bg-violet-700 dark:bg-white dark:text-violet-600 dark:hover:bg-gray-100 transition duration-300 shadow-lg">
               {language === 'de' ? 'Beratungstermin vereinbaren' : 'Schedule Consultation'}
             </button>
           </div>

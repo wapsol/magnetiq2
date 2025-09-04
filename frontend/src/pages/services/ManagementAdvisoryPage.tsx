@@ -221,28 +221,28 @@ const ManagementAdvisoryPage: React.FC = () => {
         }
       />
 
-      <div className={backgrounds.page}>
+      <div className={`${backgrounds.page}`}>
         {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white overflow-hidden">
-          <div className="absolute inset-0 bg-black/20"></div>
+        <section className="relative py-20 bg-gradient-to-br from-primary-50 via-primary-100 to-purple-50 text-gray-800 overflow-hidden">
+          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
           <div className="relative container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
-              <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
+              <div className="inline-flex items-center space-x-2 bg-primary-600 text-white rounded-full px-4 py-2 mb-8">
                 <UserGroupIcon className="h-5 w-5" />
                 <span className="text-sm font-medium">
                   {language === 'de' ? '"The Silverbacks are Back"' : '"The Silverbacks are Back"'}
                 </span>
               </div>
               
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 text-primary-900">
                 {language === 'de' ? (
-                  <>Management <span className="text-blue-400">Advisory</span></>
+                  <>Management <span className="text-primary-600">Advisory</span></>
                 ) : (
-                  <>Management <span className="text-blue-400">Advisory</span></>
+                  <>Management <span className="text-primary-600">Advisory</span></>
                 )}
               </h1>
               
-              <p className="text-xl md:text-2xl text-gray-200 mb-8">
+              <p className="text-xl md:text-2xl text-primary-700 mb-8">
                 {language === 'de' 
                   ? 'Strategische IT-Beratung und Transformation mit mindestens 20 Jahren Erfahrung in nationalen und internationalen Projekten'
                   : 'Strategic IT consulting and transformation with at least 20 years of experience in national and international projects'
@@ -250,17 +250,17 @@ const ManagementAdvisoryPage: React.FC = () => {
               </p>
               
               <div className="flex flex-wrap justify-center gap-4 mb-8">
-                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-                  <AcademicCapIcon className="h-5 w-5 text-blue-400" />
-                  <span className="font-medium">20+ {language === 'de' ? 'Jahre Erfahrung' : 'Years Experience'}</span>
+                <div className="flex items-center space-x-2 bg-white border border-primary-200 rounded-lg px-4 py-2">
+                  <AcademicCapIcon className="h-5 w-5 text-primary-600" />
+                  <span className="font-medium text-primary-800">20+ {language === 'de' ? 'Jahre Erfahrung' : 'Years Experience'}</span>
                 </div>
-                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-                  <UserGroupIcon className="h-5 w-5 text-green-400" />
-                  <span className="font-medium">{language === 'de' ? 'Internationale Experten' : 'International Experts'}</span>
+                <div className="flex items-center space-x-2 bg-white border border-primary-200 rounded-lg px-4 py-2">
+                  <UserGroupIcon className="h-5 w-5 text-green-600" />
+                  <span className="font-medium text-primary-800">{language === 'de' ? 'Internationale Experten' : 'International Experts'}</span>
                 </div>
-                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-                  <ShieldCheckIcon className="h-5 w-5 text-purple-400" />
-                  <span className="font-medium">{language === 'de' ? 'Bewährte Methoden' : 'Proven Methods'}</span>
+                <div className="flex items-center space-x-2 bg-white border border-primary-200 rounded-lg px-4 py-2">
+                  <ShieldCheckIcon className="h-5 w-5 text-primary-600" />
+                  <span className="font-medium text-primary-800">{language === 'de' ? 'Bewährte Methoden' : 'Proven Methods'}</span>
                 </div>
               </div>
             </div>

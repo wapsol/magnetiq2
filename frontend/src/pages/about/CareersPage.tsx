@@ -47,43 +47,6 @@ const CareersPage = () => {
     setSelectedPosition(null)
   }
 
-  const founders = [
-    {
-      name: "Ashant Chalasani, M.Sc.",
-      role: language === 'en' ? 'Co-Founder' : 'Mitgründer',
-      quote: language === 'en' 
-        ? 'AI will determine our future for the next 20 to 25 years and beyond. We help companies understand and harness this transformative power.'
-        : 'KI wird unsere Zukunft für die nächsten 20 bis 25 Jahre und darüber hinaus bestimmen. Wir helfen Unternehmen, diese transformative Kraft zu verstehen und zu nutzen.',
-      image: "/images/team/ashant.webp"
-    },
-    {
-      name: "Pascal Köth, Dipl.Ök.",
-      role: language === 'en' ? 'Co-Founder' : 'Mitgründer',
-      quote: language === 'en'
-        ? 'Actively shaping the digital revolution - sustainable adaptation & efficiency improvement through intelligent automation.'
-        : 'Die digitale Revolution aktiv mitgestalten - nachhaltige Adaptierung & Effizienzsteigerung durch intelligente Automatisierung.',
-      image: "/images/team/pascal.webp"
-    }
-  ]
-
-  const advisoryBoard = [
-    {
-      name: "Dr. Codrina Lauth",
-      role: language === 'en' ? 'Executive Director, Perton HPC AI Supercomputing' : 'Geschäftsführerin, Perton HPC AI Supercomputing',
-      quote: language === 'en'
-        ? 'There is no one-size-fits-all AI solution - we create the right AI for each unique challenge.'
-        : 'Es gibt nicht die richtige KI, sondern wir erschaffen sie jedes Mal neu für jede einzigartige Herausforderung.',
-      image: "/images/team/codrina.webp"
-    },
-    {
-      name: "Markus Eberius",
-      role: language === 'en' ? 'CIO/CTO (Previously at Nasdaq)' : 'CIO/CTO (Ehemals bei Nasdaq)',
-      quote: language === 'en'
-        ? 'AI is as useful or dangerous as everything else humanity has created. The key is responsible development and implementation.'
-        : 'KI ist so nützlich oder gefährlich, wie alles was der Mensch geschaffen hat. Der Schlüssel liegt in verantwortlicher Entwicklung und Umsetzung.',
-      image: "/images/team/markus.webp"
-    }
-  ]
 
   const coreValues = [
     {
@@ -208,89 +171,6 @@ const CareersPage = () => {
         </div>
       </section>
 
-      {/* Leadership Team Section */}
-      <section className="py-20">
-        <div className="container">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                {language === 'en' ? 'Meet Our Founders' : 'Lernen Sie unsere Gründer kennen'}
-              </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                {language === 'en'
-                  ? 'Visionary leaders driving AI innovation and business transformation'
-                  : 'Visionäre Führungspersönlichkeiten, die KI-Innovation und Unternehmenstransformation vorantreiben'}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
-              {founders.map((founder) => (
-                <div key={founder.name} className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg">
-                  <div className="flex items-start space-x-6">
-                    <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-gray-700">
-                      <img 
-                        src={founder.image} 
-                        alt={founder.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                        {founder.name}
-                      </h3>
-                      <p className="text-primary-600 dark:text-primary-400 font-medium mb-4">
-                        {founder.role}
-                      </p>
-                      <blockquote className="text-gray-600 dark:text-gray-300 italic">
-                        "{founder.quote}"
-                      </blockquote>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Advisory Board */}
-            <div className="text-center mb-16">
-              <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                {language === 'en' ? 'Advisory Board' : 'Beirat'}
-              </h3>
-              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                {language === 'en'
-                  ? 'Industry experts guiding our strategic direction'
-                  : 'Branchenexperten, die unsere strategische Ausrichtung leiten'}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              {advisoryBoard.map((advisor) => (
-                <div key={advisor.name} className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg">
-                  <div className="flex items-start space-x-6">
-                    <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-gray-700">
-                      <img 
-                        src={advisor.image} 
-                        alt={advisor.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                        {advisor.name}
-                      </h3>
-                      <p className="text-primary-600 dark:text-primary-400 font-medium mb-4 text-sm">
-                        {advisor.role}
-                      </p>
-                      <blockquote className="text-gray-600 dark:text-gray-300 italic">
-                        "{advisor.quote}"
-                      </blockquote>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Core Values Section */}
       <section className="py-20 bg-white dark:bg-gray-800">
@@ -468,10 +348,10 @@ const CareersPage = () => {
                 {language === 'en' ? 'Apply for Interview' : 'Für Interview bewerben'}
               </button>
               <a
-                href="/about/team"
+                href="/about"
                 className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600 transition-colors duration-200"
               >
-                {language === 'en' ? 'Learn About Our Team' : 'Unser Team kennenlernen'}
+                {language === 'en' ? 'Learn About Our Company' : 'Über unser Unternehmen'}
               </a>
             </div>
           </div>

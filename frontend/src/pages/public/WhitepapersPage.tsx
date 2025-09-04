@@ -198,52 +198,52 @@ const WhitepapersPage = () => {
   return (
     <div className={`${backgrounds.pageAlt} min-h-screen`}>
       {/* Hero Section */}
-      <div className={`relative ${gradients.heroPurple} text-white overflow-hidden`}>
-        <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
+      <div className={`relative ${gradients.heroVioletLight} text-gray-900 dark:text-white overflow-hidden`}>
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className={`relative ${responsive.container} py-16 lg:py-20`}>
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex items-center justify-center space-x-2 mb-6">
-              <DocumentTextIcon className="h-12 w-12 text-primary-300" />
+              <DocumentTextIcon className="h-12 w-12 text-violet-600" />
               <h1 className="text-4xl lg:text-6xl font-bold">
                 Knowledge Library
               </h1>
             </div>
-            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
               Download our comprehensive whitepapers, case studies, and research reports 
               to stay ahead in the digital transformation journey.
             </p>
 
             {/* Stats in Hero */}
-            <div className={`${responsive.gridCols4} mb-8 ${backgrounds.overlay} backdrop-blur-sm rounded-2xl p-8 border border-white/20`}>
+            <div className={`${responsive.gridCols4} mb-8 bg-white/60 dark:bg-black/30 backdrop-blur-sm rounded-2xl p-8 border border-violet-200/30 dark:border-violet-800/30 shadow-lg`}>
               <div className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold text-white mb-1">{whitepapers.length}</div>
-                <div className={`text-sm ${textColors.invertedSecondary}`}>Resources Available</div>
+                <div className="text-3xl lg:text-4xl font-bold text-violet-700 dark:text-violet-300 mb-1">{whitepapers.length}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Resources Available</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold text-white mb-1">
+                <div className="text-3xl lg:text-4xl font-bold text-violet-700 dark:text-violet-300 mb-1">
                   {whitepapers.reduce((sum, wp) => sum + wp.downloads, 0).toLocaleString()}
                 </div>
-                <div className={`text-sm ${textColors.invertedSecondary}`}>Total Downloads</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Total Downloads</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold text-white mb-1">
+                <div className="text-3xl lg:text-4xl font-bold text-violet-700 dark:text-violet-300 mb-1">
                   {whitepapers.reduce((sum, wp) => sum + wp.views, 0).toLocaleString()}
                 </div>
-                <div className={`text-sm ${textColors.invertedSecondary}`}>Total Views</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Total Views</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold text-white mb-1">
+                <div className="text-3xl lg:text-4xl font-bold text-violet-700 dark:text-violet-300 mb-1">
                   {Math.round(whitepapers.reduce((sum, wp) => sum + wp.pages, 0) / whitepapers.length)}
                 </div>
-                <div className={`text-sm ${textColors.invertedSecondary}`}>Avg. Pages</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Avg. Pages</div>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="#featured" className="btn-xl bg-primary-600 text-white hover:bg-primary-700 shadow-lg">
+              <a href="#featured" className="btn-xl bg-violet-600 text-white hover:bg-violet-700 shadow-lg">
                 Browse Featured Content
               </a>
-              <a href="#all" className="btn-xl border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm">
+              <a href="#all" className="btn-xl border-2 border-violet-300 dark:border-violet-400 text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-900/30 backdrop-blur-sm">
                 View All Resources
               </a>
             </div>
@@ -252,7 +252,7 @@ const WhitepapersPage = () => {
       </div>
 
       {/* Featured Section */}
-      <div id="featured" className={backgrounds.section}>
+      <div id="featured" className={`${backgrounds.section}`}>
         <div className={`${responsive.container} py-16 lg:py-20`}>
           <div className="text-center mb-12">
             <h2 className={`text-3xl font-bold ${textColors.primary} mb-4`}>
@@ -360,7 +360,7 @@ const WhitepapersPage = () => {
       </div>
 
       {/* All Resources Section */}
-      <div id="all" className={backgrounds.sectionAlt}>
+      <div id="all" className={`${backgrounds.sectionAlt}`}>
         <div className={`${responsive.container} py-16 lg:py-20`}>
           <div className="text-center mb-12">
             <h2 className={`text-3xl font-bold ${textColors.primary} mb-4`}>
@@ -500,12 +500,12 @@ const WhitepapersPage = () => {
       </div>
 
       {/* Newsletter CTA */}
-      <div className="bg-primary-600">
+      <div className="bg-violet-50 dark:bg-violet-900/30 border-t border-violet-100 dark:border-violet-800">
         <div className="container section text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
+          <h2 className="text-3xl font-bold text-violet-900 dark:text-violet-200 mb-4">
             Stay Updated with Latest Research
           </h2>
-          <p className="text-primary-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-violet-700 dark:text-violet-300 mb-8 max-w-2xl mx-auto">
             Subscribe to our newsletter and be the first to know when we publish 
             new whitepapers and research reports.
           </p>
@@ -515,7 +515,7 @@ const WhitepapersPage = () => {
               placeholder="Enter your email"
               className="form-input flex-1"
             />
-            <button className="btn-lg bg-white text-primary-600 hover:bg-primary-50 shadow-lg">
+            <button className="btn-lg bg-violet-600 text-white hover:bg-violet-700 shadow-lg">
               Subscribe
             </button>
           </div>
