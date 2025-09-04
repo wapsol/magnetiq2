@@ -49,6 +49,9 @@ import WebinarsPage from './pages/public/WebinarsPage'
 import WhitepapersPage from './pages/public/WhitepapersPage'
 import BookAMeetingPage from './pages/public/BookAMeetingPage'
 
+// Pages - Consultants
+import ConsultantProfilePage from './pages/consultants/ConsultantProfilePage'
+
 // Auth pages
 import LoginPage from './pages/auth/LoginPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
@@ -122,6 +125,11 @@ function App() {
             <Route path="whitepapers/:slug" element={<WhitepapersPage />} />
             <Route path="blog" element={<HomePage />} />
             <Route path="tools" element={<HomePage />} />
+          </Route>
+          
+          {/* Consultants */}
+          <Route path="consultants">
+            <Route path=":slug" element={<ConsultantProfilePage />} />
           </Route>
           
           {/* About */}
@@ -198,6 +206,11 @@ function App() {
             <Route path="whitepapers/:slug" element={<WhitepapersPage />} />
             <Route path="blog" element={<HomePage />} />
             <Route path="tools" element={<HomePage />} />
+          </Route>
+          
+          {/* Berater (Consultants) */}
+          <Route path="berater">
+            <Route path=":slug" element={<ConsultantProfilePage />} />
           </Route>
           
           {/* Über uns (About) */}

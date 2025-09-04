@@ -54,6 +54,158 @@ class ConsultantService:
         
         return await self._format_consultant_data(consultant)
 
+    async def get_consultant_by_slug(self, slug: str) -> Optional[Dict[str, Any]]:
+        """Get consultant by slug (first-last name format or custom slug)"""
+        
+        # Try direct slug match first (if we add a slug field later)
+        # For now, we'll match based on first-last name format
+        slug_parts = slug.lower().replace('-', ' ').split()
+        
+        if len(slug_parts) >= 2:
+            first_name = slug_parts[0]
+            last_name = ' '.join(slug_parts[1:])
+            
+            result = await self.db.execute(
+                select(Consultant)
+                .options(
+                    selectinload(Consultant.kyc_documents),
+                    selectinload(Consultant.projects),
+                    selectinload(Consultant.reviews)
+                )
+                .where(
+                    and_(
+                        func.lower(Consultant.first_name) == first_name,
+                        func.lower(Consultant.last_name) == last_name,
+                        Consultant.status == ConsultantStatus.ACTIVE  # Only get active consultants
+                    )
+                )
+                .order_by(Consultant.created_at.desc())  # Get the most recent one if multiple
+            )
+            consultant = result.scalar_one_or_none()
+            
+            if consultant:
+                return await self._format_consultant_data(consultant)
+        
+        return None
+
+    async def get_consultant_full_profile(self, consultant_id: str) -> Optional[Dict[str, Any]]:
+        """Get complete consultant profile including reviews and portfolio"""
+        
+        # Get consultant with all related data
+        result = await self.db.execute(
+            select(Consultant)
+            .options(
+                selectinload(Consultant.kyc_documents),
+                selectinload(Consultant.projects),
+                selectinload(Consultant.reviews),
+                selectinload(Consultant.earnings)
+            )
+            .where(Consultant.id == consultant_id)
+        )
+        consultant = result.scalar_one_or_none()
+        
+        if not consultant:
+            return None
+            
+        # Get portfolio items
+        portfolio_result = await self.db.execute(
+            select(ConsultantPortfolio)
+            .where(
+                and_(
+                    ConsultantPortfolio.consultant_id == consultant_id,
+                    ConsultantPortfolio.is_public == True
+                )
+            )
+            .order_by(ConsultantPortfolio.display_order, ConsultantPortfolio.created_at.desc())
+        )
+        portfolio_items = portfolio_result.scalars().all()
+        
+        # Format consultant data
+        consultant_data = await self._format_consultant_data(consultant, include_detailed=True)
+        
+        # Add reviews data
+        reviews_data = []
+        for review in consultant.reviews:
+            if review.is_published:
+                reviews_data.append({
+                    'id': review.id,
+                    'rating': review.rating,
+                    'title': review.title,
+                    'review_text': review.review_text,
+                    'communication_rating': review.communication_rating,
+                    'expertise_rating': review.expertise_rating,
+                    'timeliness_rating': review.timeliness_rating,
+                    'professionalism_rating': review.professionalism_rating,
+                    'value_for_money_rating': review.value_for_money_rating,
+                    'reviewer_name': review.reviewer_name,
+                    'reviewer_company': review.reviewer_company,
+                    'reviewer_title': review.reviewer_title,
+                    'created_at': review.created_at.isoformat(),
+                    'is_featured': review.is_featured
+                })
+        
+        # Add portfolio data
+        portfolio_data = []
+        for item in portfolio_items:
+            portfolio_data.append({
+                'id': item.id,
+                'title': item.title,
+                'description': item.description,
+                'industry': item.industry,
+                'project_type': item.project_type,
+                'technologies_used': item.technologies_used,
+                'thumbnail_url': item.thumbnail_url,
+                'images': item.images,
+                'client_name': item.client_name,
+                'project_duration': item.project_duration,
+                'team_size': item.team_size,
+                'my_role': item.my_role,
+                'outcome_description': item.outcome_description,
+                'metrics_achieved': item.metrics_achieved,
+                'is_featured': item.is_featured,
+                'display_order': item.display_order
+            })
+        
+        # Add availability slots (simplified for now)
+        availability_result = await self.db.execute(
+            select(ConsultantAvailability)
+            .where(
+                and_(
+                    ConsultantAvailability.consultant_id == consultant_id,
+                    ConsultantAvailability.is_available == True
+                )
+            )
+            .order_by(ConsultantAvailability.day_of_week, ConsultantAvailability.start_time)
+        )
+        availability_slots = availability_result.scalars().all()
+        
+        availability_data = []
+        for slot in availability_slots:
+            availability_data.append({
+                'day_of_week': slot.day_of_week,
+                'start_time': slot.start_time,
+                'end_time': slot.end_time,
+                'timezone': slot.timezone,
+                'is_available': slot.is_available
+            })
+        
+        # Combine all data
+        full_profile = {
+            **consultant_data,
+            'reviews': reviews_data,
+            'portfolio': portfolio_data,
+            'availability': availability_data,
+            'statistics': {
+                'total_reviews': len(reviews_data),
+                'average_rating': consultant_data['average_rating'],
+                'total_projects': consultant_data['total_projects'],
+                'completed_projects': consultant_data['completed_projects'],
+                'success_rate': consultant_data['success_rate']
+            }
+        }
+        
+        return full_profile
+
     async def create_consultant(
         self,
         consultant_data: Dict[str, Any],

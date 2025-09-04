@@ -229,6 +229,41 @@ async def get_consultant_profile(
         raise HTTPException(status_code=500, detail="Failed to retrieve consultant")
 
 
+@router.get("/public/profile/{slug}")
+async def get_consultant_public_profile(
+    slug: str,
+    db: AsyncSession = Depends(get_db)
+):
+    """Get public consultant profile by slug (first_name-last_name or custom slug)"""
+    
+    try:
+        service = ConsultantService(db)
+        
+        # Try to find consultant by slug (could be first-last name or custom slug)
+        consultant = await service.get_consultant_by_slug(slug)
+        
+        if not consultant:
+            raise HTTPException(status_code=404, detail="Consultant not found")
+        
+        # Only show active consultants publicly
+        if consultant['status'] != ConsultantStatus.ACTIVE:
+            raise HTTPException(status_code=404, detail="Consultant not available")
+        
+        # Get additional profile data including reviews and portfolio
+        profile_data = await service.get_consultant_full_profile(consultant['id'])
+        
+        return {
+            'success': True,
+            'data': profile_data
+        }
+        
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Get consultant profile error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve consultant profile")
+
+
 # Admin endpoints for consultant management
 @router.post("/admin/consultants")
 async def create_consultant_admin(
