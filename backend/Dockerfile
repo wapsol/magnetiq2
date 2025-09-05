@@ -35,10 +35,10 @@ RUN mkdir -p data media logs
 RUN chmod +x scripts/*.py
 
 # Expose port
-EXPOSE 3036
+EXPOSE 4036
 
 # Default command for development
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3036", "--reload"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "4036", "--reload"]
 
 # Production stage
 FROM base as production
@@ -54,7 +54,7 @@ RUN mkdir -p data media logs && \
 USER nobody
 
 # Expose port
-EXPOSE 3036
+EXPOSE 4036
 
 # Production command with Gunicorn
-CMD ["gunicorn", "app.main:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:3036"]
+CMD ["gunicorn", "app.main:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:4036"]

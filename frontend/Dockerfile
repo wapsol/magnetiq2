@@ -26,7 +26,7 @@ RUN npm ci
 COPY . .
 
 # Expose port
-EXPOSE 8036
+EXPOSE 9036
 
 # Development command
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

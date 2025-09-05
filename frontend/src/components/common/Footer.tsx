@@ -117,7 +117,7 @@ const Footer = () => {
           <div className="text-center mt-6">
             <Link
               to="/webinars"
-              className="inline-flex items-center px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-lg font-medium transition-colors duration-200"
+              className="inline-flex items-center px-6 py-3 bg-violet-700 hover:bg-violet-800 text-white rounded-lg font-medium"
             >
               {language === 'de' ? 'Alle Webinare anzeigen' : 'View All Webinars'}
             </Link>

@@ -245,7 +245,7 @@ export function generateTwitterShare(
   // Generate thread for longer content
   const thread = [
     message,
-    `🎯 What you'll learn:\\n${webinar.description.slice(0, 200)}...`,
+    `🎯 What you'll learn:\\n${webinar.description && typeof webinar.description === 'string' ? webinar.description.slice(0, 200) + '...' : 'Key insights and actionable strategies'}`,
     `📊 Perfect for: ${getRoleSpecificMessage(webinar, userProfile)}\\n\\nRegister: ${shareUrl}`
   ];
 
@@ -422,7 +422,7 @@ export function generateWhatsAppShare(
     message += `📅 Date: ${dateStr}\\n`;
   }
 
-  message += `\\n📚 ${webinar.description.slice(0, 100)}...\\n\\n`;
+  message += `\\n📚 ${webinar.description && typeof webinar.description === 'string' ? webinar.description.slice(0, 100) + '...' : 'Join this insightful webinar'}\\n\\n`;
   message += `Register: ${shareUrl}`;
 
   const whatsappUrl = `https://wa.me/?${new URLSearchParams({
@@ -584,7 +584,7 @@ export function generateSocialMetaTags(webinar: WebinarSharingData): {
   twitterImage: string;
 } {
   const title = `${webinar.title} | Expert Webinar by voltAIc Systems`;
-  const description = `${webinar.description.slice(0, 160)}... Join ${webinar.presenter || 'expert presenters'} in this exclusive webinar.`;
+  const description = `${webinar.description && typeof webinar.description === 'string' ? webinar.description.slice(0, 160) + '...' : 'Discover valuable insights and best practices'} Join ${webinar.presenter || 'expert presenters'} in this exclusive webinar.`;
 
   return {
     title,

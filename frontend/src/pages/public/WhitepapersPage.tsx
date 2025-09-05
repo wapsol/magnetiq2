@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { backgrounds, textColors, getCardClasses, getSectionClasses, gradients, responsive, shadows, borders } from '../../utils/styling'
 import { 
   DocumentTextIcon, 
-  EyeIcon,
   CalendarDaysIcon,
   UserIcon,
   ChartBarIcon,
@@ -10,7 +9,6 @@ import {
   FunnelIcon,
   ArrowDownTrayIcon,
   ShareIcon,
-  HeartIcon,
   ClockIcon,
   TagIcon
 } from '@heroicons/react/24/outline'
@@ -87,7 +85,7 @@ const WhitepapersPage = () => {
       publishDate: '2024-01-10',
       readTime: '15 min read',
       pages: 24,
-      downloads: 1247,
+      downloads: 73,
       views: 5632,
       featured: true,
       tags: ['AI', 'CMS', 'Technology', 'Innovation'],
@@ -104,7 +102,7 @@ const WhitepapersPage = () => {
       publishDate: '2024-01-08',
       readTime: '12 min read',
       pages: 18,
-      downloads: 892,
+      downloads: 89,
       views: 3421,
       featured: false,
       tags: ['SaaS', 'Scaling', 'Case Study', 'Growth'],
@@ -121,7 +119,7 @@ const WhitepapersPage = () => {
       publishDate: '2024-01-05',
       readTime: '25 min read',
       pages: 42,
-      downloads: 2156,
+      downloads: 67,
       views: 8934,
       featured: true,
       tags: ['Digital Transformation', 'Enterprise', 'Research', 'Trends'],
@@ -138,7 +136,7 @@ const WhitepapersPage = () => {
       publishDate: '2024-01-03',
       readTime: '18 min read',
       pages: 31,
-      downloads: 734,
+      downloads: 91,
       views: 2845,
       featured: false,
       tags: ['Security', 'Web Development', 'Implementation', 'Best Practices'],
@@ -155,7 +153,7 @@ const WhitepapersPage = () => {
       publishDate: '2023-12-28',
       readTime: '20 min read',
       pages: 28,
-      downloads: 1089,
+      downloads: 84,
       views: 4567,
       featured: true,
       tags: ['Machine Learning', 'Personalization', 'AI', 'Content'],
@@ -172,7 +170,7 @@ const WhitepapersPage = () => {
       publishDate: '2023-12-20',
       readTime: '14 min read',
       pages: 22,
-      downloads: 567,
+      downloads: 76,
       views: 2134,
       featured: false,
       tags: ['ROI', 'Migration', 'CMS', 'Analysis'],
@@ -202,13 +200,13 @@ const WhitepapersPage = () => {
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'whitepaper':
-        return DocumentTextIcon
-      case 'case-study':
-        return ChartBarIcon
-      case 'report':
-        return ChartBarIcon
       case 'guide':
         return DocumentTextIcon
+      case 'case-study':
+      case 'report':
+      case 'research':
+      case 'best-practices':
+        return ChartBarIcon
       default:
         return DocumentTextIcon
     }
@@ -264,13 +262,13 @@ const WhitepapersPage = () => {
               </div>
               <div className="text-center">
                 <div className="text-3xl lg:text-4xl font-bold text-violet-700 dark:text-violet-300 mb-1">
-                  {whitepapers.reduce((sum, wp) => sum + (wp.downloads || 0), 0).toLocaleString()}
+                  {whitepapers.reduce((sum, wp) => sum + (wp.download_count || wp.downloads || 0), 0).toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Total Downloads</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl lg:text-4xl font-bold text-violet-700 dark:text-violet-300 mb-1">
-                  {whitepapers.reduce((sum, wp) => sum + (wp.views || 0), 0).toLocaleString()}
+                  {whitepapers.reduce((sum, wp) => sum + (wp.view_count || wp.views || 0), 0).toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Total Views</div>
               </div>
@@ -308,7 +306,7 @@ const WhitepapersPage = () => {
 
           <div className={`${responsive.gridCols3} mb-16`}>
             {featuredWhitepapers.map((whitepaper, index) => {
-              const TypeIcon = getTypeIcon(whitepaper.type || 'document')
+              const TypeIcon = getTypeIcon(whitepaper.category || whitepaper.type || 'document')
               return (
                 <div 
                   key={whitepaper.id} 
@@ -323,19 +321,19 @@ const WhitepapersPage = () => {
                       <span className="badge badge-warning">✨ Featured</span>
                     </div>
                     <div className="absolute top-4 right-4">
-                      <span className={`badge ${getTypeColor(whitepaper.type || 'document')}`}>
-                        {whitepaper.type ? whitepaper.type.charAt(0).toUpperCase() + whitepaper.type.slice(1).replace('-', ' ') : 'Document'}
+                      <span className={`badge ${getTypeColor(whitepaper.category || whitepaper.type || 'document')}`}>
+                        {(whitepaper.category || whitepaper.type || 'document').charAt(0).toUpperCase() + (whitepaper.category || whitepaper.type || 'document').slice(1).replace('-', ' ')}
                       </span>
                     </div>
                   </div>
 
                   <div className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-primary-700 transition-colors line-clamp-2">
-                      {whitepaper.title?.en || whitepaper.title}
+                    <h3 className="text-base font-semibold text-gray-900 mb-3 group-hover:text-primary-700 transition-colors line-clamp-2">
+                      {typeof whitepaper.title === 'object' ? whitepaper.title.en || whitepaper.title.de : whitepaper.title}
                     </h3>
 
                     <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                      {whitepaper.description?.en || whitepaper.description}
+                      {typeof whitepaper.description === 'object' ? whitepaper.description.en || whitepaper.description.de : whitepaper.description}
                     </p>
 
                     {(whitepaper.author || whitepaper.authorTitle) && (
@@ -359,7 +357,7 @@ const WhitepapersPage = () => {
                     <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
                       <div className="flex items-center">
                         <CalendarDaysIcon className="h-4 w-4 mr-1" />
-                        {formatDate(whitepaper.publishDate || whitepaper.published_at)}
+                        {formatDate(whitepaper.published_at || whitepaper.publishDate)}
                       </div>
                       {whitepaper.readTime && (
                         <div className="flex items-center">
@@ -369,7 +367,7 @@ const WhitepapersPage = () => {
                       )}
                       <div className="flex items-center">
                         <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
-                        {whitepaper.downloads || whitepaper.download_count || 0}
+                        {whitepaper.download_count || whitepaper.downloads || 0}
                       </div>
                     </div>
 
@@ -391,14 +389,7 @@ const WhitepapersPage = () => {
                       </button>
                       <div className="flex space-x-2">
                         <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
-                          <EyeIcon className="h-4 w-4" />
-                          <span className="sr-only">{whitepaper.view_count || 0} views</span>
-                        </button>
-                        <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
                           <ShareIcon className="h-4 w-4" />
-                        </button>
-                        <button className="p-2 text-gray-400 hover:text-error-500 rounded-lg hover:bg-gray-100">
-                          <HeartIcon className="h-4 w-4" />
                         </button>
                       </div>
                     </div>
@@ -422,57 +413,11 @@ const WhitepapersPage = () => {
             </p>
           </div>
 
-          {/* Filters */}
-          <div className={`${backgrounds.card} p-6 rounded-xl ${shadows.sm} border ${borders.default} mb-8`}>
-            <div className="flex flex-col lg:flex-row lg:items-center gap-6">
-              <div className="flex-1">
-                <div className="relative">
-                  <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search resources by title, author, or tags..."
-                    className="form-input pl-10 w-full"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-4">
-                <div className="flex items-center space-x-2">
-                  <FunnelIcon className="h-5 w-5 text-gray-400" />
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="form-select"
-                  >
-                    {categories.map(category => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <select
-                  value={selectedType}
-                  onChange={(e) => setSelectedType(e.target.value)}
-                  className="form-select"
-                >
-                  {types.map(type => (
-                    <option key={type.id} value={type.id}>
-                      {type.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
 
           {/* Resources Grid */}
           <div className={responsive.gridCols3}>
             {filteredWhitepapers.map((whitepaper, index) => {
-              const TypeIcon = getTypeIcon(whitepaper.type || 'document')
+              const TypeIcon = getTypeIcon(whitepaper.category || whitepaper.type || 'document')
               return (
                 <div 
                   key={whitepaper.id} 
@@ -484,8 +429,8 @@ const WhitepapersPage = () => {
                       <TypeIcon className="h-16 w-16 text-gray-400" />
                     </div>
                     <div className="absolute top-4 right-4">
-                      <span className={`badge ${getTypeColor(whitepaper.type || 'document')}`}>
-                        {whitepaper.type ? whitepaper.type.charAt(0).toUpperCase() + whitepaper.type.slice(1).replace('-', ' ') : 'Document'}
+                      <span className={`badge ${getTypeColor(whitepaper.category || whitepaper.type || 'document')}`}>
+                        {(whitepaper.category || whitepaper.type || 'document').charAt(0).toUpperCase() + (whitepaper.category || whitepaper.type || 'document').slice(1).replace('-', ' ')}
                       </span>
                     </div>
                     {whitepaper.featured && (
@@ -496,12 +441,12 @@ const WhitepapersPage = () => {
                   </div>
 
                   <div className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary-700 transition-colors line-clamp-2">
-                      {whitepaper.title?.en || whitepaper.title}
+                    <h3 className="text-base font-semibold text-gray-900 mb-2 group-hover:text-primary-700 transition-colors line-clamp-2">
+                      {typeof whitepaper.title === 'object' ? whitepaper.title.en || whitepaper.title.de : whitepaper.title}
                     </h3>
 
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {whitepaper.description?.en || whitepaper.description}
+                      {typeof whitepaper.description === 'object' ? whitepaper.description.en || whitepaper.description.de : whitepaper.description}
                     </p>
 
                     <div className="flex items-center text-xs text-gray-500 mb-4">
@@ -524,7 +469,7 @@ const WhitepapersPage = () => {
                         Download
                       </button>
                       <div className="text-xs text-gray-500">
-                        {whitepaper.downloads || whitepaper.download_count || 0} downloads
+                        {whitepaper.download_count || whitepaper.downloads || 0} downloads
                       </div>
                     </div>
                   </div>

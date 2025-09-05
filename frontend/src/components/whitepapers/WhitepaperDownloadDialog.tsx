@@ -224,8 +224,8 @@ export const WhitepaperDownloadDialog: React.FC<WhitepaperDownloadDialogProps> =
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Contact Information */}
             <div>
-              <h3 className="flex items-center space-x-2 font-medium text-gray-900 dark:text-white mb-4">
-                <User size={20} />
+              <h3 className="flex items-center space-x-2 font-medium text-gray-900 dark:text-white mb-4 text-sm">
+                <User size={16} />
                 <span>Contact Information</span>
               </h3>
               
@@ -309,8 +309,8 @@ export const WhitepaperDownloadDialog: React.FC<WhitepaperDownloadDialogProps> =
 
             {/* Business Information */}
             <div className="border-t pt-6">
-              <h3 className="flex items-center space-x-2 font-medium text-gray-900 dark:text-white mb-4">
-                <Building size={20} />
+              <h3 className="flex items-center space-x-2 font-medium text-gray-900 dark:text-white mb-4 text-sm">
+                <Building size={16} />
                 <span>Business Information</span>
                 <span className="text-xs text-gray-500">(Optional)</span>
               </h3>

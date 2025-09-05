@@ -5,21 +5,21 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      target: development
     ports:
-      - "3036:3036"
+      - "4036:4036"
     environment:
       - ENVIRONMENT=development
       - DATABASE_URL=sqlite+aiosqlite:///./data/magnetiq.db
       - DEBUG=true
       - SECRET_KEY=dev-secret-key-change-in-production
-      - ALLOWED_ORIGINS=http://localhost:8036
     volumes:
       - ./backend:/app
       - ./data:/app/data
       - ./media:/app/media
-    command: uvicorn app.main:app --host 0.0.0.0 --port 3036 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 4036 --reload
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3036/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:4036/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -28,10 +28,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      target: development
     ports:
-      - "8036:8036"
+      - "9036:9036"
     environment:
-      - VITE_API_URL=http://localhost:3036
+      - VITE_API_URL=http://localhost:4036
     volumes:
       - ./frontend:/app
       - /app/node_modules
