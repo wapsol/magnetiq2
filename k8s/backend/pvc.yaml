@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: magnetiq-data-pvc
+  namespace: magnetiq-v2
+  labels:
+    app: magnetiq
+    component: backend
+    type: data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: longhorn-retain
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: magnetiq-media-pvc
+  namespace: magnetiq-v2
+  labels:
+    app: magnetiq
+    component: backend
+    type: media
+spec:
+  accessModes:
+  - ReadWriteMany
+  storageClassName: longhorn-retain
+  resources:
+    requests:
+      storage: 10Gi

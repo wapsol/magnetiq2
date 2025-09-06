@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: magnetiq-frontend
+  namespace: magnetiq-v2
+  labels:
+    app: magnetiq-frontend
+    component: frontend
+    version: v2.0.0
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: magnetiq-frontend
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: magnetiq-frontend
+        component: frontend
+        version: v2.0.0
+    spec:
+      containers:
+      - name: frontend
+        image: crep.re-cloud.io/magnetiq/v2/frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9036
+          name: http
+          protocol: TCP
+        env:
+        - name: VITE_API_URL
+          value: "https://magnetiq.voltaic.systems/api"
+        - name: NODE_ENV
+          value: "production"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 9036
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 9036
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 15"]
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30

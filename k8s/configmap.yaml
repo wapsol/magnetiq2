@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: magnetiq-config
+  namespace: magnetiq-v2
+data:
+  # Application Configuration
+  APP_NAME: "Magnetiq v2"
+  VERSION: "2.0.0"
+  ENVIRONMENT: "production"
+  DEBUG: "false"
+  
+  # Server Configuration
+  HOST: "0.0.0.0"
+  BACKEND_PORT: "4036"
+  FRONTEND_PORT: "9036"
+  
+  # Database Configuration
+  DATABASE_URL: "sqlite+aiosqlite:///app/data/magnetiq.db"
+  
+  # CORS Configuration
+  ALLOWED_ORIGINS: '["https://magnetiq.voltaic.systems", "http://localhost:9036"]'
+  
+  # SMTP Configuration (non-sensitive)
+  SMTP_HOST: "smtp-relay.brevo.com"
+  SMTP_PORT: "587"
+  SMTP_FROM_EMAIL: "noreply@voltaic.systems"
+  SMTP_FROM_NAME: "voltAIc Systems"
+  SMTP_USE_TLS: "false"
+  SMTP_USE_STARTTLS: "true"
+  
+  # Business Email Configuration
+  BUSINESS_EMAIL_CRM: "hello@voltaic.systems"
+  BUSINESS_EMAIL_SUPPORT: "support@voltaic.systems"
+  
+  # Token Expiration
+  ACCESS_TOKEN_EXPIRE_MINUTES: "15"
+  REFRESH_TOKEN_EXPIRE_DAYS: "7"

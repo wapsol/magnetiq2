@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: magnetiq-backend
+  namespace: magnetiq-v2
+  labels:
+    app: magnetiq-backend
+    component: backend
+spec:
+  type: ClusterIP
+  ports:
+  - port: 4036
+    targetPort: 4036
+    protocol: TCP
+    name: http
+  selector:
+    app: magnetiq-backend
+    component: backend
+  sessionAffinity: None

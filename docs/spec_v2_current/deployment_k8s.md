@@ -1,573 +1,249 @@
-# Kubernetes Deployment Specification for Magnetiq v2
+# Kubernetes Deployment Guide for Magnetiq v2
 
 ## Overview
-This document provides the complete Kubernetes deployment configuration for Magnetiq v2, designed for production deployment with Longhorn persistent storage using standard kubectl commands.
+This document provides a comprehensive guide for deploying Magnetiq v2 to a Kubernetes cluster using Longhorn for persistent storage. All Kubernetes manifests are organized in the `./k8s/` directory.
 
-## Architecture Overview
+## Prerequisites
 
-### Deployment Strategy
-- **Orchestration**: Kubernetes v1.24+
-- **Storage**: Longhorn distributed storage for persistence
-- **Networking**: Ingress controller with SSL termination
-- **Scaling**: Horizontal Pod Autoscaling (HPA) enabled
-- **Monitoring**: Prometheus metrics and health endpoints
+### Required Components
+- **Kubernetes Cluster**: Version 1.24 or higher
+- **kubectl**: Configured with cluster access
+- **Longhorn**: Installed and configured for persistent storage
+- **NGINX Ingress Controller**: For traffic routing
+- **cert-manager**: For SSL certificate management
+- **Container Registry Access**: Access to `crep.re-cloud.io/magnetiq/v2`
 
-### Component Architecture
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        Ingress Controller                     │
-│                     (SSL Termination/Routing)                 │
-└─────────────┬──────────────────────────┬────────────────────┘
-              │                          │
-              v                          v
-┌──────────────────────┐    ┌──────────────────────┐
-│   Frontend Service   │    │   Backend Service    │
-│    (Port: 9036)      │───>│    (Port: 4036)      │
-│   React Application  │    │   FastAPI Server     │
-└──────────────────────┘    └──────────────────────┘
-                                        │
-                                        v
-                            ┌──────────────────────┐
-                            │  Persistent Volume   │
-                            │   (Longhorn PVC)     │
-                            │  - SQLite Database   │
-                            │  - Media Files       │
-                            └──────────────────────┘
-```
+### Optional Components
+- **Metrics Server**: For HPA functionality
+- **Prometheus/Grafana**: For monitoring
 
-## Kubernetes Manifests
+## Repository Information
 
-### Directory Structure
+### Container Registry
+- **Registry URL**: `https://crep.re-cloud.io`
+- **Project**: `magnetiq`
+- **Repository**: `magnetiq/v2`
+- **Images**:
+  - Backend: `crep.re-cloud.io/magnetiq/v2/backend:latest`
+  - Frontend: `crep.re-cloud.io/magnetiq/v2/frontend:latest`
+
+## Directory Structure
+
 ```
 k8s/
-├── namespace.yaml              # Dedicated namespace isolation
-├── configmap.yaml             # Non-sensitive configuration
-├── secrets.yaml               # Sensitive configuration
-├── backend/
-│   ├── deployment.yaml        # Backend FastAPI deployment
-│   ├── service.yaml          # Backend service definition
-│   └── pvc.yaml              # Persistent Volume Claims
-├── frontend/
-│   ├── deployment.yaml        # Frontend React deployment
-│   └── service.yaml          # Frontend service definition
+├── namespace.yaml              # Namespace definition
+├── configmap.yaml             # Application configuration
+├── secrets.yaml               # Sensitive credentials
 ├── storage.yaml               # Longhorn StorageClass
-└── ingress.yaml              # Traffic routing and SSL
+├── backend/
+│   ├── deployment.yaml        # Backend deployment
+│   ├── service.yaml          # Backend service
+│   └── pvc.yaml              # Persistent volume claims
+├── frontend/
+│   ├── deployment.yaml        # Frontend deployment
+│   └── service.yaml          # Frontend service
+├── ingress.yaml              # Ingress routing rules
+├── hpa.yaml                  # Horizontal Pod Autoscaling
+├── network-policy.yaml       # Network security policies
+└── rbac.yaml                 # Role-based access control
 ```
 
-### 1. Namespace Configuration
+## Configuration Files
 
-**File: `k8s/namespace.yaml`**
-```yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: magnetiq-v2
-  labels:
-    app: magnetiq-v2
-    environment: production
-```
+### 1. Namespace (`k8s/namespace.yaml`)
+Creates an isolated namespace for all Magnetiq v2 resources.
 
-### 2. ConfigMap Configuration
+### 2. ConfigMap (`k8s/configmap.yaml`)
+Contains non-sensitive application configuration:
+- Application settings
+- Database connection strings
+- SMTP server configuration
+- CORS origins
 
-**File: `k8s/configmap.yaml`**
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: magnetiq-config
-  namespace: magnetiq-v2
-data:
-  # Application Configuration
-  APP_NAME: "Magnetiq v2"
-  VERSION: "2.0.0"
-  ENVIRONMENT: "production"
-  DEBUG: "false"
-  
-  # Server Configuration
-  HOST: "0.0.0.0"
-  BACKEND_PORT: "4036"
-  FRONTEND_PORT: "9036"
-  
-  # Database Configuration
-  DATABASE_URL: "sqlite+aiosqlite:///app/data/magnetiq.db"
-  
-  # CORS Configuration
-  ALLOWED_ORIGINS: '["https://magnetiq.voltaic.systems"]'
-  
-  # SMTP Configuration (non-sensitive)
-  SMTP_HOST: "smtp-relay.brevo.com"
-  SMTP_PORT: "587"
-  SMTP_FROM_EMAIL: "noreply@voltaic.systems"
-  SMTP_FROM_NAME: "voltAIc Systems"
-  SMTP_USE_TLS: "false"
-  SMTP_USE_STARTTLS: "true"
-  
-  # Business Email Configuration
-  BUSINESS_EMAIL_CRM: "hello@voltaic.systems"
-  BUSINESS_EMAIL_SUPPORT: "support@voltaic.systems"
-```
+### 3. Secrets (`k8s/secrets.yaml`)
+Stores sensitive data:
+- JWT secret keys
+- SMTP credentials
+- Database passwords
+- Registry credentials
 
-### 3. Secrets Configuration
+**Important**: Edit this file before deployment to add your actual credentials.
 
-**File: `k8s/secrets.yaml`**
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: magnetiq-secrets
-  namespace: magnetiq-v2
-type: Opaque
-stringData:
-  # Security Keys
-  SECRET_KEY: "your-production-secret-key-change-this"
-  ALGORITHM: "HS256"
-  
-  # Token Expiration
-  ACCESS_TOKEN_EXPIRE_MINUTES: "15"
-  REFRESH_TOKEN_EXPIRE_DAYS: "7"
-  
-  # SMTP Credentials
-  SMTP_USERNAME: "sysadmin@euroblaze.de"
-  SMTP_PASSWORD: "your-smtp-password"
-  
-  # Database Password (if using PostgreSQL in future)
-  DATABASE_PASSWORD: ""
-```
+### 4. Storage (`k8s/storage.yaml`)
+Defines Longhorn StorageClass with:
+- 3 replicas for data redundancy
+- Retain reclaim policy
+- Volume expansion support
 
-### 4. Longhorn StorageClass
+### 5. Backend Resources
+- **Deployment** (`k8s/backend/deployment.yaml`): 2 replicas with health checks
+- **Service** (`k8s/backend/service.yaml`): ClusterIP service on port 4036
+- **PVC** (`k8s/backend/pvc.yaml`): 5Gi for data, 10Gi for media
 
-**File: `k8s/storage.yaml`**
-```yaml
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: longhorn-retain
-provisioner: driver.longhorn.io
-allowVolumeExpansion: true
-reclaimPolicy: Retain
-volumeBindingMode: Immediate
-parameters:
-  numberOfReplicas: "3"
-  staleReplicaTimeout: "2880"
-  fromBackup: ""
-  fsType: "ext4"
-```
+### 6. Frontend Resources
+- **Deployment** (`k8s/frontend/deployment.yaml`): 3 replicas for high availability
+- **Service** (`k8s/frontend/service.yaml`): ClusterIP service on port 9036
 
-### 5. Backend Deployment
+### 7. Ingress (`k8s/ingress.yaml`)
+Configures routing for:
+- `/api/*` → Backend service
+- `/docs`, `/redoc` → API documentation
+- `/` → Frontend application
 
-**File: `k8s/backend/deployment.yaml`**
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: magnetiq-backend
-  namespace: magnetiq-v2
-  labels:
-    app: magnetiq-backend
-    component: backend
-spec:
-  replicas: 2
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
-  selector:
-    matchLabels:
-      app: magnetiq-backend
-  template:
-    metadata:
-      labels:
-        app: magnetiq-backend
-        component: backend
-    spec:
-      containers:
-      - name: backend
-        image: registry.voltaic.systems/magnetiq-backend:v2.0.0
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 4036
-          name: http
-        envFrom:
-        - configMapRef:
-            name: magnetiq-config
-        - secretRef:
-            name: magnetiq-secrets
-        volumeMounts:
-        - name: data-volume
-          mountPath: /app/data
-        - name: media-volume
-          mountPath: /app/media
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 4036
-          initialDelaySeconds: 30
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 4036
-          initialDelaySeconds: 10
-          periodSeconds: 10
-      volumes:
-      - name: data-volume
-        persistentVolumeClaim:
-          claimName: magnetiq-data-pvc
-      - name: media-volume
-        persistentVolumeClaim:
-          claimName: magnetiq-media-pvc
-```
+### 8. HPA (`k8s/hpa.yaml`)
+Auto-scaling configuration:
+- Backend: 2-10 replicas (CPU 70%, Memory 80%)
+- Frontend: 3-15 replicas (CPU 80%, Memory 85%)
 
-**File: `k8s/backend/service.yaml`**
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: magnetiq-backend
-  namespace: magnetiq-v2
-  labels:
-    app: magnetiq-backend
-spec:
-  type: ClusterIP
-  ports:
-  - port: 4036
-    targetPort: 4036
-    protocol: TCP
-    name: http
-  selector:
-    app: magnetiq-backend
-```
+### 9. Network Policies (`k8s/network-policy.yaml`)
+Implements network segmentation:
+- Frontend can only access backend
+- Backend can access external services (SMTP, APIs)
+- Both allow DNS resolution
 
-**File: `k8s/backend/pvc.yaml`**
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: magnetiq-data-pvc
-  namespace: magnetiq-v2
-spec:
-  accessModes:
-  - ReadWriteOnce
-  storageClassName: longhorn-retain
-  resources:
-    requests:
-      storage: 5Gi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: magnetiq-media-pvc
-  namespace: magnetiq-v2
-spec:
-  accessModes:
-  - ReadWriteMany
-  storageClassName: longhorn-retain
-  resources:
-    requests:
-      storage: 10Gi
-```
-
-### 6. Frontend Deployment
-
-**File: `k8s/frontend/deployment.yaml`**
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: magnetiq-frontend
-  namespace: magnetiq-v2
-  labels:
-    app: magnetiq-frontend
-    component: frontend
-spec:
-  replicas: 3
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
-  selector:
-    matchLabels:
-      app: magnetiq-frontend
-  template:
-    metadata:
-      labels:
-        app: magnetiq-frontend
-        component: frontend
-    spec:
-      containers:
-      - name: frontend
-        image: registry.voltaic.systems/magnetiq-frontend:v2.0.0
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 9036
-          name: http
-        env:
-        - name: VITE_API_URL
-          value: "https://magnetiq.voltaic.systems/api"
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "100m"
-          limits:
-            memory: "256Mi"
-            cpu: "200m"
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 9036
-          initialDelaySeconds: 30
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 9036
-          initialDelaySeconds: 10
-          periodSeconds: 10
-```
-
-**File: `k8s/frontend/service.yaml`**
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: magnetiq-frontend
-  namespace: magnetiq-v2
-  labels:
-    app: magnetiq-frontend
-spec:
-  type: ClusterIP
-  ports:
-  - port: 9036
-    targetPort: 9036
-    protocol: TCP
-    name: http
-  selector:
-    app: magnetiq-frontend
-```
-
-### 7. Ingress Configuration
-
-**File: `k8s/ingress.yaml`**
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: magnetiq-ingress
-  namespace: magnetiq-v2
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
-spec:
-  ingressClassName: nginx
-  tls:
-  - hosts:
-    - magnetiq.voltaic.systems
-    secretName: magnetiq-tls
-  rules:
-  - host: magnetiq.voltaic.systems
-    http:
-      paths:
-      - path: /api
-        pathType: Prefix
-        backend:
-          service:
-            name: magnetiq-backend
-            port:
-              number: 4036
-      - path: /docs
-        pathType: Prefix
-        backend:
-          service:
-            name: magnetiq-backend
-            port:
-              number: 4036
-      - path: /redoc
-        pathType: Prefix
-        backend:
-          service:
-            name: magnetiq-backend
-            port:
-              number: 4036
-      - path: /openapi.json
-        pathType: Exact
-        backend:
-          service:
-            name: magnetiq-backend
-            port:
-              number: 4036
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: magnetiq-frontend
-            port:
-              number: 9036
-```
-
-### 8. Horizontal Pod Autoscaling (Optional)
-
-**File: `k8s/hpa.yaml`**
-```yaml
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: magnetiq-backend-hpa
-  namespace: magnetiq-v2
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: magnetiq-backend
-  minReplicas: 2
-  maxReplicas: 10
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
----
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: magnetiq-frontend-hpa
-  namespace: magnetiq-v2
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: magnetiq-frontend
-  minReplicas: 3
-  maxReplicas: 15
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 80
-```
+### 10. RBAC (`k8s/rbac.yaml`)
+Defines permissions for:
+- Service account creation
+- Pod and service monitoring
+- Configuration access
 
 ## Deployment Process
 
-### Prerequisites
-1. **Kubernetes Cluster**: Ensure you have access to a Kubernetes cluster (v1.24+)
-2. **kubectl**: Install and configure kubectl CLI tool
-3. **Longhorn**: Ensure Longhorn is installed and configured in your cluster
-4. **Container Registry**: Access to registry.voltaic.systems or your container registry
-5. **SSL Certificate**: cert-manager installed for automatic SSL certificates
+### Step 1: Prepare Configuration
 
-### Step 1: Build and Push Docker Images
-
+1. **Update Secrets**:
 ```bash
-# Build Backend Image
-cd backend/
-docker build -t registry.voltaic.systems/magnetiq-backend:v2.0.0 .
-docker push registry.voltaic.systems/magnetiq-backend:v2.0.0
-
-# Build Frontend Image
-cd ../frontend/
-docker build -t registry.voltaic.systems/magnetiq-frontend:v2.0.0 .
-docker push registry.voltaic.systems/magnetiq-frontend:v2.0.0
+# Edit secrets file with your actual credentials
+vi k8s/secrets.yaml
 ```
 
-### Step 2: Create Kubernetes Resources
+2. **Update ConfigMap** (if needed):
+```bash
+# Adjust configuration for your environment
+vi k8s/configmap.yaml
+```
+
+3. **Update Ingress Host**:
+```bash
+# Set your domain name
+vi k8s/ingress.yaml
+```
+
+### Step 2: Build and Push Images
+
+```bash
+# Build and push backend image
+cd backend/
+docker build -t crep.re-cloud.io/magnetiq/v2/backend:latest .
+docker push crep.re-cloud.io/magnetiq/v2/backend:latest
+
+# Build and push frontend image
+cd ../frontend/
+docker build -t crep.re-cloud.io/magnetiq/v2/frontend:latest .
+docker push crep.re-cloud.io/magnetiq/v2/frontend:latest
+```
+
+### Step 3: Deploy to Kubernetes
 
 ```bash
 # Create namespace
 kubectl apply -f k8s/namespace.yaml
 
-# Create storage class (if not exists)
+# Create storage class
 kubectl apply -f k8s/storage.yaml
 
-# Create ConfigMap and Secrets
+# Create configurations
 kubectl apply -f k8s/configmap.yaml
 kubectl apply -f k8s/secrets.yaml
 
-# Create Persistent Volume Claims
+# Create persistent volumes
 kubectl apply -f k8s/backend/pvc.yaml
 
-# Deploy Backend
+# Deploy backend
 kubectl apply -f k8s/backend/deployment.yaml
 kubectl apply -f k8s/backend/service.yaml
 
-# Deploy Frontend
+# Deploy frontend
 kubectl apply -f k8s/frontend/deployment.yaml
 kubectl apply -f k8s/frontend/service.yaml
 
-# Create Ingress
+# Create ingress
 kubectl apply -f k8s/ingress.yaml
 
-# Optional: Create HPA
+# Apply security policies
+kubectl apply -f k8s/network-policy.yaml
+kubectl apply -f k8s/rbac.yaml
+
+# Enable auto-scaling (optional)
 kubectl apply -f k8s/hpa.yaml
 ```
 
-### Step 3: Verify Deployment
+### Step 4: Verify Deployment
 
 ```bash
-# Check namespace resources
+# Check all resources
 kubectl get all -n magnetiq-v2
 
 # Check pod status
-kubectl get pods -n magnetiq-v2
+kubectl get pods -n magnetiq-v2 -w
 
-# Check services
-kubectl get svc -n magnetiq-v2
+# Check persistent volumes
+kubectl get pvc -n magnetiq-v2
 
 # Check ingress
 kubectl get ingress -n magnetiq-v2
 
-# Check PVCs
-kubectl get pvc -n magnetiq-v2
-
 # View logs
-kubectl logs -n magnetiq-v2 -l app=magnetiq-backend
-kubectl logs -n magnetiq-v2 -l app=magnetiq-frontend
+kubectl logs -n magnetiq-v2 -l app=magnetiq-backend --tail=50
+kubectl logs -n magnetiq-v2 -l app=magnetiq-frontend --tail=50
 ```
 
-### Step 4: Database Migration (First Deployment)
+### Step 5: Initialize Database
 
 ```bash
 # Get backend pod name
 BACKEND_POD=$(kubectl get pods -n magnetiq-v2 -l app=magnetiq-backend -o jsonpath='{.items[0].metadata.name}')
 
-# Initialize database
+# Initialize database (first deployment only)
 kubectl exec -n magnetiq-v2 $BACKEND_POD -- python -m app.database.init_db
 
-# Load initial data (if needed)
+# Load initial data (optional)
 kubectl exec -n magnetiq-v2 $BACKEND_POD -- python -m scripts.load_initial_data
 ```
 
-## Monitoring and Maintenance
+## Quick Deployment Script
 
-### Health Checks
+Create a deployment script `deploy.sh`:
+
 ```bash
-# Check backend health
-kubectl exec -n magnetiq-v2 -it deploy/magnetiq-backend -- curl http://localhost:4036/health
+#!/bin/bash
+set -e
 
-# Check frontend health
-kubectl exec -n magnetiq-v2 -it deploy/magnetiq-frontend -- curl http://localhost:9036/
+echo "Deploying Magnetiq v2 to Kubernetes..."
+
+# Apply all manifests in order
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/storage.yaml
+kubectl apply -f k8s/configmap.yaml
+kubectl apply -f k8s/secrets.yaml
+kubectl apply -f k8s/backend/pvc.yaml
+kubectl apply -f k8s/backend/deployment.yaml
+kubectl apply -f k8s/backend/service.yaml
+kubectl apply -f k8s/frontend/deployment.yaml
+kubectl apply -f k8s/frontend/service.yaml
+kubectl apply -f k8s/ingress.yaml
+kubectl apply -f k8s/network-policy.yaml
+kubectl apply -f k8s/rbac.yaml
+kubectl apply -f k8s/hpa.yaml
+
+echo "Deployment complete! Checking status..."
+kubectl get pods -n magnetiq-v2
 ```
 
-### Scaling Applications
+## Operations
+
+### Scaling
+
 ```bash
 # Manual scaling
 kubectl scale deployment magnetiq-backend -n magnetiq-v2 --replicas=4
@@ -577,81 +253,158 @@ kubectl scale deployment magnetiq-frontend -n magnetiq-v2 --replicas=5
 kubectl get hpa -n magnetiq-v2
 ```
 
-### Update Deployment
+### Rolling Update
+
 ```bash
 # Update backend image
-kubectl set image deployment/magnetiq-backend backend=registry.voltaic.systems/magnetiq-backend:v2.1.0 -n magnetiq-v2
+kubectl set image deployment/magnetiq-backend \
+  backend=crep.re-cloud.io/magnetiq/v2/backend:v2.1.0 \
+  -n magnetiq-v2
 
 # Update frontend image
-kubectl set image deployment/magnetiq-frontend frontend=registry.voltaic.systems/magnetiq-frontend:v2.1.0 -n magnetiq-v2
+kubectl set image deployment/magnetiq-frontend \
+  frontend=crep.re-cloud.io/magnetiq/v2/frontend:v2.1.0 \
+  -n magnetiq-v2
 
-# Watch rollout status
+# Monitor rollout
 kubectl rollout status deployment/magnetiq-backend -n magnetiq-v2
 kubectl rollout status deployment/magnetiq-frontend -n magnetiq-v2
 ```
 
-### Backup and Restore
+### Rollback
 
-#### Backup Database
+```bash
+# Rollback to previous version
+kubectl rollout undo deployment/magnetiq-backend -n magnetiq-v2
+kubectl rollout undo deployment/magnetiq-frontend -n magnetiq-v2
+
+# Rollback to specific revision
+kubectl rollout undo deployment/magnetiq-backend -n magnetiq-v2 --to-revision=2
+```
+
+### Database Backup
+
 ```bash
 # Create backup
 BACKEND_POD=$(kubectl get pods -n magnetiq-v2 -l app=magnetiq-backend -o jsonpath='{.items[0].metadata.name}')
-kubectl exec -n magnetiq-v2 $BACKEND_POD -- sqlite3 /app/data/magnetiq.db ".backup /app/data/backup-$(date +%Y%m%d).db"
+kubectl exec -n magnetiq-v2 $BACKEND_POD -- \
+  sqlite3 /app/data/magnetiq.db ".backup /app/data/backup-$(date +%Y%m%d-%H%M%S).db"
 
 # Copy backup locally
-kubectl cp magnetiq-v2/$BACKEND_POD:/app/data/backup-$(date +%Y%m%d).db ./backup-$(date +%Y%m%d).db
+kubectl cp magnetiq-v2/$BACKEND_POD:/app/data/backup-*.db ./backups/
 ```
 
-#### Restore Database
+### Database Restore
+
 ```bash
 # Copy backup to pod
 kubectl cp ./backup.db magnetiq-v2/$BACKEND_POD:/app/data/restore.db
 
 # Restore database
-kubectl exec -n magnetiq-v2 $BACKEND_POD -- sqlite3 /app/data/magnetiq.db ".restore /app/data/restore.db"
+kubectl exec -n magnetiq-v2 $BACKEND_POD -- \
+  sqlite3 /app/data/magnetiq.db ".restore /app/data/restore.db"
+```
+
+## Monitoring
+
+### Health Checks
+
+```bash
+# Check backend health
+kubectl exec -n magnetiq-v2 -it deploy/magnetiq-backend -- \
+  curl -s http://localhost:4036/health | jq .
+
+# Check frontend health
+kubectl exec -n magnetiq-v2 -it deploy/magnetiq-frontend -- \
+  curl -s http://localhost:9036/
+```
+
+### Resource Usage
+
+```bash
+# View resource usage
+kubectl top pods -n magnetiq-v2
+kubectl top nodes
+
+# Detailed pod metrics
+kubectl describe pod -n magnetiq-v2 <pod-name>
+```
+
+### Logs
+
+```bash
+# Stream backend logs
+kubectl logs -n magnetiq-v2 -l app=magnetiq-backend -f
+
+# Stream frontend logs
+kubectl logs -n magnetiq-v2 -l app=magnetiq-frontend -f
+
+# Get logs from specific pod
+kubectl logs -n magnetiq-v2 <pod-name> --tail=100
 ```
 
 ## Troubleshooting
 
-### Common Issues and Solutions
+### Common Issues
 
 #### 1. Pods Not Starting
+
 ```bash
 # Check pod events
 kubectl describe pod <pod-name> -n magnetiq-v2
 
-# Check logs
+# Check previous logs
 kubectl logs <pod-name> -n magnetiq-v2 --previous
 ```
 
-#### 2. Database Connection Issues
+#### 2. Image Pull Errors
+
+```bash
+# Check if secret exists
+kubectl get secrets -n magnetiq-v2
+
+# Verify registry access
+docker pull crep.re-cloud.io/magnetiq/v2/backend:latest
+```
+
+#### 3. PVC Issues
+
 ```bash
 # Check PVC status
 kubectl get pvc -n magnetiq-v2
+kubectl describe pvc magnetiq-data-pvc -n magnetiq-v2
 
-# Check mount points
-kubectl exec -n magnetiq-v2 <pod-name> -- ls -la /app/data
+# Check Longhorn volumes
+kubectl get volumes.longhorn.io -n longhorn-system
 ```
 
-#### 3. Ingress Not Working
+#### 4. Ingress Issues
+
 ```bash
 # Check ingress controller
 kubectl get pods -n ingress-nginx
 
-# Check ingress rules
+# Check ingress configuration
 kubectl describe ingress magnetiq-ingress -n magnetiq-v2
+
+# Test internal service
+kubectl run test-pod --image=busybox -it --rm -n magnetiq-v2 -- \
+  wget -O- http://magnetiq-backend:4036/health
 ```
 
-#### 4. Service Discovery Issues
+#### 5. Database Connection Issues
+
 ```bash
-# Test service connectivity
-kubectl run test-pod --image=busybox -it --rm -n magnetiq-v2 -- /bin/sh
-# Inside pod:
-wget -O- http://magnetiq-backend:4036/health
-wget -O- http://magnetiq-frontend:9036/
+# Check database file
+kubectl exec -n magnetiq-v2 deploy/magnetiq-backend -- ls -la /app/data/
+
+# Test database connection
+kubectl exec -n magnetiq-v2 deploy/magnetiq-backend -- \
+  python -c "from app.database.session import engine; print(engine.url)"
 ```
 
-### Debug Commands
+### Debug Access
+
 ```bash
 # Get shell access to backend
 kubectl exec -n magnetiq-v2 -it deploy/magnetiq-backend -- /bin/bash
@@ -659,132 +412,112 @@ kubectl exec -n magnetiq-v2 -it deploy/magnetiq-backend -- /bin/bash
 # Get shell access to frontend
 kubectl exec -n magnetiq-v2 -it deploy/magnetiq-frontend -- /bin/sh
 
-# Port forward for local debugging
+# Port forwarding for local access
 kubectl port-forward -n magnetiq-v2 svc/magnetiq-backend 4036:4036
 kubectl port-forward -n magnetiq-v2 svc/magnetiq-frontend 9036:9036
 ```
 
-## Security Considerations
+## Security Best Practices
 
-### Network Policies
-```yaml
-# File: k8s/network-policy.yaml
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: magnetiq-network-policy
-  namespace: magnetiq-v2
-spec:
-  podSelector:
-    matchLabels:
-      app: magnetiq-backend
-  policyTypes:
-  - Ingress
-  ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          app: magnetiq-frontend
-    - podSelector:
-        matchLabels:
-          app: magnetiq-ingress
-    ports:
-    - protocol: TCP
-      port: 4036
-```
+### 1. Secrets Management
+- Use external secret management (Vault, Sealed Secrets)
+- Rotate credentials regularly
+- Never commit secrets to version control
 
-### RBAC Configuration
-```yaml
-# File: k8s/rbac.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  namespace: magnetiq-v2
-  name: magnetiq-role
-rules:
-- apiGroups: [""]
-  resources: ["pods", "services", "configmaps"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["apps"]
-  resources: ["deployments"]
-  verbs: ["get", "list", "watch"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: magnetiq-rolebinding
-  namespace: magnetiq-v2
-subjects:
-- kind: ServiceAccount
-  name: magnetiq-sa
-  namespace: magnetiq-v2
-roleRef:
-  kind: Role
-  name: magnetiq-role
-  apiGroup: rbac.authorization.k8s.io
-```
+### 2. Network Security
+- Apply network policies to restrict traffic
+- Use TLS for all external communication
+- Implement pod security policies
+
+### 3. Image Security
+- Scan images for vulnerabilities
+- Use specific image tags (not :latest in production)
+- Sign images with cosign
+
+### 4. RBAC
+- Follow principle of least privilege
+- Use service accounts for pods
+- Audit RBAC permissions regularly
 
 ## Performance Optimization
 
-### Resource Optimization
-- Monitor resource usage with `kubectl top pods -n magnetiq-v2`
-- Adjust resource requests/limits based on actual usage
-- Use HPA for automatic scaling during peak loads
+### 1. Resource Tuning
+```yaml
+# Adjust in deployment files based on monitoring
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+```
 
-### Database Optimization
-- Consider migrating to PostgreSQL for better performance
-- Implement database connection pooling
-- Regular VACUUM operations for SQLite
+### 2. Database Optimization
+- Consider PostgreSQL for production
+- Implement connection pooling
+- Regular VACUUM for SQLite
 
-### Caching Strategy
-- Implement Redis for session storage
-- Use CDN for static assets
-- Enable browser caching headers
+### 3. Caching
+- Add Redis for session storage
+- Implement CDN for static assets
+- Use browser caching headers
+
+### 4. Scaling Strategy
+- Use HPA for automatic scaling
+- Implement pod disruption budgets
+- Configure anti-affinity rules
 
 ## Migration from Docker Compose
 
-### Data Migration Steps
-1. Export data from Docker volumes
-2. Create PVCs in Kubernetes
-3. Import data to Longhorn volumes
-4. Verify data integrity
-
-### Configuration Migration
-1. Convert environment variables to ConfigMaps/Secrets
-2. Update connection strings and URLs
-3. Test connectivity between services
-
-## Rollback Procedures
-
-### Quick Rollback
+### 1. Export Data
 ```bash
-# Rollback to previous version
-kubectl rollout undo deployment/magnetiq-backend -n magnetiq-v2
-kubectl rollout undo deployment/magnetiq-frontend -n magnetiq-v2
-
-# Check rollback status
-kubectl rollout status deployment/magnetiq-backend -n magnetiq-v2
-kubectl rollout status deployment/magnetiq-frontend -n magnetiq-v2
+# From Docker Compose
+docker-compose exec backend sqlite3 /app/data/magnetiq.db ".backup /tmp/backup.db"
+docker cp magnetiq_backend_1:/tmp/backup.db ./backup.db
 ```
 
-### Full Rollback
+### 2. Import to Kubernetes
 ```bash
-# Apply previous configuration
-kubectl apply -f k8s-backup/
+# Copy to Kubernetes pod
+kubectl cp ./backup.db magnetiq-v2/$BACKEND_POD:/app/data/import.db
 
-# Restore database from backup
-kubectl cp ./backup.db magnetiq-v2/$BACKEND_POD:/app/data/restore.db
-kubectl exec -n magnetiq-v2 $BACKEND_POD -- sqlite3 /app/data/magnetiq.db ".restore /app/data/restore.db"
+# Restore database
+kubectl exec -n magnetiq-v2 $BACKEND_POD -- \
+  sqlite3 /app/data/magnetiq.db ".restore /app/data/import.db"
 ```
+
+## Cleanup
+
+To remove all resources:
+
+```bash
+# Delete all resources
+kubectl delete -f k8s/ -R
+
+# Or delete namespace (removes everything)
+kubectl delete namespace magnetiq-v2
+
+# Clean up PVs (if using Retain policy)
+kubectl delete pv -l app=magnetiq
+```
+
+## Support and Documentation
+
+- **Kubernetes Documentation**: https://kubernetes.io/docs/
+- **Longhorn Documentation**: https://longhorn.io/docs/
+- **NGINX Ingress**: https://kubernetes.github.io/ingress-nginx/
+- **cert-manager**: https://cert-manager.io/docs/
 
 ## Conclusion
 
-This Kubernetes deployment configuration provides a production-ready setup for Magnetiq v2 with:
+This deployment guide provides a production-ready Kubernetes configuration for Magnetiq v2 with:
 - High availability through multiple replicas
 - Persistent storage with Longhorn
-- Automatic SSL certificates
-- Horizontal auto-scaling
-- Health monitoring and probes
-- Rolling updates with zero downtime
+- Automatic SSL certificates via cert-manager
+- Horizontal auto-scaling for load management
+- Network policies for security
+- RBAC for access control
+- Comprehensive monitoring and troubleshooting procedures
 
-For additional support or customization, refer to the Kubernetes documentation or contact the DevOps team.
+For additional support or customization requirements, please consult with the DevOps team.

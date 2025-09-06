@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: magnetiq-backend
+  namespace: magnetiq-v2
+  labels:
+    app: magnetiq-backend
+    component: backend
+    version: v2.0.0
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: magnetiq-backend
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: magnetiq-backend
+        component: backend
+        version: v2.0.0
+    spec:
+      containers:
+      - name: backend
+        image: crep.re-cloud.io/magnetiq/v2/backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 4036
+          name: http
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: magnetiq-config
+        - secretRef:
+            name: magnetiq-secrets
+        volumeMounts:
+        - name: data-volume
+          mountPath: /app/data
+        - name: media-volume
+          mountPath: /app/media
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 4036
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 4036
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 15"]
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: magnetiq-data-pvc
+      - name: media-volume
+        persistentVolumeClaim:
+          claimName: magnetiq-media-pvc
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30

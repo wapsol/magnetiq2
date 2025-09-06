@@ -1,0 +1,67 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: magnetiq-ingress
+  namespace: magnetiq-v2
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - magnetiq.voltaic.systems
+    secretName: magnetiq-tls
+  rules:
+  - host: magnetiq.voltaic.systems
+    http:
+      paths:
+      # Backend API paths
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: magnetiq-backend
+            port:
+              number: 4036
+      - path: /docs
+        pathType: Prefix
+        backend:
+          service:
+            name: magnetiq-backend
+            port:
+              number: 4036
+      - path: /redoc
+        pathType: Prefix
+        backend:
+          service:
+            name: magnetiq-backend
+            port:
+              number: 4036
+      - path: /openapi.json
+        pathType: Exact
+        backend:
+          service:
+            name: magnetiq-backend
+            port:
+              number: 4036
+      - path: /health
+        pathType: Exact
+        backend:
+          service:
+            name: magnetiq-backend
+            port:
+              number: 4036
+      # Frontend paths (must be last)
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: magnetiq-frontend
+            port:
+              number: 9036

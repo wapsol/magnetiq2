@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: magnetiq-v2
+  labels:
+    app: magnetiq-v2
+    environment: production
+    project: magnetiq
