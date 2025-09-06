@@ -11,7 +11,7 @@ This document provides a comprehensive guide for deploying Magnetiq v2 to a Kube
 - **Longhorn**: Installed and configured for persistent storage
 - **NGINX Ingress Controller**: For traffic routing
 - **cert-manager**: For SSL certificate management
-- **Container Registry Access**: Access to `crep.re-cloud.io/magnetiq/v2`
+- **Container Registry Access**: Access to `crepo.re-cloud.io/magnetiq/v2`
 
 ### Optional Components
 - **Metrics Server**: For HPA functionality
@@ -20,12 +20,12 @@ This document provides a comprehensive guide for deploying Magnetiq v2 to a Kube
 ## Repository Information
 
 ### Container Registry
-- **Registry URL**: `https://crep.re-cloud.io`
+- **Registry URL**: `https://crepo.re-cloud.io`
 - **Project**: `magnetiq`
 - **Repository**: `magnetiq/v2`
 - **Images**:
-  - Backend: `crep.re-cloud.io/magnetiq/v2/backend:latest`
-  - Frontend: `crep.re-cloud.io/magnetiq/v2/frontend:latest`
+  - Backend: `crepo.re-cloud.io/magnetiq/v2/backend:latest`
+  - Frontend: `crepo.re-cloud.io/magnetiq/v2/frontend:latest`
 
 ## Directory Structure
 
@@ -134,13 +134,13 @@ vi k8s/ingress.yaml
 ```bash
 # Build and push backend image
 cd backend/
-docker build -t crep.re-cloud.io/magnetiq/v2/backend:latest .
-docker push crep.re-cloud.io/magnetiq/v2/backend:latest
+docker build -t crepo.re-cloud.io/magnetiq/v2/backend:latest .
+docker push crepo.re-cloud.io/magnetiq/v2/backend:latest
 
 # Build and push frontend image
 cd ../frontend/
-docker build -t crep.re-cloud.io/magnetiq/v2/frontend:latest .
-docker push crep.re-cloud.io/magnetiq/v2/frontend:latest
+docker build -t crepo.re-cloud.io/magnetiq/v2/frontend:latest .
+docker push crepo.re-cloud.io/magnetiq/v2/frontend:latest
 ```
 
 ### Step 3: Deploy to Kubernetes
@@ -258,12 +258,12 @@ kubectl get hpa -n magnetiq-v2
 ```bash
 # Update backend image
 kubectl set image deployment/magnetiq-backend \
-  backend=crep.re-cloud.io/magnetiq/v2/backend:v2.1.0 \
+  backend=crepo.re-cloud.io/magnetiq/v2/backend:v2.1.0 \
   -n magnetiq-v2
 
 # Update frontend image
 kubectl set image deployment/magnetiq-frontend \
-  frontend=crep.re-cloud.io/magnetiq/v2/frontend:v2.1.0 \
+  frontend=crepo.re-cloud.io/magnetiq/v2/frontend:v2.1.0 \
   -n magnetiq-v2
 
 # Monitor rollout
@@ -364,7 +364,7 @@ kubectl logs <pod-name> -n magnetiq-v2 --previous
 kubectl get secrets -n magnetiq-v2
 
 # Verify registry access
-docker pull crep.re-cloud.io/magnetiq/v2/backend:latest
+docker pull crepo.re-cloud.io/magnetiq/v2/backend:latest
 ```
 
 #### 3. PVC Issues

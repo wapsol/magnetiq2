@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: crep.re-cloud.io/magnetiq/v2/backend:latest
+        image: crepo.re-cloud.io/magnetiq/v2/backend:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 4036

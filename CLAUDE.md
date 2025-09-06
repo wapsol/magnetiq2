@@ -1,3 +1,3 @@
 - After implementing new code, always update the related parts of the spec at docs/spec_v2/.  Be thorough, and list which parts of the spec you have updated. Check for inconsistencies in the whole specification, and flag them.
 - Respect the configurations in site.conf
-- Our container repo is at https://crep.re-cloud.io. The project is called "magnetiq" and we are using the repository magnetiq/v2
+- Our container repo is at https://crepo.re-cloud.io. The project is called "magnetiq" and we are using the repository magnetiq/v2

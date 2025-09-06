@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: crep.re-cloud.io/magnetiq/v2/frontend:latest
+        image: crepo.re-cloud.io/magnetiq/v2/frontend:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 9036
