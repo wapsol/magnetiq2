@@ -8,6 +8,7 @@ This folder contains short descriptions of technology, processes and logic behin
 | SQLAlchemy | [sqlalchemy.md](sqlalchemy.md) | 2025-08-27 | Claude |
 | Redux Toolkit | [redux_toolkit.md](redux_toolkit.md) | 2025-08-27 | Claude |
 | Tailwind CSS | [tailwind_css.md](tailwind_css.md) | 2025-08-27 | Claude |
+| Kustomize | [kustomize.md](kustomize.md) | 2025-09-10 | ashant@magnetiq |
 | Alembic | [alembic.md](alembic.md) | 2025-08-26 | Ashant C |
 | Celery | [celery.md](celery.md) | 2025-08-26 | Claude |
 | Flower | [flower.md](flower.md) | 2025-08-26 | Claude |
