@@ -321,11 +321,11 @@ For detailed integration patterns and implementation, see [Integrations Specific
 
 ## Deployment Architecture
 
-Magnetiq v2 supports multiple deployment strategies from simple Docker-based deployments to enterprise Kubernetes environments with ArgoCD GitOps workflows.
+Magnetiq v2 supports multiple deployment strategies from simple Docker-based deployments to enterprise Kubernetes environments using kubectl-based workflows.
 
 ### Deployment Options
 - **Docker Compose**: Traditional container orchestration for simple deployments
-- **Kubernetes + ArgoCD**: GitOps-based deployment with Longhorn persistent storage
+- **Kubernetes**: Direct kubectl deployment with Longhorn persistent storage
 - **Hybrid Environments**: Mix of local development and cloud production
 
 For comprehensive deployment procedures, environment configurations, infrastructure setup, and operational procedures, see [Deployment Specification](./deployment.md).

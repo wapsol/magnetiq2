@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     refresh_token_expire_days: int = 7
     
     # CORS
-    allowed_origins: List[str] = Field(default=["http://localhost:8036", "http://localhost:3000", "http://localhost:8038", "http://localhost:8039", "http://localhost:9036"])
+    allowed_origins: List[str] = Field(default=["http://localhost:8036", "http://local.magnetiq2:8036", "http://localhost:3000", "http://localhost:8038", "http://localhost:8039", "http://localhost:9036"])
     allowed_methods: List[str] = ["GET", "POST", "PUT", "PATCH", "DELETE"]
     allowed_headers: List[str] = ["*"]
     
