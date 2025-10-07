@@ -115,7 +115,7 @@ const FooterNew = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {upcomingWebinars.map((webinar) => {
-              const formatDate = (dateString) => {
+              const formatDate = (dateString: string) => {
                 const date = new Date(dateString)
                 return language === 'de' 
                   ? date.toLocaleDateString('de-DE', { 

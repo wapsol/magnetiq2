@@ -1,0 +1,161 @@
+{
+  "migrationSource": "https://o18-1.voltaic.systems/",
+  "migrationDate": "2025-08-31",
+  "company": {
+    "name": "voltaic.systems",
+    "tagline": "Enterprise AI Agents and Semantic Data Management",
+    "locations": ["Stuttgart", "Frankfurt", "Germany"],
+    "contact": {
+      "email": "datadriven@voltaic.systems",
+      "phone": "+49 711 7947 2394"
+    }
+  },
+  "heroSection": {
+    "mainTitle": "Enterprise AI Agents and Semantic Data Management",
+    "subtitle": "Centralized semantic information source",
+    "keyMessages": [
+      "AI-driven enterprise solutions",
+      "Data sovereignty and autonomy",
+      "Data as your company's asset"
+    ],
+    "images": [
+      "/images/migrated/voltaic-systems/hero/hero_laptop_data.jpg",
+      "/images/migrated/voltaic-systems/hero/hero_building_reflection.jpg"
+    ]
+  },
+  "technologies": {
+    "title": "Cutting-edge Technologies",
+    "items": [
+      {
+        "name": "Agentic AI",
+        "description": "Intelligent autonomous systems for enterprise automation"
+      },
+      {
+        "name": "Semantic Data Engineering",
+        "description": "Advanced data processing and knowledge representation"
+      },
+      {
+        "name": "Elastic Autonomous Cloud Solutions",
+        "description": "Scalable cloud-native AI infrastructure"
+      }
+    ]
+  },
+  "productCategories": {
+    "software": {
+      "title": "Software Solutions",
+      "products": [
+        {
+          "name": "DOS Basic/Standard",
+          "description": "Data Operating System for comprehensive data management"
+        },
+        {
+          "name": "Data Promise",
+          "description": "Reliable data governance and compliance platform"
+        },
+        {
+          "name": "Industrial Applications",
+          "description": "Industry-specific AI solutions and integrations"
+        }
+      ]
+    },
+    "components": {
+      "title": "Core Components",
+      "items": [
+        "Mapper - Data integration and transformation engine",
+        "Models - AI and machine learning model management",
+        "Vector Space - Semantic search and similarity matching",
+        "Interfaces & Application Framework - Development tools and APIs"
+      ]
+    }
+  },
+  "services": {
+    "title": "Professional Services",
+    "offerings": [
+      {
+        "name": "AI Customizing",
+        "description": "Tailored AI solutions for specific business requirements"
+      },
+      {
+        "name": "Knowledge Building",
+        "description": "Expert consultation for building AI knowledge systems"
+      },
+      {
+        "name": "Management Advisory",
+        "description": "Strategic guidance for AI implementation and governance"
+      }
+    ]
+  },
+  "industries": {
+    "title": "Industry Solutions",
+    "sectors": [
+      {
+        "name": "Financial Services",
+        "focus": "Risk management, compliance, and fraud detection"
+      },
+      {
+        "name": "Healthcare",
+        "focus": "Patient data management and diagnostic support"
+      },
+      {
+        "name": "Manufacturing",
+        "focus": "Production optimization and quality control"
+      },
+      {
+        "name": "Retail",
+        "focus": "Customer experience and inventory management"
+      },
+      {
+        "name": "Energy & Utilities",
+        "focus": "Grid optimization and predictive maintenance"
+      },
+      {
+        "name": "Sales & Customer Services",
+        "focus": "CRM enhancement and automated support"
+      }
+    ]
+  },
+  "partners": {
+    "title": "Technology Partners",
+    "logos": [
+      {
+        "name": "NVIDIA",
+        "logo": "/images/migrated/voltaic-systems/partners/nvidia_logo.webp",
+        "description": "AI computing platform partnership"
+      },
+      {
+        "name": "Google",
+        "logo": "/images/migrated/voltaic-systems/partners/google_logo.webp",
+        "description": "Cloud services and AI tools integration"
+      },
+      {
+        "name": "BVMW",
+        "logo": "/images/migrated/voltaic-systems/partners/bvmw_logo.webp",
+        "description": "German business network association"
+      },
+      {
+        "name": "50 Experts",
+        "logo": "/images/migrated/voltaic-systems/partners/50_experts_logo.webp",
+        "description": "Professional expertise network"
+      }
+    ]
+  },
+  "visualAssets": {
+    "companyLogo": "/images/migrated/voltaic-systems/logos/voltaic_systems_logo.png",
+    "graphics": [
+      "/images/migrated/voltaic-systems/graphics/ai_intelligence.webp",
+      "/images/migrated/voltaic-systems/graphics/futuristic_tech.jpg",
+      "/images/migrated/voltaic-systems/graphics/network_tech.jpg"
+    ]
+  },
+  "brandingElements": {
+    "tone": "Technical, professional, innovation-focused",
+    "language": "Primarily German with English technical terms",
+    "keyThemes": [
+      "Data sovereignty",
+      "AI autonomy",
+      "Enterprise scalability",
+      "German engineering quality",
+      "Future-ready technology"
+    ]
+  }
+}

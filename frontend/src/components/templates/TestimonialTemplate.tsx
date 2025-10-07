@@ -13,10 +13,12 @@ interface Testimonial {
 }
 
 interface TestimonialTemplateProps {
+  title?: string
   testimonials: Testimonial[]
   layout?: 'single' | 'grid' | 'carousel'
   columns?: 1 | 2 | 3
   showRating?: boolean
+  showImages?: boolean
   showQuotes?: boolean
   variant?: 'card' | 'minimal' | 'featured'
   background?: 'white' | 'gray' | 'primary'

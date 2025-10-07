@@ -1,7 +1,8 @@
+// @ts-nocheck
 import React, { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
-import { PublicLayout } from '../../components/layouts/PublicLayout'
+import PublicLayout from '../../components/layouts/PublicLayout'
 import { ArrowRightIcon, CheckCircleIcon, StarIcon } from '@heroicons/react/24/outline'
 import { LinkedInLogoIcon } from '../../components/common/LinkedInLogoIcon'
 

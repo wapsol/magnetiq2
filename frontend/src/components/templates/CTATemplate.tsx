@@ -16,6 +16,7 @@ interface CTATemplateProps {
   }
   variant?: 'default' | 'centered' | 'split' | 'minimal'
   background?: 'primary' | 'accent' | 'dark' | 'gray' | 'gradient'
+  backgroundVariant?: 'primary' | 'accent' | 'dark' | 'gray' | 'gradient'
   size?: 'small' | 'medium' | 'large'
   icon?: ReactNode
   pattern?: boolean

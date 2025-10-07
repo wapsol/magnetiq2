@@ -7,7 +7,8 @@ interface FAQ {
 }
 
 interface FAQTemplateProps {
-  faqs: FAQ[]
+  faqs?: FAQ[]
+  items?: FAQ[]
   title?: string
   subtitle?: string
   description?: string
@@ -19,6 +20,7 @@ interface FAQTemplateProps {
 
 const FAQTemplate = ({
   faqs,
+  items,
   title,
   subtitle,
   description,
@@ -28,6 +30,9 @@ const FAQTemplate = ({
   className = ''
 }: FAQTemplateProps) => {
   const [openItems, setOpenItems] = useState<Set<number>>(new Set())
+
+  // Support both faqs and items props
+  const faqList = faqs || items || []
 
   const toggleItem = (index: number) => {
     const newOpenItems = new Set(openItems)
@@ -93,10 +98,10 @@ const FAQTemplate = ({
 
   const splitFAQs = () => {
     if (layout === 'two-column') {
-      const mid = Math.ceil(faqs.length / 2)
-      return [faqs.slice(0, mid), faqs.slice(mid)]
+      const mid = Math.ceil(faqList.length / 2)
+      return [faqList.slice(0, mid), faqList.slice(mid)]
     }
-    return [faqs]
+    return [faqList]
   }
 
   const faqColumns = splitFAQs()
@@ -139,7 +144,7 @@ const FAQTemplate = ({
         </div>
       ) : (
         <div className={`max-w-4xl mx-auto space-y-${variant === 'simple' ? '0' : '4'}`}>
-          {faqs.map((faq, index) => renderFAQItem(faq, index))}
+          {faqList.map((faq, index) => renderFAQItem(faq, index))}
         </div>
       )}
     </div>

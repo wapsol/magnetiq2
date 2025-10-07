@@ -1,0 +1,276 @@
+{
+  "migrationId": "voltaic-systems-2025-08-31",
+  "description": "Content blocks generated from voltaic.systems migration ready for integration",
+  "contentBlocks": {
+    "heroImageBlock": {
+      "_type": "hero_image",
+      "_key": "voltaic-hero-main",
+      "title": "Enterprise AI Agents und Semantic Data Management",
+      "subtitle": "Zentralisierte semantische Informationsquelle",
+      "description": "VoltAIc bedeutet künstliche Intelligenz langfristig gedacht: Der Schritt von großartigen KI-Möglichkeiten zu wirtschaftlich gesunden KI-Lösungen für jedes Unternehmen. Daten als Unternehmens-Asset mit Souveränität und Autonomie.",
+      "primary_action": {
+        "text": "Lösungen entdecken",
+        "href": "/webinars",
+        "variant": "primary"
+      },
+      "secondary_action": {
+        "text": "Über voltAIc erfahren",
+        "href": "/about"
+      },
+      "background_image": "/images/migrated/voltaic-systems/hero/hero_laptop_data.jpg",
+      "background_image_alt": "Laptop mit Datenvisualisierung für Enterprise AI Solutions",
+      "mobile_image": "/images/migrated/voltaic-systems/hero/hero_building_reflection.jpg",
+      "overlay_opacity": 0.4,
+      "overlay_color": "#000000",
+      "text_alignment": "left",
+      "text_position": "center",
+      "content_width": "wide",
+      "height": "large",
+      "_meta": {
+        "responsive": true,
+        "responsive_config": {
+          "loading": "eager",
+          "aspect_ratio": "16:9"
+        }
+      }
+    },
+    "companyLogoBlock": {
+      "_type": "image",
+      "_key": "voltaic-logo",
+      "src": "/images/migrated/voltaic-systems/logos/voltaic_systems_logo.png",
+      "alt": "voltaic.systems - Enterprise AI Agents and Semantic Data Management",
+      "width": 400,
+      "height": 200,
+      "alignment": "center",
+      "object_fit": "contain",
+      "_meta": {
+        "responsive": true,
+        "responsive_config": {
+          "loading": "eager"
+        }
+      }
+    },
+    "technologyGallery": {
+      "_type": "gallery",
+      "_key": "voltaic-tech-gallery",
+      "title": "Moderne Technologien für Enterprise AI",
+      "description": "Unsere KI-Lösungen basieren auf modernsten Technologien für Semantic Data Engineering und autonome Cloud-Systeme",
+      "images": [
+        {
+          "src": "/images/migrated/voltaic-systems/graphics/ai_intelligence.webp",
+          "alt": "Artificial Intelligence und Machine Learning Visualisierung",
+          "caption": "Agentic AI - Intelligente autonome Systeme",
+          "width": 800,
+          "height": 600
+        },
+        {
+          "src": "/images/migrated/voltaic-systems/graphics/futuristic_tech.jpg",
+          "alt": "Futuristische Technologie und Innovation",
+          "caption": "Elastic Autonomous Cloud Solutions",
+          "width": 800,
+          "height": 600
+        },
+        {
+          "src": "/images/migrated/voltaic-systems/graphics/network_tech.jpg",
+          "alt": "Netzwerk und Datenverbindungen",
+          "caption": "Semantic Data Engineering",
+          "width": 800,
+          "height": 600
+        }
+      ],
+      "layout": "grid",
+      "columns": 3,
+      "gap": "medium",
+      "aspect_ratio": "4:3",
+      "show_captions": true,
+      "enable_lightbox": true,
+      "_meta": {
+        "responsive": true,
+        "responsive_config": {
+          "mobile_columns": 1,
+          "tablet_columns": 2,
+          "desktop_columns": 3
+        }
+      }
+    },
+    "partnerGallery": {
+      "_type": "gallery",
+      "_key": "voltaic-partners",
+      "title": "Technologie-Partner",
+      "description": "Zusammenarbeit mit führenden Technologie-Unternehmen für erstklassige Enterprise AI Solutions",
+      "images": [
+        {
+          "src": "/images/migrated/voltaic-systems/partners/nvidia_logo.webp",
+          "alt": "NVIDIA Logo - AI Computing Platform Partnership",
+          "caption": "NVIDIA - AI Computing Platform",
+          "width": 300,
+          "height": 200
+        },
+        {
+          "src": "/images/migrated/voltaic-systems/partners/google_logo.webp",
+          "alt": "Google Logo - Cloud Services Integration",
+          "caption": "Google - Cloud Services & AI Tools",
+          "width": 300,
+          "height": 200
+        },
+        {
+          "src": "/images/migrated/voltaic-systems/partners/bvmw_logo.webp",
+          "alt": "BVMW Logo - German Business Network",
+          "caption": "BVMW - Bundesverband mittelständische Wirtschaft",
+          "width": 300,
+          "height": 200
+        },
+        {
+          "src": "/images/migrated/voltaic-systems/partners/50_experts_logo.webp",
+          "alt": "50 Experts Logo - Professional Network",
+          "caption": "50 Experts - Professional Expertise Network",
+          "width": 300,
+          "height": 200
+        }
+      ],
+      "layout": "grid",
+      "columns": 4,
+      "gap": "large",
+      "aspect_ratio": "3:2",
+      "show_captions": false,
+      "enable_lightbox": false,
+      "_meta": {
+        "responsive": true,
+        "responsive_config": {
+          "mobile_columns": 2,
+          "tablet_columns": 2,
+          "desktop_columns": 4
+        }
+      }
+    },
+    "heroDataImage": {
+      "_type": "image",
+      "_key": "voltaic-hero-data",
+      "src": "/images/migrated/voltaic-systems/hero/hero_laptop_data.jpg",
+      "alt": "Laptop mit Datenanalyse und Business Intelligence Dashboard",
+      "caption": "Modernste Datenvisualisierung für Enterprise Intelligence",
+      "width": 1920,
+      "height": 1080,
+      "alignment": "full",
+      "object_fit": "cover",
+      "aspect_ratio": "16:9",
+      "_meta": {
+        "responsive": true,
+        "responsive_config": {
+          "sizes": "(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px",
+          "loading": "lazy"
+        }
+      }
+    },
+    "heroFutureImage": {
+      "_type": "image",
+      "_key": "voltaic-hero-future",
+      "src": "/images/migrated/voltaic-systems/hero/hero_building_reflection.jpg",
+      "alt": "Futuristische Architektur mit Glasfassade - Symbol für Innovation",
+      "caption": "Zukunftsorientierte Technologie für nachhaltige AI-Lösungen",
+      "width": 1920,
+      "height": 1080,
+      "alignment": "full",
+      "object_fit": "cover",
+      "aspect_ratio": "16:9",
+      "_meta": {
+        "responsive": true,
+        "responsive_config": {
+          "sizes": "(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px",
+          "loading": "lazy"
+        }
+      }
+    }
+  },
+  "sectionContent": {
+    "improvedIndustries": [
+      {
+        "name": "Financial Services",
+        "description": "Risikomanagement, Compliance und Fraud Detection mit Enterprise AI",
+        "emoji": "🏦",
+        "technologies": ["Risk Analysis AI", "Compliance Automation", "Fraud Detection"]
+      },
+      {
+        "name": "Healthcare",
+        "description": "Patientendaten-Management und Diagnostik-Unterstützung",
+        "emoji": "🏥",
+        "technologies": ["Medical Data AI", "Diagnostic Support", "Patient Analytics"]
+      },
+      {
+        "name": "Manufacturing",
+        "description": "Produktionsoptimierung und Qualitätskontrolle",
+        "emoji": "🏭",
+        "technologies": ["Production AI", "Quality Control", "Predictive Maintenance"]
+      },
+      {
+        "name": "Energy & Utilities",
+        "description": "Smart Grid Optimierung und Predictive Maintenance",
+        "emoji": "⚡",
+        "technologies": ["Grid AI", "Energy Analytics", "Maintenance Prediction"]
+      },
+      {
+        "name": "Retail",
+        "description": "Customer Experience Enhancement und Inventory Management",
+        "emoji": "🏢",
+        "technologies": ["Customer AI", "Inventory Optimization", "Personalization"]
+      },
+      {
+        "name": "Sales & Customer Service",
+        "description": "CRM Enhancement und automatisierte Kundenbetreuung",
+        "emoji": "🤝",
+        "technologies": ["Sales AI", "Customer Analytics", "Service Automation"]
+      }
+    ],
+    "enhancedFeatures": [
+      {
+        "title": "DOS - Data Operating System",
+        "description": "Vollständige semantische Datenverwaltung mit autonomer KI-Integration für Enterprise-Umgebungen",
+        "icon": "CpuChipIcon",
+        "technologies": ["Semantic Data Management", "AI Integration", "Enterprise Architecture"]
+      },
+      {
+        "title": "AI Data Mapper", 
+        "description": "Intelligente Datenintegration und -transformation mit Machine Learning für komplexe Unternehmensstrukturen",
+        "icon": "ChartBarIcon",
+        "technologies": ["Data Integration", "ML Transformation", "Enterprise Mapping"]
+      },
+      {
+        "title": "AI Customizing & Model Fine-tuning",
+        "description": "Maßgeschneiderte KI-Lösungen mit Model Fine-tuning für spezifische Geschäftsanforderungen",
+        "icon": "BoltIcon", 
+        "technologies": ["Custom AI", "Model Training", "Business Optimization"]
+      },
+      {
+        "title": "Elastic Autonomous Cloud Solutions",
+        "description": "Skalierbare Cloud-native KI-Infrastruktur mit autonomer Verwaltung und Elastic Computing",
+        "icon": "ShieldCheckIcon",
+        "technologies": ["Cloud AI", "Autonomous Systems", "Elastic Infrastructure"]
+      }
+    ],
+    "improvedStats": [
+      { "label": "Enterprise AI Lösungen", "value": "100+" },
+      { "label": "Zufriedene Unternehmen", "value": "50+" },
+      { "label": "Deutsche Standorte", "value": "2" },
+      { "label": "Integrierte Datenquellen", "value": "1000+" }
+    ]
+  },
+  "contentMeta": {
+    "sourceWebsite": "https://o18-1.voltaic.systems/",
+    "extractedElements": {
+      "images": 8,
+      "logos": 5,
+      "textSections": 6,
+      "industryCategories": 6,
+      "technologies": 4
+    },
+    "responsiveVariants": {
+      "hero_images": ["1920w", "1200w", "768w", "320w"],
+      "logos": ["400w", "200w"],
+      "graphics": ["800w", "600w", "400w"]
+    },
+    "fileFormats": [".jpg", ".webp", ".png"],
+    "totalAssetSize": "~1.2MB",
+    "seoOptimized": true,
+    "accessibilityCompliant": true
+  }
+}

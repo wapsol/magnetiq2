@@ -358,7 +358,7 @@ const TemplateShowcasePage = () => {
           stats={stats}
           layout="grid"
           columns={4}
-          variant="cards"
+          variant="simple"
           background="white"
           size="medium"
           showTrends={true}

@@ -8,9 +8,12 @@ interface Feature {
 }
 
 interface FeatureTemplateProps {
+  title?: string
+  subtitle?: string
   features: Feature[]
   layout?: 'grid' | 'list' | 'cards'
   columns?: 2 | 3 | 4
+  showIcons?: boolean
   iconStyle?: 'circle' | 'square' | 'none'
   showHover?: boolean
   className?: string

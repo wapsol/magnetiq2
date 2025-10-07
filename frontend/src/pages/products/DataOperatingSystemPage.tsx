@@ -120,7 +120,7 @@ const DataOperatingSystemPage: React.FC = () => {
           ? 'Das voltAIc Daten-Betriebssystem - Eine einheitliche Plattform für Datenmanagement, Echtzeitverarbeitung und KI-gestützte Analytics.'
           : 'The voltAIc Data Operating System - A unified platform for data management, real-time processing, and AI-powered analytics.'
         }
-        canonical={language === 'de' ? '/de/produkte/daten-betriebssystem' : '/products/data-operating-system'}
+        canonicalUrl={language === 'de' ? '/de/produkte/daten-betriebssystem' : '/products/data-operating-system'}
       />
 
       <div className={`${backgrounds.page}`}>

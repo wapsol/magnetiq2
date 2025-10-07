@@ -148,7 +148,7 @@ const BookAMeetingPage: React.FC = () => {
           ? 'Buchen Sie eine 30-minütige KI-Beratung für €30 mit unseren Experten. Erhalten Sie wertvolle Einblicke in KI-Technologie für Ihr Unternehmen.'
           : 'Book a 30-minute AI consultation for €30 with our experts. Get valuable insights into AI technology for your business.'
         }
-        canonical="/book-a-meeting"
+        canonicalUrl="/book-a-meeting"
       />
 
       <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 min-h-screen">

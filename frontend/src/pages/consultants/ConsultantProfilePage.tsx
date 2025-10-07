@@ -118,7 +118,7 @@ const ConsultantProfilePage: React.FC = () => {
   if (loading) {
     return (
       <div className={`min-h-screen ${backgrounds.page} flex items-center justify-center`}>
-        <LoadingSpinner size="large" />
+        <LoadingSpinner size="lg" />
       </div>
     );
   }

@@ -24,7 +24,8 @@ interface PricingTemplateProps {
   title: string
   subtitle?: string
   description?: string
-  tiers: PricingTier[]
+  tiers?: PricingTier[]
+  plans?: PricingTier[]
   billingToggle?: {
     monthly: string
     yearly: string
@@ -39,9 +40,13 @@ const PricingTemplate = ({
   subtitle,
   description,
   tiers,
+  plans,
   billingToggle,
   className = ''
 }: PricingTemplateProps) => {
+  // Support both tiers and plans props
+  const pricingTiers = tiers || plans || []
+
   return (
     <div className={className}>
       {/* Header */}
@@ -90,11 +95,11 @@ const PricingTemplate = ({
 
       {/* Pricing Grid */}
       <div className={`grid gap-8 ${
-        tiers.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' :
-        tiers.length === 3 ? 'md:grid-cols-3 max-w-6xl mx-auto' :
+        pricingTiers.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' :
+        pricingTiers.length === 3 ? 'md:grid-cols-3 max-w-6xl mx-auto' :
         'md:grid-cols-2 lg:grid-cols-4'
       }`}>
-        {tiers.map((tier, index) => (
+        {pricingTiers.map((tier, index) => (
           <div
             key={tier.name}
             className={`relative rounded-2xl border ${

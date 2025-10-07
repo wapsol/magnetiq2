@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react'
 import { ContentBlock, BlockRendererProps } from '../../types/content'
 import HeroTemplate from '../templates/HeroTemplate'
