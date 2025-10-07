@@ -16,18 +16,28 @@ const ImprintPage = () => {
   const { language } = useLanguage()
 
   const companyInfo = {
-    name: 'voltAIc Systems GmbH',
-    business: language === 'en' ? 'AI Data Intelligence Solutions' : 'KI-Datenintelligentz-Lösungen',
+    name: 'Wapsol GmbH',
+    brand: 'voltAIc Systems',
+    business: language === 'en'
+      ? 'Managing the voltAIc Systems brand - AI Data Intelligence Solutions'
+      : 'Verwaltet die voltAIc Systems Marke - KI-Datenintelligentz-Lösungen',
     address: {
-      street: 'Königstraße 78',
-      postalCode: '70173',
+      street: 'Industriestraße 24b',
+      postalCode: '70565',
       city: 'Stuttgart',
       country: language === 'en' ? 'Germany' : 'Deutschland'
     },
     contact: {
       phone: '+49 711 7947 2394',
+      fax: '+49 711 8998 9571',
       email: 'datadriven@voltaic.systems',
       website: 'https://voltaic.systems'
+    },
+    legal: {
+      managingDirector: 'Ashant Chalasani',
+      registrationCourt: language === 'en' ? 'District Court Stuttgart' : 'Amtsgericht Stuttgart',
+      registrationNumber: 'HRB 22736',
+      vatId: 'DE215101721'
     }
   }
 
@@ -41,8 +51,7 @@ const ImprintPage = () => {
           <p className={`${textColors.secondary}`}>{companyInfo.business}</p>
           <div className="mt-4">
             <p>{companyInfo.address.street}</p>
-            <p>{companyInfo.address.postalCode} {companyInfo.address.city}</p>
-            <p>{companyInfo.address.country}</p>
+            <p>{companyInfo.address.postalCode} {companyInfo.address.city}, {companyInfo.address.country}</p>
           </div>
         </div>
       )
@@ -74,18 +83,6 @@ const ImprintPage = () => {
       )
     },
     {
-      icon: <IdentificationIcon className="h-6 w-6" />,
-      title: language === 'en' ? 'Management' : 'Geschäftsführung',
-      content: (
-        <div>
-          <p className={`${textColors.secondary}`}>
-            {language === 'en' ? 'Managing Directors:' : 'Geschäftsführer:'}
-          </p>
-          <p className="font-medium">[Name of Managing Director]</p>
-        </div>
-      )
-    },
-    {
       icon: <ScaleIcon className="h-6 w-6" />,
       title: language === 'en' ? 'Registry Court' : 'Handelsregister',
       content: (
@@ -94,19 +91,19 @@ const ImprintPage = () => {
             <span className={`${textColors.secondary}`}>
               {language === 'en' ? 'District Court:' : 'Amtsgericht:'}
             </span>
-            <span className="ml-2">Stuttgart</span>
+            <span className="ml-2">{companyInfo.legal.registrationCourt}</span>
           </p>
           <p>
             <span className={`${textColors.secondary}`}>
               {language === 'en' ? 'Registration Number:' : 'Handelsregisternummer:'}
             </span>
-            <span className="ml-2">HRB [NUMBER]</span>
+            <span className="ml-2">{companyInfo.legal.registrationNumber}</span>
           </p>
           <p>
             <span className={`${textColors.secondary}`}>
               {language === 'en' ? 'VAT ID:' : 'Umsatzsteuer-ID:'}
             </span>
-            <span className="ml-2">DE[NUMBER]</span>
+            <span className="ml-2">{companyInfo.legal.vatId}</span>
           </p>
         </div>
       )
@@ -119,11 +116,9 @@ const ImprintPage = () => {
           <p className={`${textColors.secondary} mb-2`}>
             {language === 'en' ? 'According to § 55 Abs. 2 RStV:' : 'Nach § 55 Abs. 2 RStV:'}
           </p>
-          <div>
-            <p className="font-medium">[Name of Responsible Person]</p>
-            <p>{companyInfo.name}</p>
-            <p>{companyInfo.address.street}</p>
-            <p>{companyInfo.address.postalCode} {companyInfo.address.city}</p>
+          <div className="space-y-1">
+            <p className="font-medium">Pascal Köth</p>
+            <p className="font-medium">Ashant Chalasani</p>
           </div>
         </div>
       )
@@ -134,9 +129,9 @@ const ImprintPage = () => {
     <>
       <SEOHead
         title={language === 'de' ? 'Impressum - voltAIc Systems' : 'Imprint - voltAIc Systems'}
-        description={language === 'de' 
-          ? 'Rechtliche Informationen und Impressum der voltAIc Systems GmbH, Ihrem Partner für KI-Datenintelligentz-Lösungen.'
-          : 'Legal information and imprint of voltAIc Systems GmbH, your partner for AI data intelligence solutions.'
+        description={language === 'de'
+          ? 'Rechtliche Informationen und Impressum der Wapsol GmbH, die die voltAIc Systems Marke verwaltet - Ihr Partner für KI-Datenintelligentz-Lösungen.'
+          : 'Legal information and imprint of Wapsol GmbH, managing the voltAIc Systems brand - your partner for AI data intelligence solutions.'
         }
       />
 
@@ -157,9 +152,9 @@ const ImprintPage = () => {
               </h1>
               
               <p className={`text-xl ${textColors.secondary} max-w-3xl mx-auto`}>
-                {language === 'de' 
-                  ? 'Rechtliche Angaben gemäß § 5 TMG und weitere gesetzliche Informationen der voltAIc Systems GmbH.'
-                  : 'Legal information according to German law and statutory details of voltAIc Systems GmbH.'
+                {language === 'de'
+                  ? 'Rechtliche Angaben gemäß § 5 TMG und weitere gesetzliche Informationen der Wapsol GmbH, die die voltAIc Systems Marke verwaltet.'
+                  : 'Legal information according to German law and statutory details of Wapsol GmbH, managing the voltAIc Systems brand.'
                 }
               </p>
             </div>

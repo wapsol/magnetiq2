@@ -118,5 +118,113 @@ This Docker-native approach:
 
 ---
 
+## Conversation Summary: Docker Build Workflow & Knowledge Base Setup
+
+**Date**: 2025-10-06
+**Context**: Initial project onboarding and build system configuration
+**Category**: Development / Documentation
+
+### Session Overview
+Comprehensive session covering Docker build environments, nginx architecture, and knowledge base setup for the Magnetiq v2 project.
+
+### Key Activities
+
+#### 1. **Codebase Analysis**
+- Analyzed project structure for Magnetiq v2 CMS
+- Examined multi-stage Dockerfiles for backend (Python/FastAPI) and frontend (React/Vite)
+- Reviewed Kubernetes deployment configurations
+- Identified missing configuration files
+
+#### 2. **Docker Environment Investigation**
+**Question**: How to maintain separate DEV and PROD Docker builds?
+
+**Answer**: Use Docker-native multi-stage builds (already implemented)
+- No need for complex external tooling (Makefiles, etc.)
+- Dockerfiles already properly structured with `development` and `production` stages
+- docker-compose.yml uses `target: development` for DEV
+- Production uses `--target production` flag when building
+
+#### 3. **nginx:alpine Architecture Understanding**
+**Finding**: nginx:alpine has different roles per environment
+- **DEV**: NOT used - Frontend runs Vite dev server directly
+- **PROD**: Embedded in frontend container via `FROM nginx:alpine as production`
+- **K8s**: Separate nginx-ingress-controller handles cluster routing
+
+**Critical Discovery**: Missing `docker/nginx-frontend.conf` file
+- Referenced in frontend Dockerfile line 50
+- Required for production frontend builds
+- Action item flagged for creation
+
+#### 4. **Build Script Creation**
+Created `/Users/ashant/magnetiq2/scripts/build.sh` with:
+- Automatic path resolution (works from any directory)
+- Color-coded output
+- Interactive push confirmation for prod builds
+- Timestamp tagging strategy
+- Both DEV and PROD modes tested successfully
+
+**Usage**:
+```bash
+./scripts/build.sh dev   # Docker Compose development
+./scripts/build.sh prod  # Production images for K8s
+```
+
+#### 5. **Port Configuration Documented**
+- **DEV**: Backend 4036, Frontend 9036
+- **PROD (K8s)**: Backend 4036 (internal), Frontend 80→9036 (service mapping)
+- Vite config adjusted to match Docker port mappings
+
+#### 6. **Knowledge Base System Established**
+- Updated CLAUDE.md with kb.md documentation guidelines
+- Created initial `/Users/ashant/magnetiq2/docs/kb.md`
+- Documented Docker build learnings as first entry
+- Established "add that to kb" workflow
+
+### Technical Decisions Made
+
+1. **Keep It Docker-Native**: Rejected complex build tooling in favor of multi-stage builds
+2. **Single Build Script**: One simple script handles both environments
+3. **Interactive Production Push**: Safety feature to prevent accidental registry pushes
+4. **Timestamp Tagging**: Production images tagged with both `latest` and `YYYYMMDD-HHMMSS`
+
+### Container Registry Configuration
+- Registry: `crepo.re-cloud.io`
+- Project: `magnetiq/v2`
+- Repositories: `backend` and `frontend`
+- K8s pulls with `imagePullPolicy: Always`
+
+### Services Status After Session
+- ✅ Backend running at http://localhost:4036 (Docker)
+- ✅ Frontend running at http://localhost:9036 (Docker)
+- ✅ Build script created and tested
+- ✅ Knowledge base system established
+- ⚠️ Missing nginx-frontend.conf (to be created)
+
+### Lessons From This Session
+
+1. **Simplicity Wins**: The existing multi-stage Dockerfiles were already optimal. No need to add complexity.
+
+2. **Understanding Over Doing**: Spent time understanding nginx:alpine's role before making changes - prevented unnecessary modifications.
+
+3. **Document As You Go**: Established kb.md early to capture learnings immediately rather than trying to remember later.
+
+4. **Path Resolution Matters**: Build script properly handles relative paths so it works from any directory.
+
+5. **Interactive Safety Nets**: Production push confirmation prevents costly mistakes.
+
+### Impact
+This session established:
+- Clear understanding of DEV/PROD build separation
+- Simple, maintainable build workflow
+- Documentation system for future learning retention
+- Foundation for consistent deployment practices
+
+### Next Steps Identified
+1. Create missing `docker/nginx-frontend.conf`
+2. Test complete DEV→PROD→K8s deployment pipeline
+3. Continue populating kb.md as new insights emerge
+
+---
+
 ## Future Entries
 New learnings will be appended below...
