@@ -34,6 +34,10 @@ CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 # Build stage
 FROM base as build
 
+# Install ALL dependencies (including dev dependencies for build)
+COPY package*.json ./
+RUN npm ci && npm cache clean --force
+
 # Copy source code
 COPY . .
 
