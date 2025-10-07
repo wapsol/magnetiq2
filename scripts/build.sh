@@ -16,6 +16,7 @@
 #   --registry    Container registry path (default: crepo.re-cloud.io/magnetiq/v2)
 #   --log-file    Optional log file path
 #   --target      Docker build target (default: production)
+#   --network     Docker network mode (e.g., host)
 #   --sudo        Use sudo for docker commands
 # ==============================================================================
 
@@ -37,6 +38,7 @@ REGISTRY="crepo.re-cloud.io/magnetiq/v2"
 TARGET="production"
 USE_SUDO=""
 LOG_FILE=""
+USE_NETWORK_HOST=""
 LEGACY_MODE=""
 COMPONENT=""
 TAG=""
@@ -54,6 +56,7 @@ elif [[ $# -gt 0 ]]; then
             --registry) REGISTRY="$2"; shift 2 ;;
             --log-file) LOG_FILE="$2"; shift 2 ;;
             --target) TARGET="$2"; shift 2 ;;
+            --network) USE_NETWORK_HOST="--network=$2"; shift 2 ;;
             --sudo) USE_SUDO="sudo"; shift ;;
             *) echo -e "${RED}Unknown option: $1${NC}"; exit 1 ;;
         esac
@@ -104,6 +107,7 @@ if [ -n "$COMPONENT" ]; then
     echo -e "${GREEN}Building ${COMPONENT} image...${NC}"
 
     BUILD_CMD="${USE_SUDO} docker build --target ${TARGET}"
+    [ -n "$USE_NETWORK_HOST" ] && BUILD_CMD="${BUILD_CMD} ${USE_NETWORK_HOST}"
     BUILD_CMD="${BUILD_CMD} -t ${REGISTRY}/${COMPONENT}:${TAG}"
     BUILD_CMD="${BUILD_CMD} -t ${REGISTRY}/${COMPONENT}:latest"
     BUILD_CMD="${BUILD_CMD} ./${COMPONENT}"
@@ -194,6 +198,7 @@ elif [ "$ENV" = "prod" ]; then
     # Build backend
     echo -e "${BLUE}Building backend image...${NC}"
     docker build --target production \
+        --network=host \
         -t ${REGISTRY}/backend:latest \
         -t ${REGISTRY}/backend:${TIMESTAMP} \
         ./backend
@@ -204,6 +209,7 @@ elif [ "$ENV" = "prod" ]; then
     # Build frontend
     echo -e "${BLUE}Building frontend image...${NC}"
     docker build --target production \
+        --network=host \
         -t ${REGISTRY}/frontend:latest \
         -t ${REGISTRY}/frontend:${TIMESTAMP} \
         ./frontend
