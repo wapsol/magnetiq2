@@ -2,9 +2,21 @@
 # ==============================================================================
 # build.sh - Build Docker images for DEV or PROD environments
 # ==============================================================================
-# Usage:
+# Usage (Legacy Mode):
 #   ./scripts/build.sh dev   - Build and start development containers
 #   ./scripts/build.sh prod  - Build production images and push to registry
+#
+# Usage (Parameter Mode):
+#   ./scripts/build.sh --component backend --tag v1.0.0 --registry magnetiq/v2
+#   ./scripts/build.sh --component frontend --tag v1.0.0 --target production
+#
+# Parameters:
+#   --component   Component to build (backend/frontend)
+#   --tag         Version tag for the image
+#   --registry    Container registry path (default: crepo.re-cloud.io/magnetiq/v2)
+#   --log-file    Optional log file path
+#   --target      Docker build target (default: production)
+#   --sudo        Use sudo for docker commands
 # ==============================================================================
 
 set -e  # Exit on error
@@ -20,26 +32,130 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# Environment argument
-ENV=${1:-dev}
-
-# Container registry
+# Default values
 REGISTRY="crepo.re-cloud.io/magnetiq/v2"
+TARGET="production"
+USE_SUDO=""
+LOG_FILE=""
+LEGACY_MODE=""
+COMPONENT=""
+TAG=""
+
+# Detect mode: Legacy (dev|prod) or Parameter-based
+if [[ $# -eq 1 && "$1" =~ ^(dev|prod)$ ]]; then
+    # Legacy mode
+    LEGACY_MODE="$1"
+elif [[ $# -gt 0 ]]; then
+    # Parse named parameters
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --component) COMPONENT="$2"; shift 2 ;;
+            --tag) TAG="$2"; shift 2 ;;
+            --registry) REGISTRY="$2"; shift 2 ;;
+            --log-file) LOG_FILE="$2"; shift 2 ;;
+            --target) TARGET="$2"; shift 2 ;;
+            --sudo) USE_SUDO="sudo"; shift ;;
+            *) echo -e "${RED}Unknown option: $1${NC}"; exit 1 ;;
+        esac
+    done
+else
+    # No arguments, default to dev
+    LEGACY_MODE="dev"
+fi
 
 # Change to project root
 cd "${PROJECT_ROOT}"
 
-echo -e "${BLUE}==================================================${NC}"
-echo -e "${BLUE}  Magnetiq v2 Docker Build Script${NC}"
-echo -e "${BLUE}==================================================${NC}"
-echo -e "Environment: ${YELLOW}${ENV}${NC}"
-echo -e "Project Root: ${PROJECT_ROOT}"
-echo ""
+# ==============================================================================
+# Parameter Mode - Build specific component
+# ==============================================================================
+if [ -n "$COMPONENT" ]; then
+    echo -e "${BLUE}==================================================${NC}"
+    echo -e "${BLUE}  Magnetiq v2 Docker Build (Parameter Mode)${NC}"
+    echo -e "${BLUE}==================================================${NC}"
+    echo -e "Component: ${YELLOW}${COMPONENT}${NC}"
+    echo -e "Tag: ${YELLOW}${TAG:-latest}${NC}"
+    echo -e "Registry: ${YELLOW}${REGISTRY}${NC}"
+    echo -e "Target: ${YELLOW}${TARGET}${NC}"
+    echo -e "Project Root: ${PROJECT_ROOT}"
+    [ -n "$LOG_FILE" ] && echo -e "Log File: ${LOG_FILE}"
+    [ -n "$USE_SUDO" ] && echo -e "Using sudo: ${YELLOW}Yes${NC}"
+    echo ""
+
+    # Validate component
+    if [[ "$COMPONENT" != "backend" && "$COMPONENT" != "frontend" ]]; then
+        echo -e "${RED}Error: Invalid component '${COMPONENT}'. Must be 'backend' or 'frontend'${NC}"
+        exit 1
+    fi
+
+    # Validate tag is provided
+    if [ -z "$TAG" ]; then
+        echo -e "${RED}Error: --tag parameter is required in parameter mode${NC}"
+        exit 1
+    fi
+
+    # Setup logging if requested
+    if [ -n "$LOG_FILE" ]; then
+        exec 1> >(tee -a "$LOG_FILE")
+        exec 2>&1
+    fi
+
+    # Build the component
+    echo -e "${GREEN}Building ${COMPONENT} image...${NC}"
+
+    BUILD_CMD="${USE_SUDO} docker build --target ${TARGET}"
+    BUILD_CMD="${BUILD_CMD} -t ${REGISTRY}/${COMPONENT}:${TAG}"
+    BUILD_CMD="${BUILD_CMD} -t ${REGISTRY}/${COMPONENT}:latest"
+    BUILD_CMD="${BUILD_CMD} ./${COMPONENT}"
+
+    echo -e "${BLUE}Command: ${BUILD_CMD}${NC}"
+    eval $BUILD_CMD
+
+    echo ""
+    echo -e "${GREEN}✓ ${COMPONENT} image built successfully${NC}"
+    echo ""
+
+    # Show built images
+    echo -e "${BLUE}Built images:${NC}"
+    ${USE_SUDO} docker images | grep "${REGISTRY}/${COMPONENT}" | head -2
+    echo ""
+
+    # Ask to push
+    echo -e "${YELLOW}Push images to registry? (y/n)${NC}"
+    read -r PUSH_CONFIRM
+
+    if [ "$PUSH_CONFIRM" = "y" ] || [ "$PUSH_CONFIRM" = "Y" ]; then
+        echo ""
+        echo -e "${GREEN}Pushing images to ${REGISTRY}...${NC}"
+
+        ${USE_SUDO} docker push ${REGISTRY}/${COMPONENT}:${TAG}
+        ${USE_SUDO} docker push ${REGISTRY}/${COMPONENT}:latest
+
+        echo ""
+        echo -e "${GREEN}==================================================${NC}"
+        echo -e "${GREEN}  Images pushed successfully!${NC}"
+        echo -e "${GREEN}==================================================${NC}"
+        echo -e "${COMPONENT}: ${REGISTRY}/${COMPONENT}:${TAG}"
+        echo -e "          ${REGISTRY}/${COMPONENT}:latest"
+    else
+        echo -e "${YELLOW}Skipping push. Images available locally.${NC}"
+    fi
+
+# ==============================================================================
+# Legacy Mode - DEV or PROD
+# ==============================================================================
+else
+    echo -e "${BLUE}==================================================${NC}"
+    echo -e "${BLUE}  Magnetiq v2 Docker Build Script${NC}"
+    echo -e "${BLUE}==================================================${NC}"
+    echo -e "Environment: ${YELLOW}${LEGACY_MODE}${NC}"
+    echo -e "Project Root: ${PROJECT_ROOT}"
+    echo ""
 
 # ==============================================================================
 # DEV Environment
 # ==============================================================================
-if [ "$ENV" = "dev" ]; then
+if [ "$LEGACY_MODE" = "dev" ]; then
     echo -e "${GREEN}Building and starting DEVELOPMENT containers...${NC}"
     echo ""
 
@@ -133,13 +249,15 @@ elif [ "$ENV" = "prod" ]; then
 # Invalid Environment
 # ==============================================================================
 else
-    echo -e "${RED}Error: Invalid environment '${ENV}'${NC}"
+    echo -e "${RED}Error: Invalid environment '${LEGACY_MODE}'${NC}"
     echo ""
     echo "Usage:"
     echo "  ./scripts/build.sh dev   - Build and start development containers"
     echo "  ./scripts/build.sh prod  - Build production images and push to registry"
     exit 1
 fi
+
+fi  # End of Legacy Mode
 
 echo ""
 echo -e "${GREEN}Done!${NC}"
