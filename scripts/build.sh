@@ -123,27 +123,11 @@ if [ -n "$COMPONENT" ]; then
     echo -e "${BLUE}Built images:${NC}"
     ${USE_SUDO} docker images | grep "${REGISTRY}/${COMPONENT}" | head -2
     echo ""
-
-    # Ask to push
-    echo -e "${YELLOW}Push images to registry? (y/n)${NC}"
-    read -r PUSH_CONFIRM
-
-    if [ "$PUSH_CONFIRM" = "y" ] || [ "$PUSH_CONFIRM" = "Y" ]; then
-        echo ""
-        echo -e "${GREEN}Pushing images to ${REGISTRY}...${NC}"
-
-        ${USE_SUDO} docker push ${REGISTRY}/${COMPONENT}:${TAG}
-        ${USE_SUDO} docker push ${REGISTRY}/${COMPONENT}:latest
-
-        echo ""
-        echo -e "${GREEN}==================================================${NC}"
-        echo -e "${GREEN}  Images pushed successfully!${NC}"
-        echo -e "${GREEN}==================================================${NC}"
-        echo -e "${COMPONENT}: ${REGISTRY}/${COMPONENT}:${TAG}"
-        echo -e "          ${REGISTRY}/${COMPONENT}:latest"
-    else
-        echo -e "${YELLOW}Skipping push. Images available locally.${NC}"
-    fi
+    echo -e "${GREEN}==================================================${NC}"
+    echo -e "${GREEN}  Build completed successfully!${NC}"
+    echo -e "${GREEN}==================================================${NC}"
+    echo -e "${COMPONENT}: ${REGISTRY}/${COMPONENT}:${TAG}"
+    echo -e "          ${REGISTRY}/${COMPONENT}:latest"
 
 # ==============================================================================
 # Legacy Mode - DEV or PROD
@@ -221,35 +205,13 @@ elif [ "$ENV" = "prod" ]; then
     echo -e "${BLUE}Built images:${NC}"
     docker images | grep "${REGISTRY}" | head -4
     echo ""
-
-    # Ask to push
-    echo -e "${YELLOW}Push images to registry? (y/n)${NC}"
-    read -r PUSH_CONFIRM
-
-    if [ "$PUSH_CONFIRM" = "y" ] || [ "$PUSH_CONFIRM" = "Y" ]; then
-        echo ""
-        echo -e "${GREEN}Pushing images to ${REGISTRY}...${NC}"
-
-        docker push ${REGISTRY}/backend:latest
-        docker push ${REGISTRY}/backend:${TIMESTAMP}
-        docker push ${REGISTRY}/frontend:latest
-        docker push ${REGISTRY}/frontend:${TIMESTAMP}
-
-        echo ""
-        echo -e "${GREEN}==================================================${NC}"
-        echo -e "${GREEN}  Images pushed successfully!${NC}"
-        echo -e "${GREEN}==================================================${NC}"
-        echo -e "Backend:  ${REGISTRY}/backend:latest"
-        echo -e "          ${REGISTRY}/backend:${TIMESTAMP}"
-        echo -e "Frontend: ${REGISTRY}/frontend:latest"
-        echo -e "          ${REGISTRY}/frontend:${TIMESTAMP}"
-        echo ""
-        echo -e "${BLUE}Deploy to K8s:${NC}"
-        echo -e "  kubectl rollout restart deployment/magnetiq-backend -n magnetiq-v2"
-        echo -e "  kubectl rollout restart deployment/magnetiq-frontend -n magnetiq-v2"
-    else
-        echo -e "${YELLOW}Skipping push. Images available locally.${NC}"
-    fi
+    echo -e "${GREEN}==================================================${NC}"
+    echo -e "${GREEN}  Build completed successfully!${NC}"
+    echo -e "${GREEN}==================================================${NC}"
+    echo -e "Backend:  ${REGISTRY}/backend:latest"
+    echo -e "          ${REGISTRY}/backend:${TIMESTAMP}"
+    echo -e "Frontend: ${REGISTRY}/frontend:latest"
+    echo -e "          ${REGISTRY}/frontend:${TIMESTAMP}"
 
 # ==============================================================================
 # Invalid Environment
